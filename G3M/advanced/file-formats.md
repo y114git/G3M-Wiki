@@ -244,14 +244,32 @@ G3M auto-converts DELTAMOD mods on import. See [Importing Mods](../mods/importin
 
 ## PizzaOven Format
 
-Mod format for Pizza Tower via PizzaOven.
+Mod format for Pizza Tower from the PizzaOven mod manager. Always distributed as a `.zip` archive.
+
+### NORMAL Mods
 
 | File | Description |
 | --- | --- |
-| `mod.json` | Metadata file with mod name, author, and structure. |
-| `audio/`, `code/`, `texture/`, etc. | Folders containing mod resources. |
+| `mod.json` | Metadata (`title`, `submitter`, `description`, `homepage`, `preview`, `cat`). |
+| `.xdelta` / `.vcdiff` | Binary patch applied to `data.win` or sound banks. |
+| `.win` | Full data file replacement. |
+| `.bank` | FMOD audio bank (goes to `sound/Desktop/`). |
+| `.txt` | Language file (goes to `lang/`) or credits file (game root). |
+| `.ttf` / `.otf` | Font (goes to `lang/fonts/`). |
+| `.def` | Language definition (goes to `lang/`). |
+| `.png` / `.json` | Language graphics (go to `lang/graphics/`). |
+| `.dll` / `.mp4` | Plugin DLL or video (game root). |
+| `.disable_gb1click` | Opt-out marker — disables G3M auto-conversion. |
 
-G3M attempts auto-conversion of eligible PizzaOven mods. See [Importing Mods](../mods/importing.md#pizzaoven-conversion).
+### AFOM/CYOP Mods
+
+| File | Description |
+| --- | --- |
+| `<TowerName>/` | One or more tower folders at archive root. |
+| `<TowerName>/<name>.ini` | INI with `[properties]` section, `name` and `mainlevel` keys. |
+| `<TowerName>/levels/` | Level data files. |
+
+G3M auto-converts eligible PizzaOven and AFOM/CYOP mods. See [PizzaOven & AFOM/CYOP Conversion](../mods/po-conversion.md) for details.
 
 ---
 

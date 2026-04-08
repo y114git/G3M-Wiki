@@ -88,16 +88,16 @@ Supported DELTAMOD game mappings:
 
 ---
 
-## PizzaOven Conversion
+## PizzaOven & AFOM/CYOP Conversion
 
-For Pizza Tower, G3M can convert PizzaOven mod format to G3M format. A PizzaOven mod is a folder with a `mod.json` file. G3M:
+For Pizza Tower, G3M auto-detects and converts two PizzaOven-originated mod types:
 
-1. Inspects the folder structure for GML-compatible content (audio, code, textures, etc.).
-2. Determines if the mod can be converted (e.g., it has xdelta patches, data files, or code scripts).
-3. If eligible, generates g3mpatch files from the mod's content using G3MTool.
-4. Creates a proper `mod_config.json` and organizes the files into G3M structure.
+- **NORMAL mods** — A folder (or `.zip`) with `mod.json` and mod content files (xdelta patches, audio banks, language files, fonts, etc.). G3M copies the game to a temp directory, simulates applying the mod as PizzaOven would, diffs the result against the original, and produces a native G3M mod from the changes. Requires the Pizza Tower game path to be configured.
+- **AFOM/CYOP mods** — Custom level archives where each root entry is a tower folder with a valid `.ini` containing `[properties]`, `name`, and `mainlevel`. G3M stores the tower folders in the mod directory and deploys them to `%APPDATA%\PizzaTower_GM2\towers\` on launch.
 
-If conversion is not possible (e.g., the mod uses unsupported features), a message is shown explaining that the mod cannot be converted automatically.
+**GMLoader** mods (with GML folders like `audio/`, `code/`, `lib/`) are not supported and cannot be converted.
+
+See [PizzaOven & AFOM/CYOP Conversion](po-conversion.md) for full details.
 
 ---
 
@@ -109,11 +109,3 @@ When importing a mod whose ID matches an existing mod in the library:
 - Merging preserves existing version snapshots and other data in the mod folder.
 - Replacing removes the old folder entirely and creates a new one.
 
----
-
-## Import Analytics
-
-If analytics opt-in is enabled, G3M records anonymous import events with:
-- Source: gamebanana, local_file, g3m_protocol, external_url.
-- Outcome: success, failure, merged, manual.
-- File extension of the imported file.

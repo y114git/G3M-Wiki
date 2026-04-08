@@ -38,7 +38,7 @@
 * [Filtering & Sorting](mods/mod-filtering.md)
 * [Modpacks (Multiple Mods)](mods/modpacks.md)
 * [Creating Mods](mods/creating-mods.md)
-* [PO Translation Conversion](mods/po-conversion.md)
+* [PizzaOven & AFOM/CYOP Conversion](mods/po-conversion.md)
 
 ## Features
 
