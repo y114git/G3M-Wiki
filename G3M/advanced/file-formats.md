@@ -50,6 +50,14 @@ The core metadata file for every G3M mod. JSON format.
 
 **Top-level fields:**
 
+| Field | Type | Description |
+| --- | --- | --- |
+| `config_version` | string | Schema version (e.g., `"1.0.0"`). |
+| `metadata` | object | Nested object containing all mod metadata (see below). |
+| `files` | object | Chapter-to-file mapping (see below). |
+
+**`metadata` object fields:**
+
 | Field | Type | Example |
 | --- | --- | --- |
 | `id` | string | `"local_abc123"` or `"gb_mod_45678"` |
@@ -57,15 +65,13 @@ The core metadata file for every G3M mod. JSON format.
 | `version` | string | `"1.2.0"` |
 | `author` | string | `"ModAuthor"` |
 | `description` | string | `"A cool mod that changes the intro."` |
+| `homepage` | string | `"https://gamebanana.com/mods/12345"` |
+| `icon` | string | `"icon.png"` |
 | `game` | string | `"deltarune"` |
 | `game_version` | string | `"1.10"` |
-| `icon` | string | `"icon.png"` |
 | `tags` | array | `["customization", "gameplay"]` |
-| `homepage` | string | `"https://gamebanana.com/mods/12345"` |
-| `files` | object | Chapter-to-file mapping (see below) |
-| `playtime_hours` | number | `2.5` |
-| `added_date` | string | `"2024-01-15T10:30:00Z"` |
-| `last_updated` | string | `"2024-03-20T14:00:00Z"` |
+
+Per-mod playtime, added date, and last-updated timestamps are stored in the profile's `mods_data.json`, not in `mod_config.json`.
 
 **files object:**
 
@@ -94,7 +100,7 @@ The manifest file for G3M plugins. JSON format.
 | `author` | string | Yes | Author name. |
 | `version` | string | Yes | Plugin version. |
 | `entry` | string | Yes | Main Python file name (e.g., "main.py"). |
-| `api_version` | string | No | Target Plugin API version (default: "1"). |
+| `api_version` | string | Yes | Target Plugin API version (e.g., `"1.0.0"`). Must match the app's `PLUGIN_API_VERSION`. |
 | `icon` | string | No | Icon file path. |
 | `homepage` | string | No | URL to project page. |
 | `tags` | array | No | Category tags. |
@@ -175,25 +181,27 @@ Custom game registry. Stored in `{user_data_root}/settings/custom_games.json`.
 | `visibility` | Object mapping game IDs to boolean visibility. |
 | `custom_games` | Array of custom game records. |
 
-### profile.json
+### `<ProfileName>.json`
 
-Per-profile mod selection state. Stored in `{user_data_root}/profiles/<name>/profile.json`.
+Per-profile state. Stored in `{user_data_root}/profiles/<name>/<name>.json` (e.g., `profiles/Default/Default.json`).
 
-Contains the `used_mods` mapping: chapter IDs to arrays of mod IDs.
+Contains profile-specific flat keys: `selected_game_type`, `used_mods_<chapter_id>` (arrays of mod IDs), `chapter_mode_enabled`, `full_install_enabled`, and similar.
 
-### plugins_state.json
+### plugins_data.json
 
-Plugin enabled/disabled state and per-plugin settings. Stored in `{user_data_root}/plugins_state.json`.
+Plugin enabled/disabled state and per-plugin settings. Stored in `{user_data_root}/plugins/plugins_data.json`.
 
-### downloads.json
+Structure: `{"enabled": {"plugin_id": bool, ...}, "settings": {"plugin_id": {...}, ...}}`.
 
-Download history. Stored in `{user_data_root}/downloads/downloads.json`.
+### downloads_history.json
+
+Download history. Stored in `{user_data_root}/downloads/downloads_history.json`.
 
 Array of download record objects with fields described in [Downloads](../features/downloads.md).
 
-### game_versions.json
+### game_versions_data.json
 
-Game version records. Stored in `{user_data_root}/game_versions/game_versions.json`.
+Game version records. Stored in `{user_data_root}/game_versions/game_versions_data.json`.
 
 ---
 
@@ -206,16 +214,18 @@ G3M can extract files from these archive formats:
 | ZIP | `.zip` | Built-in `zipfile` module |
 | 7-Zip | `.7z` | `py7zr` library |
 | RAR | `.rar` | `rarfile` library |
+| TAR (all variants) | `.tar.gz`, `.tar.bz2`, `.tar.xz`, `.tar`, `.tgz` | Built-in `tarfile` module |
+| LZMA | `.lzma` | Built-in `lzma` module |
 
 ---
 
 ## Theme Package
 
-### .g3mtheme.zip
+### Theme package (.zip)
 
-A ZIP archive containing a `g3m_theme.json` manifest and optional media files. See [Theme Packages](../customization/theme-packages.md) for details.
+A standard `.zip` archive containing a `theme_config.json` manifest and optional media asset files. See [Theme Packages](../customization/theme-packages.md) for details.
 
-Recognized manifest file names (checked in order): `g3m_theme.json`, `theme_config.json`, `deltahub_theme.json`, `theme.json`.
+Recognized manifest file names: `theme_config.json` (current), `theme.json` (legacy).
 
 ---
 
@@ -225,7 +235,7 @@ Legacy mod format from Deltamod Manager.
 
 | File | Description |
 | --- | --- |
-| `deltamod_info.json` | JSON metadata (name, author, game, etc.) |
+| `_deltamodInfo.json` or `meta.json` | JSON metadata (name, author, game, etc.) |
 | `modding.xml` | XML descriptor with mod metadata and file references. |
 
 G3M auto-converts DELTAMOD mods on import. See [Importing Mods](../mods/importing.md#deltamod-conversion).

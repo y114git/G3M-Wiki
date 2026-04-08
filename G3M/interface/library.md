@@ -110,7 +110,7 @@ If a mod has a newer version available on GameBanana than the locally installed 
 
 Clicking the **Add Mod** button (plus icon) opens a small dialog with two options:
 
-- **Import Mod** — Opens a file picker to import a mod from a `.zip`, `.7z`, `.rar`, `.g3mtool`, `.g3mpatch`, `.deltamod`, or raw folder. See [Importing Mods](../mods/importing.md) for details.
+- **Import Mod** — Opens a file picker to import a mod from a `.zip`, `.7z`, `.rar`, `.g3mpatch`, or raw folder. See [Importing Mods](../mods/importing.md) for details.
 - **Create Mod** — Opens the Mod Editor in creation mode. See [Mod Editor](../mods/mod-editor.md).
 
 ---

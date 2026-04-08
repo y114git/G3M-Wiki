@@ -12,12 +12,11 @@ You can drag files or URLs directly onto the main G3M window.
 
 | Drop Type | Behavior |
 | --- | --- |
-| **Archive files** (`.zip`, `.7z`, `.rar`) | Extracted and imported as mods. |
+| **Archive files** (`.zip`, `.7z`, `.rar`, `.tar.gz`, `.lzma`) | Extracted; content detected as native G3M mod, DELTAMOD format, or theme package, and imported accordingly. |
 | **Patch files** (`.g3mpatch`, `.xdelta`, `.vcdiff`, `.csx`) | Imported as single-file mods. |
 | **Data files** (`.win`, `.ios`, `.unx`, `.droid`) | Imported as raw-data mods. |
-| **DELTAMOD files** (`.deltamod`) | Converted and imported as G3M mods. |
-| **Folders** | Scanned for `mod_config.json` (native), `deltamod_info.json` (DELTAMOD), or `mod.json` (PizzaOven). If found, imported accordingly. If not, scanned for supported data/patch files. |
-| **URLs** (`http://`, `https://`) | Downloaded and then imported. |
+| **Folders** | Scanned for `mod_config.json` (native G3M), `_deltamodInfo.json` / `meta.json` (DELTAMOD), or known theme config files. Imported accordingly. |
+| **URLs** (`http://`, `https://`) | Downloaded and then imported. Text drops containing HTTP URLs are also handled. |
 | **Multiple files** | Queued and processed one at a time. |
 
 ### Drop Zones
@@ -28,7 +27,13 @@ The drop zone covers the entire main window content area. When a file is dragged
 
 ## Mod Versions Dialog Drop
 
-In the Mod Versions dialog, you can drag `.zip` files onto the dialog to import them as version snapshots. The files are copied into the mod's `mod_versions/` subfolder.
+In the Mod Versions dialog, you can drag archive files or URLs onto the dialog to import them as version snapshots.
+
+---
+
+## Game Versions Dialog Drop
+
+The Game Versions dialog also accepts dropped files and URLs to create a new game version snapshot.
 
 ---
 

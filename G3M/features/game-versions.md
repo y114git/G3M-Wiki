@@ -6,7 +6,7 @@ The Game Versions feature lets you save complete snapshots of a game's files and
 
 ## Overview
 
-A "game version" is a compressed archive of the game's data directory. G3M stores these archives in the `game_versions/` folder of your user data directory, indexed by a `game_versions.json` file.
+A "game version" is a compressed archive of the game's data directory. G3M stores these archives in the `game_versions/` folder of your user data directory, indexed by a `game_version_data.json` file.
 
 ---
 

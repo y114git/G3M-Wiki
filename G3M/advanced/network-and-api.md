@@ -35,7 +35,7 @@ GameBanana enforces a limit of **250 requests per hour**. When this limit is rea
 ### Caching
 
 - **Mod list pages** — Cached in memory per game. Refreshing the game clears the cache.
-- **Mod icons** — Cached in memory (LRU, up to 100 entries).
+- **Mod icons** — Cached in memory as rendered `QPixmap` objects (plain dict, unbounded during session).
 - **Description images** — Cached during the session.
 - **Mod metadata** — Stored locally when a mod is downloaded, so Library mods don't need network access.
 
@@ -49,61 +49,13 @@ GameBanana enforces a limit of **250 requests per hour**. When this limit is rea
 
 ## G3M Cloud Services
 
-G3M has its own cloud backend for features not provided by GameBanana.
+G3M has its own cloud backend for features not provided by GameBanana. The following features communicate with it:
 
-### Base URL
-
-The cloud functions base URL is configured in `config.py`. All cloud requests use this base URL.
-
-### Endpoints
-
-| Endpoint | Purpose | Method |
-| --- | --- | --- |
-| `/chat/messages` | Fetch chat messages | GET |
-| `/chat/send` | Send a chat message | POST |
-| `/presence/ping` | Register/refresh online presence | POST |
-| `/presence/count` | Get online player count | GET |
-| `/announce/latest` | Get the latest announcement | GET |
-| `/announce/vote` | Submit a poll vote | POST |
-| `/ingestAnalytics` | Upload analytics batch | POST |
-| `/globalSettings` | Fetch global app settings | GET |
-| `/updates/latest` | Check for app updates | GET |
-
-### Authentication
-
-No user authentication is required. All cloud endpoints are anonymous. The only identity used is:
-
-- **Chat**: Anonymous — no identity.
-- **Polls**: A hashed UUID (`announce_identity` in settings), used solely to prevent duplicate votes.
-- **Analytics**: A local UUID, never correlated to any account.
-- **Presence**: A session token generated per app launch.
-
-### Global Settings
-
-On startup, G3M fetches global settings from the cloud. These settings include:
-
-- Download URLs for Full Install games.
-- Feature flags.
-- Plugin catalog URL.
-- Announcement payload.
-- Any server-side configuration overrides.
-
-The global settings are cached with a timestamp (`global_settings_loaded_at`) and refreshed periodically.
-
----
-
-## GitHub API
-
-Used for update checking:
-
-| Purpose | Endpoint |
-| --- | --- |
-| Check latest release | `https://api.github.com/repos/y114git/G3M/releases/latest` |
-| List all releases (beta) | `https://api.github.com/repos/y114git/G3M/releases` |
-
-### Rate Limiting
-
-GitHub's API has a rate limit of 60 requests per hour for unauthenticated requests. Since G3M only checks once per launch, this is rarely an issue.
+- **Chat** — Fetches and sends messages. Anonymous, no account required.
+- **Online Presence** — Registers the current session and retrieves the live online user count.
+- **Announcements & Polls** — Fetches developer announcements and submits poll votes. Poll votes use a locally generated anonymous identifier to prevent duplicates.
+- **Analytics** — Uploads anonymous usage data when opted in.
+- **Global Settings** — Fetches configuration on startup (update info, Full Install URLs, announcement payload). Cached in memory and re-fetched periodically.
 
 ---
 
@@ -137,7 +89,6 @@ G3M uses the system's default proxy settings via the `requests` library. If you 
 
 - Ensure `https://gamebanana.com` is accessible.
 - Ensure the G3M cloud functions URL is accessible.
-- Ensure `https://api.github.com` is accessible (for updates).
 - If these are blocked, the corresponding features will not work, but local mod management remains fully functional.
 
 ---

@@ -31,7 +31,7 @@ my_plugin/
   "author": "YourName",
   "version": "1.0.0",
   "entry": "main.py",
-  "api_version": "1"
+  "api_version": "1.0.0"
 }
 ```
 
@@ -63,7 +63,7 @@ def on_load(context):
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `api_version` | string | `"1"` | Target Plugin API version. |
+| `api_version` | string | `"1.0.0"` | Target Plugin API version. |
 | `icon` | string | `null` | Relative path to icon image. |
 | `homepage` | string | `null` | URL to plugin homepage/repository. |
 | `tags` | array | `[]` | Category tags: `interface`, `game_experience`, `tool`, `other`. |
@@ -81,11 +81,22 @@ Hooks let your plugin execute code at specific lifecycle points.
 
 | Hook | When | Parameters |
 | --- | --- | --- |
-| `pre_launch` | Before game patching and launch. | `PluginTaskRuntime` context. |
-| `post_launch` | After game exits and files are restored. | `PluginTaskRuntime` context. |
-| `on_mod_install` | When a mod is imported/installed. | Mod info, target path. |
-| `on_mod_uninstall` | When a mod is deleted. | Mod info. |
-| `on_settings_tab` | When Settings tab is displayed. | `PluginUiContext` with parent widget. |
+| `app_ready` | After app initialization completes. | `PluginTaskRuntime` |
+| `app_shutdown` | When the app is shutting down. | `PluginTaskRuntime` |
+| `before_mod_apply` | Before mods are patched/launched. | `PluginTaskRuntime` |
+| `after_mod_apply_before_launch` | After patching, before game start. | `PluginTaskRuntime` |
+| `mod_apply_cancelled` | When patching/launch is cancelled. | `PluginTaskRuntime` |
+| `after_game_started` | After game process is launched. | `PluginTaskRuntime` |
+| `before_restore_after_exit` | After game exits, before restore. | `PluginTaskRuntime` |
+| `after_restore_after_exit` | After file restoration completes. | `PluginTaskRuntime` |
+| `language_changed` | When the UI language changes. | `PluginTaskRuntime` |
+| `theme_changed` | When the theme changes. | `PluginTaskRuntime` |
+| `profile_changed` | When the active profile changes. | `PluginTaskRuntime` |
+| `settings_view` | When Settings tab is shown. | `PluginUiContext` |
+| `main_view` | When the main view is shown. | `PluginUiContext` |
+| `navigation_actions` | When the nav bar is built. | `PluginUiContext` |
+| `game_registry` | When game registry is initialized. | `PluginTaskRuntime` |
+| `background_task` | For background tasks. | `PluginTaskRuntime` |
 
 ### Declaring Hooks
 
@@ -93,7 +104,7 @@ In `plugin_config.json`:
 
 ```json
 {
-  "hooks": ["pre_launch", "post_launch"]
+  "hooks": ["before_mod_apply", "after_restore_after_exit"]
 }
 ```
 
@@ -102,7 +113,7 @@ In `plugin_config.json`:
 In your entry file, define functions matching the hook names:
 
 ```python
-def pre_launch(runtime):
+def before_mod_apply(runtime):
     """Called before game is patched and launched."""
     runtime.report_status("My plugin is preparing...")
     runtime.report_progress(50)
@@ -110,8 +121,8 @@ def pre_launch(runtime):
     runtime.report_status("My plugin is ready.")
     runtime.report_progress(100)
 
-def post_launch(runtime):
-    """Called after game exits."""
+def after_restore_after_exit(runtime):
+    """Called after game exits and files are restored."""
     runtime.report_status("Cleaning up...")
 ```
 
@@ -206,7 +217,7 @@ context.plugin_settings.set("last_run", "2024-03-20")
 all_settings = context.plugin_settings.all()
 ```
 
-Settings are persisted in `plugins_state.json` under your plugin's ID.
+Settings are persisted in `plugins/plugins_data.json` under the `settings` key for your plugin's ID.
 
 ---
 
@@ -274,12 +285,12 @@ G3M warns if both plugins are enabled simultaneously.
 
 ## Settings Tab Hook
 
-The `on_settings_tab` hook lets you add UI widgets to the Settings tab:
+The `settings_view` hook lets you add UI widgets to the Settings tab:
 
 ```python
 from PyQt6.QtWidgets import QLabel, QCheckBox, QVBoxLayout, QWidget
 
-def on_settings_tab(ui_context):
+def settings_view(ui_context):
     """Add a custom settings panel."""
     widget = QWidget()
     layout = QVBoxLayout(widget)
@@ -351,9 +362,9 @@ Always wrap potentially failing operations in try/except blocks and log errors w
 
 ## API Version Compatibility
 
-The current Plugin API version is **1**. Your plugin's `api_version` must match the host's version:
+The current Plugin API version is **1.0.0**. Your plugin's `api_version` must match the host's version:
 
-- `api_version: "1"` — Compatible with G3M Plugin API v1.
+- `api_version: "1.0.0"` — Compatible with G3M Plugin API v1.0.0.
 - If the API version changes in a future G3M release, plugins targeting the old version may not load.
 
 Always test your plugin with the latest G3M version before distributing.

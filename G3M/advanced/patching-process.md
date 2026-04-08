@@ -10,14 +10,17 @@ When you launch a game with mods selected, G3M performs a multi-step patching pi
 
 1. **Pre-flight checks** — Validate game path, check mods exist, ensure game is not already running.
 2. **Backup** — Back up original game data files.
-3. **Plugin pre-launch hooks** — Execute any plugin `pre_launch` hooks.
+3. **Plugin pre-launch hooks** — Execute any plugin `before_mod_apply` hooks.
 4. **Patching** — Apply each mod's data to the game files.
-5. **Extra files** — Copy any additional files from mods into the game directory.
-6. **Launch** — Start the game process.
-7. **Monitoring** — Watch the game process until it exits.
-8. **Restoration** — Restore all original files from backups.
-9. **Plugin post-launch hooks** — Execute any plugin `post_launch` hooks.
-10. **Cleanup** — Remove temporary files and backups.
+5. **Plugin post-patch hooks** — Execute any plugin `after_mod_apply_before_launch` hooks.
+6. **Extra files** — Copy any additional files from mods into the game directory.
+7. **Launch** — Start the game process.
+8. **Plugin after-launch hooks** — Execute any plugin `after_game_started` hooks.
+9. **Monitoring** — Watch the game process until it exits.
+10. **Pre-restore hooks** — Execute any plugin `before_restore_after_exit` hooks.
+11. **Restoration** — Restore all original files from backups.
+12. **Plugin post-restore hooks** — Execute any plugin `after_restore_after_exit` hooks.
+13. **Cleanup** — Remove temporary files and backups.
 
 ---
 
@@ -46,14 +49,14 @@ If any backup operation fails (disk full, permission denied), the entire launch 
 
 ---
 
-## Step 3: Plugin Pre-Launch Hooks
+## Step 3: Plugin Pre-Patch Hooks
 
-If any enabled plugins implement the `pre_launch` hook:
+If any enabled plugins implement the `before_mod_apply` hook:
 
 1. A background thread is created.
-2. Each plugin's `pre_launch` function is called with a `PluginTaskRuntime` context.
+2. Each plugin's `before_mod_apply` function is called with a `PluginTaskRuntime` context.
 3. Plugins can modify files, report progress, check cancellation, or use the host's backup manager.
-4. If a plugin raises an error or signals cancellation, the launch may be aborted (depending on the plugin's behavior).
+4. If a plugin raises an error or signals cancellation, the launch may be aborted.
 
 ---
 
@@ -188,17 +191,21 @@ If any individual file restoration fails, an error is logged, but the process co
 
 ---
 
-## Step 9: Plugin Post-Launch Hooks
+## Step 10–12: Plugin Exit Hooks
 
-After restoration:
+On game exit, three additional hooks fire in sequence:
 
-1. If any enabled plugins implement the `post_launch` hook, they are called.
-2. Plugins receive the same task runtime context.
-3. This allows plugins to perform cleanup, recording, or other post-game operations.
+1. `before_restore_after_exit` — called after the game exits, before file restoration begins.
+2. File restoration completes.
+3. `after_restore_after_exit` — called after restoration completes.
+
+These allow plugins to perform cleanup, recording, or other post-game operations.
+
+Note: `after_game_started` fires immediately after the game process is launched (Step 8) and `mod_apply_cancelled` fires if patching is cancelled.
 
 ---
 
-## Step 10: Cleanup
+## Step 13: Cleanup
 
 Final cleanup:
 

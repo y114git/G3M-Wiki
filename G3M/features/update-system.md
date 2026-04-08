@@ -8,7 +8,7 @@ G3M includes an automatic update checker that notifies you when a new version is
 
 ### Automatic Check
 
-On every launch (after initialization), G3M checks the GitHub releases for the latest version. The check runs in the background and does not block the UI.
+On every launch (after initialization), G3M fetches global settings from the G3M cloud backend, which includes update information. The check runs in the background and does not block the UI.
 
 ### Manual Check
 
@@ -34,7 +34,7 @@ When an update is found, a dialog appears with:
 
 - **Current version** — Your installed version (e.g., "3.0.3stable").
 - **New version** — The available version.
-- **Release notes** — The changelog/description from the GitHub release.
+- **Release notes** — The changelog/notes provided by the cloud settings payload.
 - **Install** button — Downloads and installs the update.
 - **Skip** button — Dismisses the dialog. The update is not installed but may be shown again on the next launch.
 
@@ -44,10 +44,10 @@ When an update is found, a dialog appears with:
 
 ### Windows
 
-1. G3M downloads the new executable from GitHub.
+1. G3M downloads the update archive from the URL provided in the cloud settings.
 2. Saves it to a temporary directory.
-3. Launches the installer/updater.
-4. Requests the application to quit so the update can replace files.
+3. Extracts and launches the InnoSetup installer.
+4. Requests the application to quit so the installer can proceed.
 5. After updating, G3M restarts.
 
 ### macOS
@@ -80,9 +80,9 @@ If analytics opt-in is enabled, the outcome of each update check is recorded:
 
 ## Network Requirements
 
-Update checks require an internet connection and access to the GitHub API. If the network is unavailable, the check silently fails and no notification is shown.
+Update checks require an internet connection and access to the G3M cloud backend. If the network is unavailable, the check silently fails and no notification is shown.
 
-The request timeout is 5 seconds (short timeout). If GitHub is slow to respond, the check may be skipped.
+The request timeout is 5 seconds (`NETWORK_TIMEOUT_SHORT`). If the cloud server is slow to respond, the check may be skipped.
 
 ---
 

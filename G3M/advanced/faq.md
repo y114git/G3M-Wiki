@@ -131,7 +131,7 @@ See [Customization](../customization/README.md).
 
 ### How do I share my theme?
 
-Export your theme as a `.g3mtheme.zip` file (Settings → Appearance → Export Theme). Send the file to someone else, who can import it in their G3M. See [Theme Packages](../customization/theme-packages.md).
+Export your theme as a `.zip` file (Settings → Appearance → Export Theme). Send the file to someone else, who can import it in their G3M. See [Theme Packages](../customization/theme-packages.md).
 
 ---
 
@@ -139,7 +139,7 @@ Export your theme as a `.g3mtheme.zip` file (Settings → Appearance → Export 
 
 ### Does G3M collect personal data?
 
-No. G3M has an optional anonymous analytics system that collects usage statistics (mod installs, game launches, etc.) with no personal information. It is disabled by default. See [Analytics](analytics.md).
+No. G3M has a two-tier anonymous analytics system. A small set of always-on events (app launch, mod installs, game launches) is always collected with no personal information. An additional opt-in tier collects more detail and is **disabled by default**. See [Analytics](analytics.md).
 
 ### Are one-click install links safe?
 
@@ -155,7 +155,7 @@ G3M itself does not scan mods for malware. GameBanana has its own file scanning 
 
 ### Where does G3M store its data?
 
-- Windows: `%APPDATA%\G3M`
+- Windows: `%LOCALAPPDATA%\G3M`
 - macOS: `~/Library/Application Support/G3M`
 - Linux: `~/.local/share/G3M`
 

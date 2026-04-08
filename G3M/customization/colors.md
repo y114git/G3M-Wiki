@@ -9,12 +9,12 @@ G3M's entire interface is colored by seven customizable color channels. Changing
 | Channel | Setting Key | Default | What It Affects |
 | --- | --- | --- | --- |
 | **Background** | `custom_background_color` | `#282828` | Frame background (applied with partial transparency, alpha ~150), tooltip backgrounds. |
-| **Elements** | `custom_elements_color` | `#3d3d3d` | Buttons, input fields, dropdown backgrounds, card backgrounds, interactive controls. |
-| **Border** | `custom_border_color` | `#555555` | Borders around panels, cards, inputs, dialogs, separators. |
-| **Hover** | `custom_hover_color` | `#4a4a4a` | Color of elements when the mouse hovers over them. |
-| **Select** | `custom_select_color` | `#5a5a5a` | Color of selected/active elements (active tab, selected list item, pressed button). |
-| **Main Text** | `custom_main_text_color` | `#ffffff` | All primary text: labels, titles, button text, content text. |
-| **Secondary Text** | `custom_secondary_text_color` | `#aaaaaa` | Less prominent text: version numbers, subtitles, hints, descriptions. |
+| **Elements** | `custom_elements_color` | `#222222` | Buttons, input fields, dropdown backgrounds, card backgrounds, interactive controls. |
+| **Border** | `custom_border_color` | `#039d5b` | Borders around panels, cards, inputs, dialogs, separators. |
+| **Hover** | `custom_hover_color` | `#616b78` | Color of elements when the mouse hovers over them. |
+| **Select** | `custom_select_color` | `#ecedef` | Color of selected/active elements (active tab, selected list item, pressed button). |
+| **Main Text** | `custom_main_text_color` | `#e8e9eb` | All primary text: labels, titles, button text, content text. |
+| **Secondary Text** | `custom_secondary_text_color` | `#6de985` | Less prominent text: version numbers, subtitles, hints, descriptions. |
 
 ---
 

@@ -8,7 +8,7 @@ G3M maintains detailed log files for debugging and troubleshooting.
 
 | Platform | Path |
 | --- | --- |
-| Windows | `%APPDATA%\G3M\logs\` |
+| Windows | `%LOCALAPPDATA%\G3M\logs\` |
 | macOS | `~/Library/Application Support/G3M/logs/` |
 | Linux | `~/.local/share/G3M/logs/` |
 

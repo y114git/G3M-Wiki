@@ -1,6 +1,6 @@
 # Theme Packages
 
-G3M supports exporting and importing complete theme configurations as `.g3mtheme.zip` archives. This makes it easy to share your visual setup with others.
+G3M supports exporting and importing complete theme configurations as `.zip` archives. This makes it easy to share your visual setup with others.
 
 ---
 
@@ -9,14 +9,14 @@ G3M supports exporting and importing complete theme configurations as `.g3mtheme
 1. Go to Settings → Appearance.
 2. Click **Export Theme**.
 3. Choose a destination and file name.
-4. G3M creates a `.g3mtheme.zip` archive.
+4. G3M creates a `.zip` archive.
 
 ### What Is Exported
 
 The archive contains:
 
-- **`g3m_theme.json`** — A JSON manifest with:
-  - `theme_config_version`: Schema version (currently 1).
+- **`theme_config.json`** — A JSON manifest with:
+  - `config_version`: Schema version (currently `"1.0.0"`).
   - All seven color values.
   - `background_disabled` flag.
   - `disable_animations` flag.
@@ -38,7 +38,7 @@ Only files that exist at the time of export are included.
 
 1. Go to Settings → Appearance.
 2. Click **Import Theme**.
-3. Select a `.g3mtheme.zip` file.
+3. Select a `.zip` file.
 4. G3M extracts and applies:
    - All color values are set immediately.
    - Media files are copied to the data folder.
@@ -48,7 +48,7 @@ Only files that exist at the time of export are included.
 
 ### Theme Config Discovery
 
-When importing, G3M looks for the theme manifest file by checking these names in order: `g3m_theme.json`, `theme_config.json`, `deltahub_theme.json`, `theme.json`. The first one found is used.
+When importing, G3M looks for the theme manifest file by checking these names in order: `theme_config.json`, `theme.json`. The first one found is used.
 
 ### Compatibility
 
@@ -58,10 +58,10 @@ If the imported theme uses color keys from an older version (legacy key names), 
 
 ## Theme File Format
 
-The `.g3mtheme.zip` is a standard ZIP archive. Inside:
+The `.zip` is a standard ZIP archive. Inside:
 
 ```
-g3m_theme.json
+theme_config.json
 custom_background.png    (optional)
 custom_logo.png          (optional)
 custom_font.ttf          (optional)
@@ -73,7 +73,7 @@ The JSON manifest example:
 
 ```json
 {
-  "theme_config_version": 1,
+  "config_version": "1.0.0",
   "custom_background_color": "#1a1a2e",
   "custom_elements_color": "#16213e",
   "custom_border_color": "#0f3460",

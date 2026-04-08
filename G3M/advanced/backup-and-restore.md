@@ -38,7 +38,7 @@ The backup system is managed by the `BackupManager`, which tracks:
 
 ## Session Manifest
 
-A session manifest is written to the backup directory during patching. This JSON file records the complete state of the backup session, allowing recovery even if G3M crashes during gameplay.
+A `session.lock` file is written to the app data directory (`config_dir/session.lock`) after patching completes. This JSON file records the complete state of the backup session (backup directory path, original file mappings, added file list, modification order), allowing automatic crash recovery.
 
 ---
 
@@ -46,7 +46,7 @@ A session manifest is written to the backup directory during patching. This JSON
 
 - If a backup fails (e.g., disk full, permission denied), the launch is aborted and an error message is shown. The game is not started.
 - If restoration fails for a specific file, an error is logged but restoration continues for other files.
-- If G3M crashes while the game is running, the backup files remain in the backup directory. On the next launch, G3M can detect the unrestored state and offer to clean up.
+- If G3M crashes while the game is running, the backup files remain in the backup directory and `session.lock` stays on disk. On the next launch, G3M detects the stale `session.lock` via `recover_previous_session()`, automatically restores all files using `BackupManager.load_from_manifest`, and cleans up the backup directory — no user confirmation required.
 
 ---
 

@@ -61,7 +61,7 @@ Common reasons:
 
 ## One-Click Install Not Working
 
-- Ensure the `g3m://` protocol is registered. On Windows, check `HKEY_CURRENT_USER\Software\Classes\g3m`. On Linux, check `~/.local/share/applications/g3m-url-handler.desktop`.
+- Ensure the `g3m://` protocol is registered. On Windows, check `HKEY_CURRENT_USER\Software\Classes\g3m`. On Linux, check `~/.local/share/applications/g3m.desktop`.
 - Try reinstalling G3M to re-register the protocol.
 - Make sure your browser allows custom protocol handlers.
 
@@ -79,7 +79,7 @@ Common reasons:
 ## Theme Not Applying
 
 - After importing a theme, some changes (like fonts) require a restart.
-- Verify the `.g3mtheme.zip` contains a valid `g3m_theme.json` manifest.
+- Verify the `.zip` theme package contains a valid `theme_config.json` manifest.
 - Check the log file for theme loading errors.
 
 ---
@@ -132,7 +132,7 @@ To completely reset G3M to factory defaults:
 
 1. Close G3M.
 2. Delete the user data folder:
-   - Windows: `%APPDATA%\G3M`
+   - Windows: `%LOCALAPPDATA%\G3M`
    - macOS: `~/Library/Application Support/G3M`
    - Linux: `~/.local/share/G3M`
 3. Restart G3M. Everything will be recreated from scratch.

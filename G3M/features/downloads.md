@@ -90,7 +90,7 @@ The Downloads tab shows a notification badge with the count of downloads that ne
 
 ## Persistence
 
-All download records are persisted in `downloads/downloads.json`. The actual downloaded files are stored in the `downloads/` folder. Records survive application restarts. On startup, G3M checks which downloaded files still exist on disk and updates the `file_exists` flag accordingly.
+All download records are persisted in `downloads/downloads_history.json`. The actual downloaded files are stored in the `downloads/` folder. Records survive application restarts. On startup, G3M checks which downloaded files still exist on disk and updates the `file_exists` flag accordingly.
 
 ---
 

@@ -18,8 +18,9 @@ The chat has multiple channels, one per supported language:
 - **Español** (`es`)
 - **Русский** (`ru`)
 - **中文** (`zh`)
+- **International** (`int`)
 
-Select a channel from the dropdown at the top of the chat dialog. Messages are loaded from the selected channel.
+Select a channel by clicking its button at the top of the chat dialog. Messages are loaded from the selected channel.
 
 ---
 

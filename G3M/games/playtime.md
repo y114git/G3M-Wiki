@@ -35,7 +35,7 @@ When the game process exits:
 
 ## Per-Mod Playtime
 
-Each mod in the Library has a `playtime_hours` field in its `mod_config.json`. This field accumulates playtime across all play sessions with that mod selected.
+Each mod in the Library has a `playtime_hours` entry in the profile's `mods_data.json` file. This field accumulates playtime across all play sessions with that mod selected.
 
 ### Display
 
@@ -57,18 +57,18 @@ If the game is launched without mods, the playtime is not attributed to any mod.
 
 ## Persistence
 
-Playtime data is stored in each mod's `mod_config.json` file:
+Playtime data is stored in the profile's `mods_data.json` (`{user_data_root}/profiles/<profile_name>/mods_data.json`) as a per-mod metadata entry:
 
 ```json
 {
-  "id": "my_mod",
-  "name": "My Mod",
-  "playtime_hours": 12.5,
-  ...
+  "my_mod_id": {
+    "playtime_hours": 12.5,
+    "added_date": "2024-01-01 12:00:00"
+  }
 }
 ```
 
-The value is a floating-point number representing total hours. It is updated after each play session and saved immediately.
+The value is a float representing total hours (rounded to 4 decimal places). It is updated after each play session and saved immediately.
 
 ---
 
