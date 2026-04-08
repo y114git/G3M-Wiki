@@ -4,7 +4,7 @@
 
 | Requirement | Details |
 | --- | --- |
-| OS | Windows 10 version 1809 or later (64-bit only), macOS, or Linux |
+| OS | Windows 10 version 1809 or later (64-bit only); macOS 11 (Big Sur) or later; Linux with glibc 2.28 or later |
 | Python | 3.14 or later (bundled in the installer; not needed separately) |
 | Disk space | ~150 MB for the application itself; additional space for mods and game files |
 | Internet | Required for browsing GameBanana, chat, updates, and announcements. Offline use is possible for local mods. |
@@ -25,11 +25,20 @@ The installer requires Windows 10 build 17763 (version 1809) or higher. Older ve
 
 ### macOS
 
+**Minimum: macOS 11 (Big Sur).** Older macOS versions are not supported.
+
 1. Download the `.zip` release from GitHub.
 2. Move `G3M.app` to your Applications folder (or any user folder). Do **not** run it from the download location — macOS App Translocation will put it in a read-only path and updates will fail.
 3. Launch `G3M.app`.
 
 ### Linux
+
+**Minimum: glibc 2.28.** Supported distributions include:
+
+- Debian 10 (Buster) or later
+- RHEL 8 / AlmaLinux 8 / Rocky Linux 8 or later
+- Ubuntu 18.10 or later (**not** Ubuntu 18.04 LTS — it ships glibc 2.27). Ubuntu 20.04 LTS (glibc 2.31) is recommended for stable operation.
+- Fedora 29 or later
 
 1. Download the Linux release from GitHub.
 2. Extract the archive.

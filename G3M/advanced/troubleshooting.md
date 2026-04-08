@@ -22,6 +22,27 @@ Check the log file at `{user_data_root}/logs/g3m.log` for error details. Common 
 - Missing dependencies — Ensure you have the latest version installed.
 - Incompatible OS version — G3M requires Windows 10 1809+ (build 17763).
 
+### (Linux) "Could not load the Qt platform plugin xcb"
+
+Full error:
+
+```
+Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized.
+```
+
+Since Qt 6.5, the `xcb` platform plugin requires the `libxcb-cursor0` library. Install it with:
+
+```bash
+# Debian / Ubuntu
+sudo apt install libxcb-cursor0
+
+# Fedora / RHEL
+sudo dnf install xcb-util-cursor
+```
+
+Then restart G3M.
+
 ---
 
 ## Game Path Not Found

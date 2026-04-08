@@ -1,129 +1,135 @@
-# PO Translation File Conversion
+# PizzaOven & AFOM/CYOP Conversion
 
-G3M includes a PO file conversion feature for creating text translation mods. PO (Portable Object) files are a standard format for software translations, and G3M can convert them into game data patches.
-
----
-
-## What Are PO Files?
-
-PO files are the standard GNU gettext format for translations:
-
-```
-#: original text context
-msgid "Hello, world!"
-msgstr "Привет, мир!"
-
-msgid "Save"
-msgstr "Сохранить"
-```
-
-Each entry has:
-
-- **msgid** — The original (source language) string.
-- **msgstr** — The translated string.
-- Optional comments and context markers.
+G3M supports importing and converting mods created for Pizza Tower's **PizzaOven** modding framework, as well as **AFOM/CYOP** custom level mods. Both formats are detected and converted automatically on import.
 
 ---
 
-## How It Works in G3M
+## PizzaOven Mods
 
-G3M can process PO files to create text modification patches for GameMaker games:
+### What Is PizzaOven?
 
-### The Process
+PizzaOven is a third-party mod manager for Pizza Tower widely used in the community. PizzaOven mods are distributed as `.zip` archives containing a `mod.json` metadata file and mod content files. G3M auto-detects and converts eligible PizzaOven mods into the native G3M format — no manual steps required from the player.
 
-1. **Extract strings** — G3M (via G3MTool) extracts all text strings from the game's data file into a PO template file (.pot or .po).
-2. **Translate** — You (or a translator) fills in the `msgstr` entries with the translated text.
-3. **Convert back** — G3M applies the translated PO file to the original game data, producing a patched data file or g3mpatch with all strings replaced.
+### PizzaOven Mod Structure
 
-### Step-by-Step
+A PizzaOven mod archive typically contains:
 
-#### Extracting Strings
+- **`mod.json`** — The mod's metadata file. Key fields:
+  - `title` — Mod display name.
+  - `submitter` — Author name.
+  - `description` — Mod description.
+  - `homepage` — Link to the mod's page.
+  - `preview` — Icon file name.
+  - `cat` — Mod category. Absent or blank means a regular NORMAL mod. `"CYOP/AFOM"` means a custom levels mod. `"GMLoader"` means a GMLoader scripting mod.
+- **Mod content files** (for NORMAL mods):
 
-1. Open Modding Tools.
-2. Use the Info or Convert tab with a game data file.
-3. G3MTool can output a PO-compatible file listing all game strings.
-4. Save this file as a `.po` or `.pot` template.
+| File type | Extensions | Destination in game folder |
+| --- | --- | --- |
+| Binary patch | `.xdelta`, `.vcdiff` | Applied to `data.win` (or sound banks) |
+| Full data replacement | `.win` | Replaces `data.win` |
+| Audio bank | `.bank` | `sound/Desktop/` |
+| Language/text file | `.txt` | `lang/` (if contains `lang =`), or game root (credits files) |
+| Font | `.ttf`, `.otf` | `lang/fonts/` |
+| Language definition | `.def` | `lang/` |
+| Language graphics | `.png` | `lang/graphics/` |
+| Language graphics config | `.json` | `lang/graphics/` |
+| Plugin DLL / video | `.dll`, `.mp4` | Game root |
 
-#### Translating
+### Opt-Out Markers
 
-1. Open the PO file in any PO editor (e.g., Poedit, Lokalize, or a plain text editor).
-2. Translate each `msgstr` entry.
-3. Leave `msgstr` empty for strings you don't want to change.
-4. Save the translated PO file.
+Mod authors can place hidden marker files in their archive to prevent automatic conversion:
 
-#### Applying the Translation
+| File | Effect |
+| --- | --- |
+| `.disable_gb1click` | Disables G3M conversion entirely |
+| `.disable_gb1click_pizzaoven` | Disables PizzaOven-style conversion |
+| `.disable_gb1click_pizzaovenplus` | Disables PizzaOven+ conversion |
 
-1. Open Modding Tools → Patch or Convert tab.
-2. Select the original game data file.
-3. Apply the translated PO file.
-4. G3MTool replaces matching strings in the game data with their translations.
-5. Save the result as a patched data file or create a g3mpatch from it.
+If both `.disable_gb1click_pizzaoven` and `.disable_gb1click_pizzaovenplus` are present, G3M will not convert the mod.
 
----
+### How G3M Converts a PizzaOven NORMAL Mod
 
-## Creating a Translation Mod
+Converting a PizzaOven NORMAL mod requires the **Pizza Tower game path** to be configured in Settings → Game.
 
-After applying the PO translations to create a patched data file:
+The conversion pipeline:
 
-1. Create a g3mpatch from the patched file (Modding Tools → Convert DATA → g3mpatch).
-2. Create a new mod in the Library (Add Mod → Create Mod).
-3. Assign the g3mpatch as the data file.
-4. Set the mod metadata: name (e.g., "Russian Translation"), author, tags (`textedit`).
-5. Export and share the mod.
+1. **Inspection** — G3M reads `mod.json`, checks opt-out markers, confirms the mod type is NORMAL, and verifies at least one eligible mod file exists. If any check fails, conversion is skipped with an explanatory message.
+2. **Game copy** — G3M copies the entire Pizza Tower installation to a temporary directory. This temporary copy is the "sandbox" the mod will be applied to.
+3. **Simulation** — G3M applies all the mod's eligible files to the temporary game copy, replicating what PizzaOven would do natively (xdelta patches applied via G3MTool, files placed in the correct subfolders).
+4. **Diff** — G3M compares the original game files with the modified temporary copies using SHA-256 hashing to identify exactly which files were changed.
+5. **G3M mod creation** — From the diff:
+   - If `data.win` changed: G3M creates a `.g3mpatch` (preferred). If that fails verification, it falls back to `.xdelta`, then to a full `.win` copy.
+   - All other changed files (audio banks, language files, fonts, etc.) become `extra_files` in the G3M mod.
+   - `mod_config.json` is written with metadata from `mod.json` and/or GameBanana.
+6. **Cleanup** — The temporary game copy is deleted.
 
----
+The resulting G3M mod behaves like any native mod: it patches `data.win` and copies extra files on launch, then restores everything after the game exits.
 
-## PO File Format Details
+If the same mod (matched by GameBanana mod ID) is imported again, G3M reconverts it and replaces the existing mod content while preserving the mod's version snapshots folder.
 
-G3M follows the standard PO format:
+### Unsupported PizzaOven Mod Types
 
-```
-# Comment line
-#. Extracted comment
-#: reference:location
-msgctxt "context"
-msgid "Source text"
-msgstr "Translated text"
-```
+| Type | Detection | G3M Support |
+| --- | --- | --- |
+| **NORMAL** | No `cat` in `mod.json`, or has xdelta patches at root | ✅ Auto-converted |
+| **CYOP/AFOM** | `cat: "CYOP/AFOM"` in `mod.json`, or has `levels/` with `.json` and `.ini` | See below |
+| **GMLoader** | `cat: "GMLoader"` in `mod.json`, or has GML folders (`audio/`, `code/`, `lib/`, etc.) | ❌ Not supported |
 
-### Multi-line Strings
-
-```
-msgid ""
-"This is a very long string that "
-"spans multiple lines."
-msgstr ""
-"Это очень длинная строка, "
-"которая занимает несколько строк."
-```
-
-### Plural Forms
-
-G3M does not use PO plural forms (msgid_plural/msgstr[N]). All strings are treated as singular.
-
-### Encoding
-
-PO files should be saved in UTF-8 encoding. The header should include:
-
-```
-"Content-Type: text/plain; charset=UTF-8\n"
-```
+**GMLoader** mods use a scripting framework that requires GMLoader to be installed separately inside the game. G3M cannot convert them.
 
 ---
 
-## Limitations
+## AFOM/CYOP Custom Level Mods
 
-- PO conversion only affects text strings in the game data. It cannot change sprites, sounds, code logic, or other non-text resources.
-- String matching is exact — if the game updates and changes a string, the PO entry for the old string will no longer match.
-- Some games use encoded or formatted strings (with placeholders like `{0}`, `\n`, color codes). These must be preserved in the translation.
-- Very long translations may overflow text boxes in the game if the game's UI doesn't dynamically resize.
+### What Are AFOM/CYOP Mods?
 
----
+**CYOP** (Create Your Own Pizza) is Pizza Tower's built-in custom level system. **AFOM** (Another Fixed Objects Mod) is a community name for the same custom level format. Unlike regular mods, AFOM/CYOP mods do not patch the game's data file — instead they supply custom tower (level) data that Pizza Tower reads from `%APPDATA%\PizzaTower_GM2\towers\`.
 
-## Tips for Translators
+### AFOM/CYOP Mod Structure
 
-- **Preserve formatting codes.** If the original has `\n` (newline), `\t` (tab), or `{0}` (placeholder), keep them in the translation.
-- **Preserve leading/trailing spaces.** Some strings include intentional spaces for alignment.
-- **Test in-game.** After creating the translation mod, launch the game with it applied to verify all strings display correctly.
-- **Use context.** The PO file may include context markers (#: comments) showing where in the game each string is used. This helps choose the right translation.
-- **Iterate.** Use G3M's Mod Versions feature to save snapshots of your translation as you progress.
+An AFOM/CYOP mod archive contains one or more **tower folders** at its root. Each tower folder must include an `.ini` file with a `[properties]` section containing at minimum:
+
+- `name` — Display name of the tower.
+- `mainlevel` — Path to the tower's main level file.
+
+Example:
+
+```
+My Custom Tower/
+├── MyTower.ini      ← [properties] with name and mainlevel
+├── levels/
+│   ├── mainlevel.json
+│   └── room2.json
+└── music/
+    └── theme.ogg
+```
+
+The archive must contain **only folders** at its root. Any file directly at the archive root causes G3M to reject the AFOM/CYOP detection.
+
+### How G3M Handles AFOM/CYOP Mods
+
+**On import:**
+
+1. G3M extracts the archive to a temporary folder.
+2. It inspects the root: every root entry must be a folder, and each folder must contain a valid `.ini` with `[properties]`, `name`, and `mainlevel`.
+3. If valid, G3M creates a mod directory and copies all tower folder(s) into a `towers/` subfolder inside it.
+4. A `mod_config.json` is created with:
+   - Game: `pizzatower`
+   - Tag: `CYOP/AFOM`
+   - `extra_files: ["towers/"]`
+
+**On launch:**
+
+1. When you launch Pizza Tower with an AFOM/CYOP mod selected, G3M copies the contents of `towers/` from the mod directory into `%APPDATA%\PizzaTower_GM2\towers\` (Pizza Tower's custom level directory). Existing files at the destination are backed up first.
+2. Pizza Tower is launched. The game reads the installed tower data from `%APPDATA%\PizzaTower_GM2\towers\`.
+3. After the game exits, G3M removes the installed tower folders and restores any previously backed-up files — identical to how extra files work for all other mods.
+
+### Creating an AFOM/CYOP Mod
+
+To create and distribute an AFOM/CYOP mod compatible with G3M:
+
+1. **Build your tower** using the in-game CYOP editor or compatible community tools.
+2. **Collect the tower folder** — the directory produced by the editor that contains an `.ini` and level data.
+3. **Package it** — create a `.zip` archive with each tower folder directly at the archive root (no wrapping folder above the tower folder).
+4. **Validate the `.ini`** — ensure a `[properties]` section is present with valid `name` and `mainlevel` keys.
+5. **Distribute** — upload to GameBanana with the `CYOP/AFOM` category, or share the `.zip` directly. G3M will recognize and convert it automatically on import.

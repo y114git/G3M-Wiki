@@ -44,7 +44,7 @@ Four tag filter buttons:
 
 Tags are derived from the mod's own tags and from its GameBanana category (mapped automatically). You can select multiple tags — only mods matching **all** selected tags are shown.
 
-There is also a special tag **CYOP/AFOM** that appears on certain mods — it stands for "Create Your Own Path / A Fangame Of Mine".
+There is also a special tag **CYOP/AFOM** that appears on Pizza Tower custom level mods — CYOP stands for "Create Your Own Pizza" (the game's built-in custom level system) and AFOM stands for "Another Fixed Objects Mod".
 
 ### Search
 

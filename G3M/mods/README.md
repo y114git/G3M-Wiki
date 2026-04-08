@@ -69,7 +69,8 @@ G3M recognizes and can import mods from multiple formats:
 | **CSX script** | `.csx` | C# script executed by G3MTool to programmatically modify game data. |
 | **Raw data file** | `.win`, `.ios`, `.unx`, `.droid` | A complete replacement for the game's data file. |
 | **DELTAMOD** | `.zip` containing `_deltamodInfo.json` (or `meta.json`) and `modding.xml` | A mod format used by Deltamod Manager. G3M automatically converts it to native G3M format on import. |
-| **PizzaOven** | Folder with `mod.json` | A mod format used by PizzaOven for Pizza Tower mods. G3M can auto-convert eligible PizzaOven mods. |
+| **PizzaOven (NORMAL)** | `.zip` with `mod.json` and patch/audio/language files | Pizza Tower mods from the PizzaOven manager. G3M simulates the PizzaOven build against a temp game copy and converts the result. Requires Pizza Tower game path. |
+| **AFOM/CYOP** | `.zip` with tower folder(s), each containing an `.ini` with `[properties]` | Pizza Tower custom level (tower) mods. G3M deploys the tower folders to `%APPDATA%\PizzaTower_GM2\towers\` on launch and removes them after. |
 | **Archives** | `.zip`, `.7z`, `.rar` | Compressed archives that may contain any of the above formats. G3M extracts and inspects them automatically. |
 
 ### Supported Archive Formats

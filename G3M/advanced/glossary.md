@@ -6,6 +6,9 @@ Definitions of terms used throughout this wiki and the G3M application.
 
 ## A
 
+### AFOM/CYOP
+Pizza Tower custom level mods. **CYOP** (Create Your Own Pizza) is the game's built-in custom level system; **AFOM** (Another Fixed Objects Mod) is the community name for the same format. These mods supply tower folder data that Pizza Tower loads from `%APPDATA%\PizzaTower_GM2\towers\`. See [PizzaOven & AFOM/CYOP Conversion](../mods/po-conversion.md).
+
 ### Analytics
 Anonymous usage statistics collected by G3M in two tiers: an always-on tier (app launch, mod installs, game launches) and an opt-in tier for more detail (disabled by default). See [Analytics](analytics.md).
 
@@ -169,13 +172,10 @@ The player counter in the title bar showing how many users currently have G3M op
 The process of modifying a game's data file with a mod's changes. See [Patching Process](patching-process.md).
 
 ### PizzaOven
-A mod format for Pizza Tower. G3M can auto-convert eligible PizzaOven mods.
+A third-party mod manager for Pizza Tower. PizzaOven mods are `.zip` archives containing a `mod.json` and mod content files. G3M auto-detects and converts eligible NORMAL-type PizzaOven mods. See [PizzaOven & AFOM/CYOP Conversion](../mods/po-conversion.md).
 
 ### Plugin
 A third-party extension that adds functionality to G3M. See [Plugins](../features/plugins.md).
-
-### PO File
-Portable Object file — a standard translation format. G3M can use PO files to create text translation mods.
 
 ### PortProton
 A Wine-based compatibility layer for running Windows games on Linux. G3M integrates with it as a launch option.
