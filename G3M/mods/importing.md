@@ -27,10 +27,9 @@ G3M offers several ways to add mods to your library.
    - `.xdelta`, `.vcdiff` — Binary diff patches.
    - `.csx` — C# script patches.
    - `.win`, `.ios`, `.unx`, `.droid` — Raw data files.
-   - `.deltamod` — Deltamod format packages.
 4. G3M processes each file:
    - Archives are extracted to a temporary folder.
-   - The contents are inspected for a `mod_config.json` (G3M native), `deltamod_info.json` / `modding.xml` (DELTAMOD format), `mod.json` (PizzaOven format), or raw data files.
+   - The contents are inspected for a `mod_config.json` (G3M native), `_deltamodInfo.json` / `meta.json` / `modding.xml` (DELTAMOD format), `mod.json` (PizzaOven format), or raw data files.
    - If a `mod_config.json` is found, the mod is imported directly.
    - If DELTAMOD files are found, the mod is converted to G3M format automatically.
    - If PizzaOven format is detected (for Pizza Tower mods), G3M attempts auto-conversion.
@@ -69,7 +68,7 @@ See [One-Click Install](../advanced/one-click-install.md) for full details.
 
 ## DELTAMOD Conversion
 
-If the imported archive contains a `deltamod_info.json` or `modding.xml` file (DELTAMOD format from Deltamod Manager), G3M converts it automatically:
+If the imported archive contains a `_deltamodInfo.json` (or `meta.json`) and `modding.xml` file (DELTAMOD format from Deltamod Manager), G3M converts it automatically:
 
 - Reads the DELTAMOD metadata (name, author, description, game, version).
 - Maps the DELTAMOD game identifier (e.g., `toby.deltarune`) to the G3M game ID.

@@ -81,13 +81,14 @@ The English language file contains keys organized into these groups:
 
 1. Go to Settings → General.
 2. Select a language from the **Language** dropdown.
-3. A restart is required for the change to fully take effect.
+3. The change applies immediately — no restart required.
 
-On restart, G3M:
+G3M then:
 1. Loads the selected language file.
 2. Falls back to English for any missing keys.
 3. Updates the Qt translator for system dialog translations.
 4. Loads any language-specific font if needed (e.g., CJK fonts for Chinese).
+5. Relocalizies all visible UI text and open dialogs.
 
 ---
 

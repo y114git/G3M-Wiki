@@ -68,7 +68,7 @@ After applying the PO translations to create a patched data file:
 1. Create a g3mpatch from the patched file (Modding Tools → Convert DATA → g3mpatch).
 2. Create a new mod in the Library (Add Mod → Create Mod).
 3. Assign the g3mpatch as the data file.
-4. Set the mod metadata: name (e.g., "Russian Translation"), author, tags ("Text Edit").
+4. Set the mod metadata: name (e.g., "Russian Translation"), author, tags (`textedit`).
 5. Export and share the mod.
 
 ---

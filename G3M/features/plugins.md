@@ -6,7 +6,7 @@ G3M has a plugin system that lets third-party developers extend the application 
 
 ## Plugin API Version
 
-The current Plugin API version is **1**. Plugins declare which API version they target. G3M checks compatibility: a plugin is compatible if its declared API version matches the host's API version (major version must match).
+The current Plugin API version is **1.0.0**. Plugins declare which API version they target. G3M checks compatibility: a plugin is compatible if its declared API version matches the host's API version.
 
 ---
 
@@ -40,7 +40,7 @@ Each plugin is a folder inside the `plugins/` directory of the user data folder.
 | `homepage` | string | URL to the plugin's homepage or repository. |
 | `tags` | array | List of category tags. Valid tags: `interface`, `game_experience`, `tool`, `other`. |
 | `relations` | object | Dependency and conflict declarations. Keys are plugin IDs, values are `"require"` or `"conflict"`. |
-| `hooks` | array | List of hook names this plugin implements. Valid hooks: `pre_launch`, `post_launch`, `on_mod_install`, `on_mod_uninstall`, `on_settings_tab`. |
+| `hooks` | array | List of hook names this plugin implements. See Plugin Hooks section for valid values. |
 | `settings_schema` | object | Schema for plugin-specific settings. |
 
 ---
@@ -64,11 +64,22 @@ Hooks allow plugins to execute code at specific points in the G3M lifecycle:
 
 | Hook | When It Fires |
 | --- | --- |
-| `pre_launch` | Before the game is patched and launched. Can modify behavior or cancel launch. |
-| `post_launch` | After the game process exits and files are restored. |
-| `on_mod_install` | When a mod is imported or installed into the library. |
-| `on_mod_uninstall` | When a mod is deleted from the library. |
-| `on_settings_tab` | When the Settings tab is displayed. The plugin can add its own UI widgets. |
+| `app_ready` | After application initialization completes. |
+| `app_shutdown` | When the application is shutting down. |
+| `before_mod_apply` | Before mods are patched, before game launch. Can add to the backup manager. |
+| `after_mod_apply_before_launch` | After all mods are applied, before the game process is started. |
+| `mod_apply_cancelled` | When the patching/launch is cancelled by the user. |
+| `after_game_started` | After the game process is launched. |
+| `before_restore_after_exit` | After the game exits, before game files are restored. |
+| `after_restore_after_exit` | After game files are restored. |
+| `language_changed` | When the UI language changes. |
+| `theme_changed` | When the theme changes. |
+| `profile_changed` | When the active profile changes. |
+| `settings_view` | When the Settings tab is shown. Plugin can add its own UI widgets. |
+| `main_view` | When the main view is shown. Plugin can inject UI elements. |
+| `navigation_actions` | When the navigation bar is built. Plugin can add action buttons. |
+| `game_registry` | When the game registry is initialized. Plugin can register custom games. |
+| `background_task` | For background tasks unrelated to a specific lifecycle point. |
 
 Hooks are executed in a background thread to avoid blocking the UI. Plugins receive a `PluginTaskRuntime` context that provides:
 
@@ -99,7 +110,7 @@ For UI hooks, a `PluginUiContext` is also provided with a subset of these servic
 
 ## Plugin Settings
 
-Plugins can define their own settings via the `settings_schema` field in the manifest. These settings are stored in `plugins_state.json` under a key for each plugin. The `PluginSettingsAccessor` provides `get(key, default)`, `set(key, value)`, and `all()` methods.
+Plugins can define their own settings via the `settings_schema` field in the manifest. These settings are stored in `plugins/plugins_data.json` under the `settings` key for each plugin. The `PluginSettingsAccessor` provides `get(key, default)`, `set(key, value)`, and `all()` methods.
 
 ---
 

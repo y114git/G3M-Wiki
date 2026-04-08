@@ -84,12 +84,12 @@ Default colors:
 | Color | Default Hex |
 | --- | --- |
 | Background | `#282828` |
-| Elements | `#3d3d3d` |
-| Border | `#555555` |
-| Hover | `#4a4a4a` |
-| Select | `#5a5a5a` |
-| Main Text | `#ffffff` |
-| Secondary Text | `#aaaaaa` |
+| Elements | `#222222` |
+| Border | `#039d5b` |
+| Hover | `#616b78` |
+| Select | `#ecedef` |
+| Main Text | `#e8e9eb` |
+| Secondary Text | `#6de985` |
 
 ### Background Image / Video
 
@@ -136,10 +136,10 @@ Checkbox. Disables all UI animations (transitions, fades, color animations). Use
 
 | Action | Description |
 | --- | --- |
-| **Export Theme** | Saves all theme settings (colors, background, font, logo, sounds, radius, flags) into a `.g3mtheme.zip` archive. |
-| **Import Theme** | Loads a `.g3mtheme.zip` archive. Restores all colors, copies media files, and applies the theme immediately. A restart is required for some changes (fonts). |
+| **Export Theme** | Saves all theme settings (colors, background, font, logo, sounds, radius, flags) into a `.zip` archive. |
+| **Import Theme** | Loads a `.zip` theme archive. Restores all colors, copies media files, and applies the theme immediately. A restart is required for some changes (fonts). |
 
-The theme file is a `.zip` containing a `g3m_theme.json` manifest (schema version 1) and any media files (background, logo, font, startup sound, background music).
+The theme file is a plain `.zip` containing a `theme_config.json` manifest (schema version `1.0.0`) and any media files (background, logo, font, startup sound, background music).
 
 ---
 

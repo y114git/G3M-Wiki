@@ -20,7 +20,7 @@ Both schemes work identically. `deltahub://` is maintained for backward compatib
 ### Registration
 
 - **Windows**: On first launch, G3M registers the `g3m` and `deltahub` URL schemes in the Windows Registry under `HKEY_CURRENT_USER\Software\Classes\`. Each scheme points to the G3M executable.
-- **Linux**: G3M creates a `.desktop` file at `~/.local/share/applications/g3m-url-handler.desktop` with `MimeType=x-scheme-handler/g3m;x-scheme-handler/deltahub;`. It also runs `xdg-mime` to register itself as the default handler.
+- **Linux**: G3M creates a `.desktop` file at `~/.local/share/applications/g3m.desktop` with `MimeType=x-scheme-handler/g3m;x-scheme-handler/deltahub;`. It also runs `xdg-mime` to register itself as the default handler.
 - **macOS**: The URL schemes are declared in the application's `Info.plist` as `CFBundleURLSchemes`.
 
 ### Flow

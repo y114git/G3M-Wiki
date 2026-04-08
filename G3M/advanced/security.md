@@ -31,8 +31,7 @@ All network communication uses HTTPS (TLS encrypted). This includes:
 
 - GameBanana API requests.
 - File downloads from GameBanana.
-- G3M cloud service requests.
-- GitHub API requests for updates.
+- G3M cloud service requests (including update info).
 
 Certificate verification is enabled by default via the `urllib3`/`requests` libraries.
 
@@ -57,7 +56,7 @@ The `defusedxml` library:
 
 G3M only operates within:
 
-- Its own user data directory (`%APPDATA%\G3M` or equivalent).
+- Its own user data directory (`%LOCALAPPDATA%\G3M` on Windows, or equivalent on other platforms).
 - The game's installation directory (for patching and restoration).
 - User-selected directories (for imports, exports, Full Install).
 
@@ -153,12 +152,9 @@ G3M does not store any sensitive data (passwords, tokens, API keys) in its setti
 
 The anonymous analytics system (when opted in):
 
-- Does not collect IP addresses (server-side: not logged).
-- Does not collect usernames or account identifiers.
-- Does not collect file paths.
-- Does collect: app version, platform, language, anonymous mod IDs, event counts.
-- Data is compressed (gzip) and base64-encoded before transmission.
-- The analytics endpoint uses HTTPS.
+- Does not collect IP addresses, usernames, account identifiers, or file paths.
+- Collects only non-personal, non-identifying usage signals.
+- Data is sent securely to the G3M server over HTTPS.
 
 ---
 
@@ -166,9 +162,8 @@ The anonymous analytics system (when opted in):
 
 When downloading app updates:
 
-- Updates are fetched from GitHub Releases (official source).
-- The download URL points to GitHub's release asset server.
-- HTTPS is used for the download.
+- Update availability and download URLs are fetched from the G3M cloud backend.
+- The download itself uses HTTPS.
 - G3M does not verify release signatures (GPG/code signing) at this time.
 - On Windows, the downloaded installer is an InnoSetup executable — Windows SmartScreen and antivirus apply their usual checks.
 

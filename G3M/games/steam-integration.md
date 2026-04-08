@@ -35,7 +35,7 @@ When "Launch via Steam" is enabled in Settings → Game:
 | Game | Steam App ID |
 | --- | --- |
 | DELTARUNE | 1671210 |
-| DELTARUNE DEMO | 1671200 |
+| DELTARUNE DEMO | 1690940 |
 | UNDERTALE | 391540 |
 | Pizza Tower | 2231450 |
 | UNDERTALE Yellow | — (not on Steam) |

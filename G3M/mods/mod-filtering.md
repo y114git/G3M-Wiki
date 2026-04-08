@@ -31,7 +31,7 @@ Four predefined tag categories can be toggled:
 | **Gameplay** | Tags containing "gameplay", "mechanic", "balance", "difficulty", or similar. |
 | **Other** | Tags that don't fit the above categories, or mods with no tags. |
 
-When multiple tags are selected, mods must match **at least one** selected tag (OR logic between tags).
+When multiple tags are selected, mods must match **all** selected tags (AND logic between tags).
 
 ### NSFW Filtering
 

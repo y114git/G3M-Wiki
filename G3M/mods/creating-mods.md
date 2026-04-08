@@ -30,7 +30,7 @@ The simplest way to create a mod.
    - **Version**: A version number (e.g., "1.0.0").
    - **Description**: What your mod does.
    - **Game**: Select the target game.
-   - **Tags**: Choose relevant tags (Customization, Gameplay, Text Edit, Other).
+   - **Tags**: Choose relevant tags (`customization`, `gameplay`, `textedit`, `other`).
 5. Under the chapter file assignments, select your modified `data.win` as the data file for the appropriate chapter.
 6. Optionally add an icon image.
 7. Click **Create**.

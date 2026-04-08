@@ -73,7 +73,7 @@ All user data is stored in a platform-specific folder:
 
 | Platform | Location |
 | --- | --- |
-| Windows | `%APPDATA%\G3M` |
+| Windows | `%LOCALAPPDATA%\G3M` |
 | macOS | `~/Library/Application Support/G3M` |
 | Linux | `~/.local/share/G3M` |
 
@@ -86,10 +86,10 @@ Inside this folder:
 | `settings/custom_games.json` | Custom game registry |
 | `profiles/` | One subfolder per profile, each containing a `profile.json` with mod selections |
 | `profiles/<name>/mods/` | Local mod folders for that profile |
-| `downloads/` | Downloaded mod archives and `downloads.json` history |
-| `game_versions/` | Saved game version archives and `game_versions.json` index |
+| `downloads/` | Downloaded mod archives and `downloads_history.json` history |
+| `game_versions/` | Saved game version archives and `game_versions_data.json` index |
 | `plugins/` | Installed plugin folders |
-| `plugins_state.json` | Plugin enabled/disabled state and per-plugin settings |
+| `plugins/plugins_data.json` | Plugin enabled/disabled state and per-plugin settings |
 | `lang/` | Language files (synced from bundled + user-editable) |
 | `logs/` | Application log files, archived into `logs/g3m/` on each launch |
 

@@ -8,10 +8,10 @@ This step-by-step guide walks you through customizing every visual aspect of G3M
 
 ### Method 1: Import a Ready-Made Theme
 
-1. Download a `.g3mtheme.zip` file from the community (Discord, Telegram, etc.).
+1. Download a `.zip` theme file from the community (Discord, Telegram, etc.).
 2. Go to Settings → Appearance.
 3. Click **Import Theme**.
-4. Select the `.g3mtheme.zip` file.
+4. Select the `.zip` file.
 5. Done — all colors, background, font, logo, and audio are applied.
 
 ### Method 2: Build Your Own Theme
@@ -143,7 +143,7 @@ If you prefer a solid-color UI:
 Once you're happy with everything:
 
 1. Click **Export Theme**.
-2. Save the `.g3mtheme.zip` file.
+2. Save the `.zip` file.
 3. Share it with friends or the community!
 
 ---

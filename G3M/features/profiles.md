@@ -44,7 +44,7 @@ Each profile is stored as a folder under `{user_data_root}/profiles/<profile_nam
 
 | Path | Content |
 | --- | --- |
-| `profile.json` | Used mods state and profile-specific settings. |
+| `<ProfileName>.json` | Used mods state and profile-specific settings (e.g., `Default.json`). |
 | `mods/` | All installed mod folders for this profile. |
 
 ---
@@ -53,7 +53,7 @@ Each profile is stored as a folder under `{user_data_root}/profiles/<profile_nam
 
 ### Export
 
-Profiles can be exported as `.zip` archives. The export includes the `profile.json` and the entire `mods/` folder.
+Profiles can be exported as `.zip` archives. The export includes the `<ProfileName>.json` and the entire `mods/` folder.
 
 ### Import
 

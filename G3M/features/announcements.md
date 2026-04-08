@@ -25,13 +25,13 @@ A simple text announcement. The dialog shows:
 A poll where you can select **exactly one** option. The dialog shows:
 
 - **Question / body text** — The poll question.
-- **Options** — Radio buttons or a list of choices.
+- **Options** — Toggle buttons (one per choice).
 - **Submit button** — Sends your vote to the server.
 - **Skip / Dismiss** — Closes without voting.
 
 ### Multiple-Choice Poll
 
-A poll where you can select **one or more** options. Same as above, but with checkboxes instead of radio buttons.
+A poll where you can select **one or more** options. Same as single-choice, but multiple toggle buttons can be active simultaneously.
 
 ---
 

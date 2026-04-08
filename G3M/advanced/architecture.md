@@ -52,6 +52,10 @@ Contains the application's entry points and thin UI composition roots.
 | `dialogs.py` | Top-level dialog factories (file pickers, confirmation dialogs). |
 | `game_ui.py` | Game-specific UI helpers (chapter tab styling, Steam launch checkbox state). |
 | `protocol_handler.py` | One-click install URL parsing and dispatch. |
+| `localization_utils.py` | Localization helpers used within the app layer. |
+| `settings_setup.py` | Settings initialization and post-load wiring. |
+| `tab_handler.py` | Runtime tab-switching logic. |
+| `tab_setup.py` | Tab widget construction and initial setup. |
 
 **Boundary rules:**
 - `window.py` must not create core services directly — they come from `app_context`.
@@ -114,8 +118,13 @@ Each controller owns a specific feature area of the UI:
 | Controller | Responsibility |
 | --- | --- |
 | `game_launch_controller.py` | Game launch button state, launch operations. |
+| `library_display_controller.py` | Library tab rendering and display updates. |
 | `mod_import_export_controller.py` | Import/export dialogs and operations. |
+| `mod_operations_controller.py` | Mod-level operations (delete, enable, etc.). |
 | `plugins_controller.py` | Plugins settings tab, filters, catalog. |
+| `refresh_controller.py` | Coordinating refresh of mod/game/catalog data. |
+| `search_display_controller.py` | Mods browser search results display. |
+| `settings_controller.py` | Settings tab interaction and persistence. |
 | `shortcut_controller.py` | Shortcut creation logic. |
 | `theme_controller.py` | Theme application and debounced updates. |
 
@@ -151,6 +160,14 @@ The largest layer. Each service owns a distinct domain:
 | `plugin_runtime_service.py` | Plugin scanning, loading, hook execution. |
 | `pizza_oven_conversion_service.py` | PizzaOven mod format conversion. |
 | `g3mtool_patching_service.py` | G3MTool-based patching orchestration. |
+| `base_json_store.py` | Base class for JSON-backed persistent stores. |
+| `downloads_store.py` | Persistent download record storage. |
+| `game_versions_store.py` | Persistent game version record storage. |
+| `pizza_tower_afom_service.py` | Pizza Tower AFOM/CYOP mod support. |
+| `plugin_catalog_service.py` | Plugin catalog fetching and caching. |
+| `plugin_install_service.py` | Plugin installation from archive. |
+| `plugin_state_service.py` | Plugin enabled/disabled state management. |
+| `plugin_support.py` | Plugin support utilities. |
 
 **Boundary rules:**
 - Services must not import `app.window` or manipulate widgets directly.
@@ -164,8 +181,8 @@ The largest layer. Each service owns a distinct domain:
 | --- | --- |
 | `g3mtool_adapter.py` | G3MTool CLI (patch create/apply, convert, diff, info, merge). |
 | `deltamod_adapter.py` | DELTAMOD format conversion. |
-| `theme_adapter.py` | Theme file import/export. |
-| `mod_adapter.py` | Mod file processing and normalization. |
+| `gamebanana_adapter.py` | GameBanana API HTTP requests and response parsing. |
+| `gamebanana_converter.py` | GameBanana API response → internal mod model conversion. |
 
 Adapters translate between G3M's internal model and external tools/formats.
 
@@ -197,6 +214,7 @@ Pure data classes and enums:
 | --- | --- |
 | `app_state.py` | `AppState` — Central reactive state with signals. |
 | `game_modes.py` | `GameDefinition`, `GameEntry`, `GameTab`, built-in game registry. |
+| `game_version_models.py` | Game version record data classes. |
 | `mod_models.py` | `LocalModInfo`, `BrowserModInfo`, `ModFileData`. |
 | `plugin_models.py` | `PluginManifest`, `InstalledPluginRecord`, `PluginContext`. |
 | `download_models.py` | `DownloadRecord`, `DownloadStatus`, `UseStatus`. |
@@ -213,6 +231,7 @@ Models have no dependencies on Qt widgets or services.
 | `config.py` | Constants: version, URLs, file extensions, colors, API endpoints. |
 | `settings_schema.py` | Default settings values, theme color key helpers. |
 | `style_loader.py` | QSS stylesheet generation and caching. |
+| `styles.py` | QSS string constants and style templates. |
 
 ---
 
@@ -222,13 +241,20 @@ Stateless helper functions:
 
 | File | Functions |
 | --- | --- |
+| `archive_utils.py` | Archive extraction (zip, 7z, rar, tar). |
+| `cache_utils.py` | Caching helpers. |
 | `file_utils.py` | Safe file operations, directory creation, sanitization. |
-| `path_utils.py` | Path resolution, resource path, profile roots. |
-| `network_utils.py` | HTTP session creation, request helpers. |
-| `mod_utils.py` | Mod ID extraction, name parsing. |
+| `game_version_utils.py` | Game version archive helpers. |
 | `mod_config_parser.py` | `mod_config.json` reading/writing/normalization. |
+| `mod_readme_utils.py` | Mod readme file detection and reading. |
+| `mod_scan_utils.py` | Scanning directories for installed mods. |
+| `mod_utils.py` | Mod ID extraction, name parsing. |
 | `mod_version_utils.py` | Version snapshot creation. |
+| `network_utils.py` | HTTP session creation, request helpers. |
+| `path_utils.py` | Path resolution, resource path, profile roots. |
+| `pizzatower_afom_utils.py` | Pizza Tower AFOM/CYOP path utilities. |
 | `time_utils.py` | UTC timestamps, formatting. |
+| `patching/` | Subdirectory: patch file resolution, verification, file-override and mod-content utilities. |
 
 ---
 
@@ -288,10 +314,12 @@ Key constants defined in `src/config/config.py`:
 | Constant | Value | Description |
 | --- | --- | --- |
 | `APP_DISPLAY_NAME` | "G3M" | Application display name. |
-| `APP_VERSION` | "3.0.3" | Current version string. |
+| `APP_VERSION` | "3.0.3stable" | Current version string. |
 | `PRIMARY_URL_SCHEME` | "g3m" | Primary protocol scheme. |
-| `URL_PROTOCOL_PREFIXES` | ["g3m://", "deltahub://"] | Recognized protocol prefixes. |
+| `URL_PROTOCOL_PREFIXES` | `("g3m://", "deltahub://")` | Recognized protocol prefixes. |
 | `MOD_CONFIG_FILENAME` | "mod_config.json" | Standard mod config file name. |
 | `MOD_VERSIONS_DIR` | "mod_versions" | Mod version snapshots directory. |
-| `PLUGIN_API_VERSION` | 1 | Current plugin API version. |
-| `PLUGIN_HOOKS` | ["pre_launch", "post_launch", ...] | Recognized plugin hook names. |
+| `PLUGIN_API_VERSION` | "1.0.0" | Current plugin API version. |
+| `PLUGIN_HOOKS` | see below | Recognized plugin hook names. |
+
+Plugin hooks (from `config.py`): `app_ready`, `app_shutdown`, `before_mod_apply`, `after_mod_apply_before_launch`, `mod_apply_cancelled`, `after_game_started`, `before_restore_after_exit`, `after_restore_after_exit`, `language_changed`, `theme_changed`, `profile_changed`, `settings_view`, `main_view`, `navigation_actions`, `game_registry`, `background_task`.

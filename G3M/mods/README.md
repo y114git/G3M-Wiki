@@ -20,7 +20,15 @@ Every mod in G3M is stored as a folder inside the current profile's `mods/` dire
 
 ## mod_config.json Format
 
-The mod configuration file is a JSON file with the following structure:
+The mod configuration file is a JSON file with the following top-level structure:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `config_version` | string | Schema version (e.g., `"1.0.0"`). |
+| `metadata` | object | Nested object containing all mod metadata fields (see below). |
+| `files` | object | Chapter-to-file-data mapping. Each key is a chapter/section ID, and the value is a file data object. |
+
+### `metadata` Object Fields
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -29,16 +37,13 @@ The mod configuration file is a JSON file with the following structure:
 | `version` | string | Version string (e.g., "1.0.0"). |
 | `author` | string | The mod author's name. |
 | `description` | string | A brief description of what the mod does. |
-| `game` | string | The game ID this mod is for (e.g., "deltarune", "undertale", "pizzatower"). |
-| `game_version` | string | Which game version this mod is designed for. |
-| `icon` | string | Path to the icon file (relative to the mod folder) or a URL. |
-| `tags` | array | List of string tags (e.g., "customization", "gameplay"). |
 | `homepage` | string | URL to the mod's homepage (GameBanana page, website, etc.). |
-| `files` | object | Chapter-to-file-data mapping. Each key is a chapter/section ID, and the value is a file data object. |
-| `playtime_hours` | number | Tracked playtime (populated automatically). |
-| `added_date` | string | ISO timestamp of when the mod was added. |
-| `last_updated` | string | ISO timestamp of the last modification. |
-| `metadata` | object | Legacy wrapper; fields are equivalent to top-level fields. |
+| `icon` | string | Path to the icon file (relative to the mod folder) or a URL. |
+| `game` | string | The game ID this mod is for (e.g., `"deltarune"`, `"undertale"`, `"pizzatower"`). |
+| `game_version` | string | Which game version this mod is designed for. |
+| `tags` | array | List of string tags: `"textedit"`, `"customization"`, `"gameplay"`, `"other"`. |
+
+Per-mod playtime, added date, and last-updated timestamps are stored separately in the profile's `mods_data.json`, not in `mod_config.json`.
 
 ### File Data Object
 
@@ -63,7 +68,7 @@ G3M recognizes and can import mods from multiple formats:
 | **xdelta** | `.xdelta`, `.vcdiff` | Standard binary diff/patch format. Requires the original data file as a base. |
 | **CSX script** | `.csx` | C# script executed by G3MTool to programmatically modify game data. |
 | **Raw data file** | `.win`, `.ios`, `.unx`, `.droid` | A complete replacement for the game's data file. |
-| **DELTAMOD** | `.deltamod`, folder with `deltamod_info.json` or `modding.xml` | A mod format used by Deltamod Manager. G3M automatically converts it to native G3M format on import. |
+| **DELTAMOD** | `.zip` containing `_deltamodInfo.json` (or `meta.json`) and `modding.xml` | A mod format used by Deltamod Manager. G3M automatically converts it to native G3M format on import. |
 | **PizzaOven** | Folder with `mod.json` | A mod format used by PizzaOven for Pizza Tower mods. G3M can auto-convert eligible PizzaOven mods. |
 | **Archives** | `.zip`, `.7z`, `.rar` | Compressed archives that may contain any of the above formats. G3M extracts and inspects them automatically. |
 

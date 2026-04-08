@@ -8,7 +8,7 @@ This page provides a complete map of every file and folder in G3M's user data di
 
 | Platform | Path |
 | --- | --- |
-| Windows | `%APPDATA%\G3M` |
+| Windows | `%LOCALAPPDATA%\G3M` (falls back to `%APPDATA%\G3M` if LOCALAPPDATA is unset) |
 | macOS | `~/Library/Application Support/G3M` |
 | Linux | `~/.local/share/G3M` |
 
@@ -21,51 +21,53 @@ G3M/
 ├── settings/
 │   ├── settings.json
 │   ├── blocklist.json
-│   └── custom_games.json
+│   ├── custom_games.json
+│   └── session.lock          (only present while game is running / after crash)
 ├── profiles/
 │   ├── Default/
-│   │   ├── profile.json
-│   │   └── mods/
-│   │       ├── mod_folder_1/
-│   │       │   ├── mod_config.json
-│   │       │   ├── data/
-│   │       │   ├── icon.png
-│   │       │   └── mod_versions/
-│   │       └── mod_folder_2/
+│   │   ├── Default.json      (profile state file)
+│   │   ├── mods_data.json    (mod metadata cache)
+│   │   ├── mod_folder_1/     (mod folders are directly in the profile dir)
+│   │   │   ├── mod_config.json
+│   │   │   ├── data/
+│   │   │   ├── icon.png
+│   │   │   └── mod_versions/
+│   │   └── mod_folder_2/
 │   └── MyProfile/
-│       ├── profile.json
-│       └── mods/
+│       ├── MyProfile.json
+│       ├── mods_data.json
+│       └── (mod folders...)
 ├── downloads/
-│   ├── downloads.json
+│   ├── downloads_history.json
 │   └── (downloaded archive files)
 ├── game_versions/
-│   ├── game_versions.json
+│   ├── game_versions_data.json
 │   └── (version archive files)
 ├── plugins/
+│   ├── plugins_data.json     (plugin enabled/settings state)
 │   ├── plugin_folder_1/
 │   │   ├── plugin_config.json
 │   │   ├── main.py
 │   │   ├── icon.png
 │   │   └── lang/
 │   └── plugin_folder_2/
-├── plugins_state.json
+├── themes/
+│   └── (user-saved .zip theme archives)
 ├── lang/
 │   ├── lang_en.json
 │   ├── lang_es.json
 │   ├── lang_ru.json
-│   ├── lang_zh_cn.json
-│   └── lang_zh_tw.json
+│   └── (other language files)
 ├── logs/
 │   ├── g3m.log
 │   ├── shortcut.log
 │   └── g3m/
-│       ├── g3m_2024-03-20_14-30-00.log
-│       └── g3m_2024-03-19_09-15-00.log
-├── custom_background.png
-├── custom_logo.png
-├── custom_font.ttf
-├── custom_startup_sound.mp3
-└── custom_background_music.mp3
+│       └── (archived log files with timestamps)
+├── custom_background.<ext>
+├── custom_logo.<ext>
+├── custom_font.<ext>
+├── custom_startup_sound.<ext>
+└── custom_background_music.<ext>
 ```
 
 ---
@@ -119,23 +121,17 @@ Custom game definitions and game display order/visibility:
 
 Each profile is a subfolder. Every G3M installation always has a `Default/` profile.
 
-### profile.json
+### `<ProfileName>.json`
 
-Per-profile state file:
+Per-profile state file. The filename matches the profile folder name (e.g., `Default.json`). Contains profile-specific settings keys such as `selected_game_type`, `used_mods_<chapter_id>` entries, `chapter_mode_enabled`, and `full_install_enabled`. These keys are stored separately from `settings.json` and loaded/saved when switching profiles.
 
-```json
-{
-  "used_mods": {
-    "deltarune_1": ["mod_id_1", "mod_id_2"],
-    "deltarune_2": ["mod_id_3"],
-    "undertale": []
-  }
-}
-```
+### `mods_data.json`
 
-### mods/ Subdirectory
+Cached mod metadata for the profile, written on scan.
 
-Contains one folder per installed mod. Each mod folder contains:
+### Mod folders
+
+Mod folders are stored **directly** in the profile directory (not in a `mods/` subdirectory). Each mod folder contains:
 
 | File | Purpose |
 | --- | --- |
@@ -150,7 +146,7 @@ Contains one folder per installed mod. Each mod folder contains:
 
 ## downloads/ Directory
 
-### downloads.json
+### downloads_history.json
 
 Array of download records:
 
@@ -179,7 +175,7 @@ Downloaded archive files are stored directly in the `downloads/` folder.
 
 ## game_versions/ Directory
 
-### game_versions.json
+### game_versions_data.json
 
 Array of game version records:
 
@@ -205,24 +201,28 @@ Version archive `.zip` files are stored directly in `game_versions/`.
 
 Each plugin is a folder containing at minimum `plugin_config.json` and a Python entry file. See [Plugins](../features/plugins.md) for details.
 
-### plugins_state.json
+### plugins_data.json
 
-Stored at the data directory root (not inside `plugins/`):
+Stored inside `plugins/` (at `plugins/plugins_data.json`). Structure:
 
 ```json
 {
-  "my_plugin": {
-    "enabled": true,
-    "settings": {
-      "custom_key": "custom_value"
-    }
+  "enabled": {
+    "my_plugin": true,
+    "another_plugin": false
   },
-  "another_plugin": {
-    "enabled": false,
-    "settings": {}
+  "settings": {
+    "my_plugin": { "custom_key": "custom_value" },
+    "another_plugin": {}
   }
 }
 ```
+
+---
+
+## themes/ Directory
+
+Contains user-saved theme package archives (`.zip` files). When you import a theme via Settings, it is saved here. The directory is scanned to populate the theme selector list.
 
 ---
 
@@ -256,13 +256,13 @@ Archived logs from previous sessions. File names include timestamps. These are n
 
 Custom media files are stored at the data directory root:
 
-| File | Source |
+| File | Accepted Extensions |
 | --- | --- |
-| `custom_background.<ext>` | Set via Settings → Appearance → Custom Background. |
-| `custom_logo.<ext>` | Set via Settings → Appearance → Custom Logo. |
-| `custom_font.<ext>` | Set via Settings → Appearance → Custom Font. |
-| `custom_startup_sound.<ext>` | Set via Settings → Appearance → Select startup sound. |
-| `custom_background_music.<ext>` | Set via Settings → Appearance → Select background music. |
+| `custom_background.<ext>` | Image: `.png .jpg .jpeg .gif .bmp .ico .webp`; Video: `.mp4 .webm .avi .mkv .mov .m4v .3gp .mpg .mpeg .flv .wmv` |
+| `custom_logo.<ext>` | Same as background. |
+| `custom_font.<ext>` | `.ttf .otf` |
+| `custom_startup_sound.<ext>` | `.mp3 .wav .ogg .flac .m4a .aac` |
+| `custom_background_music.<ext>` | `.mp3 .wav .ogg .flac .m4a .aac` |
 
 The file extension depends on the original file you selected. Only one custom file of each type exists at a time — selecting a new one replaces the old one.
 
@@ -272,7 +272,7 @@ The file extension depends on the original file you selected. Only one custom fi
 
 During operations, G3M may create temporary files:
 
-- **Backup directory** — Created during game patching, deleted after restoration. Location: typically a subdirectory of the game path or a system temp directory.
+- **Backup directory** — Created during game patching, deleted after restoration. Location: `{user_data_root}/patching_backups/` for normal patches; inside a system temp directory for modpack patches.
 - **Download temp files** — Partial downloads before completion. Location: `downloads/` folder.
 - **Archive extraction temp** — Temporary extraction directory during mod import. Location: system temp directory.
 

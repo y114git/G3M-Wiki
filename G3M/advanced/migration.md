@@ -68,7 +68,7 @@ The `cache_format_version` key in settings is updated to match the current app v
 
 ## Profile Migration
 
-If settings contain profile-related keys at the top level (from an older version that didn't use separate profile folders), they are extracted and written into the Default profile's `profile.json`. The keys are then removed from the main settings.
+If settings contain profile-related keys at the top level (from an older version that didn't use separate profile folders), they are extracted and written into the Default profile's `Default.json`. The keys are then removed from the main settings.
 
 Legacy per-game mod folders that were stored flat in the mods directory are restructured into the profile-based folder hierarchy.
 

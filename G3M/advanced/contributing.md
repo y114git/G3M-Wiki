@@ -189,7 +189,7 @@ Never add imports in the opposite direction.
 To contribute a new language translation:
 
 1. Copy `src/assets/lang/lang_en.json` to `lang_<code>.json` (e.g., `lang_fr.json` for French).
-2. Translate all `msgstr`-equivalent values.
+2. Translate all JSON values (keep the JSON keys unchanged).
 3. Register the new language in the localization service's language list.
 4. Test the translation in-app.
 5. Submit a Pull Request.

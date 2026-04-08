@@ -9,7 +9,7 @@ G3M supports six built-in games and an unlimited number of user-added custom gam
 | Game | ID | Steam App ID | GameBanana ID | Chapter Tabs | Full Install | Direct Launch |
 | --- | --- | --- | --- | --- | --- | --- |
 | DELTARUNE | `deltarune` | 1671210 | 6755 | Main Menu, Ch.1, Ch.2, Ch.3, Ch.4 | No | Yes |
-| DELTARUNE DEMO | `deltarunedemo` | 1671200 | — | Demo (single tab) | Yes | No |
+| DELTARUNE DEMO | `deltarunedemo` | 1690940 | — | Demo (single tab) | Yes | No |
 | UNDERTALE | `undertale` | 391540 | 5506 | Single tab | No | Yes |
 | UNDERTALE Yellow | `undertaleyellow` | — | 19606 | Single tab | Yes | Yes |
 | Pizza Tower | `pizzatower` | 2231450 | 7692 | Single tab | No | Yes |
@@ -88,7 +88,7 @@ When you click **Launch** in the status bar, G3M:
 3. Backs up the game's original data files (e.g., `data.win`) to a temporary backup folder.
 4. Patches each chapter's data file with the selected mod using the appropriate patching method (g3mpatch, xdelta, csx, or raw data copy).
 5. Copies any extra files from the mod into the game directory.
-6. If plugins are active, executes plugin hooks (pre-launch and post-launch).
+6. If plugins are active, executes plugin hooks (`before_mod_apply`, `after_mod_apply_before_launch`, `after_game_started`, etc.).
 7. Launches the game executable (directly or via Steam, depending on settings).
 8. Starts a game monitor that watches for the game process.
 9. While the game is running, the action button shows "Close" and the status shows the game name and playtime.

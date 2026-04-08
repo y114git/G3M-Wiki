@@ -7,10 +7,10 @@ Definitions of terms used throughout this wiki and the G3M application.
 ## A
 
 ### Analytics
-Optional anonymous usage statistics collected by G3M. Disabled by default. See [Analytics](analytics.md).
+Anonymous usage statistics collected by G3M in two tiers: an always-on tier (app launch, mod installs, game launches) and an opt-in tier for more detail (disabled by default). See [Analytics](analytics.md).
 
 ### API Version (Plugin)
-The Plugin API version number (currently **1**). Plugins must target a compatible API version to be loaded.
+The Plugin API version number (currently **1.0.0**). Plugins must target a compatible API version to be loaded.
 
 ### Auto-Detection
 The process by which G3M automatically finds installed games by scanning Steam library paths and known directories.
@@ -107,7 +107,7 @@ A saved snapshot of a game's data files, stored as a ZIP archive. See [Game Vers
 ## H
 
 ### Hook (Plugin)
-A named lifecycle event that plugins can subscribe to. Hooks: `pre_launch`, `post_launch`, `on_mod_install`, `on_mod_uninstall`, `on_settings_tab`.
+A named lifecycle event that plugins can subscribe to. Available hooks: `app_ready`, `app_shutdown`, `before_mod_apply`, `after_mod_apply_before_launch`, `mod_apply_cancelled`, `after_game_started`, `before_restore_after_exit`, `after_restore_after_exit`, `language_changed`, `theme_changed`, `profile_changed`, `settings_view`, `main_view`, `navigation_actions`, `game_registry`, `background_task`.
 
 ---
 
@@ -211,13 +211,13 @@ A numeric identifier for a game on the Steam platform (e.g., 391540 for UNDERTAL
 ## T
 
 ### Tag
-A category label applied to mods or plugins for filtering purposes. Mod tags: Text Edit, Customization, Gameplay, Other. Plugin tags: Interface, Game Experience, Tool, Other.
+A category label applied to mods or plugins for filtering purposes. Mod tags: `textedit`, `customization`, `gameplay`, `other`. Plugin tags: Interface, Game Experience, Tool, Other.
 
 ### Theme
 The collection of colors, background, font, logo, and audio that define G3M's visual and auditory appearance.
 
 ### Theme Package
-A `.g3mtheme.zip` archive containing a complete theme configuration for sharing.
+A `.zip` archive containing a `theme_config.json` manifest and optional media assets for sharing a complete G3M theme.
 
 ### Title Bar
 The custom-drawn bar at the top of the G3M window containing the logo, tabs, social buttons, and window controls.
