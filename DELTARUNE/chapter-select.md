@@ -1,4 +1,4 @@
-# CHAPTER_SELECT
+﻿# CHAPTER_SELECT
 
 `CHAPTER_SELECT` is the shipped launcher runtime for DELTARUNE. It is not a gameplay chapter and it does not share the numbered chapter gameplay stack.
 
@@ -30,7 +30,7 @@ The extracted runtime is very small compared with the numbered chapters:
 - no battle controller stack
 - no chapter overworld stack
 
-So it should be documented as a launcher/runtime shell, not as a fifth chapter.
+It should be documented as a launcher/runtime shell, not as a fifth chapter.
 
 ---
 
@@ -161,7 +161,7 @@ It does not use:
 - `stringsetloc`
 - chapter JSON localization loading
 
-So launcher text edits should be treated separately from chapter text edits.
+Launcher text edits should be treated separately from chapter text edits.
 
 ---
 
@@ -178,11 +178,11 @@ Each numbered chapter then performs its own startup logic again after the launch
 
 ---
 
-## Why This Matters For Modders
+## Modding Notes
 
 If you are patching DELTARUNE through UndertaleModTool:
 
 - patch `CHAPTER_SELECT` for launcher UI, chapter visibility, metadata presentation, and launch flow
 - patch numbered chapters for battle, overworld, cutscenes, items, saves, and chapter-specific systems
 
-Treating `CHAPTER_SELECT` as “just another chapter” will hide the real runtime split and cause documentation errors.
+`CHAPTER_SELECT` has a separate runtime stack from the numbered chapters. Documentation should treat them separately.

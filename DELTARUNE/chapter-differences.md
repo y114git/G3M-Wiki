@@ -1,8 +1,8 @@
-# Chapter Differences
+﻿# Chapter Differences
 
 This page documents concrete runtime differences between the shipped DELTARUNE targets: `CHAPTER_1`, `CHAPTER_2`, `CHAPTER_3`, `CHAPTER_4`, and `CHAPTER_SELECT`.
 
-It is written from the perspective of the shipped game data that modders inspect through UndertaleModTool, not from original editor projects.
+Based on data extracted through UndertaleModTool.
 
 ---
 
@@ -267,7 +267,7 @@ Primary new direction:
 Major runtime additions:
 - board-game overworld framework: many `scr_board_*` scripts and `obj_board_*` objects
 - rhythm-game framework: `scr_rhythmgame_*`, `obj_rhythmgame*`
-- Tenna / TV / show-specific orchestration
+- Tenna / TV / game-show scripting objects and `c_tenna_*` commands
 - further cutscene command expansion through many `c_*` scripts
 
 ### Chapter 4

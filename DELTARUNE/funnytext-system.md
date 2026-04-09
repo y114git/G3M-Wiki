@@ -1,4 +1,4 @@
-# Funnytext System
+﻿# Funnytext System
 
 `obj_funnytext` is an animated text-object family used for title cards, board labels, TV callouts, and other non-standard text reveals. It runs alongside `obj_writer` and is integrated through writer-owned object slots in Chapters 3 and 4.
 
@@ -27,7 +27,7 @@ function scr_funnytext_init(arg0, arg1, arg2, arg3, arg4, arg5)
 }
 ```
 
-So funnytext is usually selected through the shared writer-routing system rather than hardcoded everywhere with direct instance creation.
+Funnytext is usually selected through the shared writer-routing system rather than hardcoded everywhere with direct instance creation.
 
 ---
 
@@ -66,9 +66,9 @@ writerobj.settingb = global.writerobjsettingb[nextchar2var];
 object_made[nextchar2var] = 1;
 ```
 
-So the inline text tag does not decide funnytext behavior by itself. It only consumes the configuration already stored in the global writer-object tables.
+The inline text tag does not decide funnytext behavior by itself. It only consumes the configuration already stored in the global writer-object tables.
 
-The effective meaning of the configured fields is:
+The configured fields are:
 
 - `global.writerobj[slot]`: object class to spawn, usually `obj_funnytext`
 - `global.writerimg[slot]`: sprite assigned to the spawned object
@@ -77,7 +77,7 @@ The effective meaning of the configured fields is:
 - `global.writerobjsettinga[slot]`: copied into the object's `settinga`
 - `global.writerobjsettingb[slot]`: copied into the object's `settingb`
 
-This is the actual “insert funnytext into text” pipeline in shipped Chapters 3 and 4.
+This is the funnytext insertion pipeline in Chapters 3 and 4.
 
 ---
 
@@ -89,7 +89,7 @@ The text runtime uses several related tag families:
 - `\m?` draws a mini inline image / mini portrait using `global.writerimg[]`
 - `\O?` spawns a configured writer-owned object, often `obj_funnytext`
 
-`funnytext` is therefore only one member of a broader writer-side asset insertion system.
+`funnytext` is one member of the writer-side asset insertion system.
 
 ---
 
@@ -116,7 +116,7 @@ Representative sprite-to-sound mappings include:
 Chapter 3 `obj_funnytext/Create_0.gml` initializes:
 
 ```gml
-settinga = 0;
+Settinga = 0;
 settingb = 0;
 typingstyle = 0;
 typingspeed = 3;
@@ -148,7 +148,7 @@ On first Step, the object:
 - for `typingstyle == 0`, tries to find a loop sprite named `sprite_name + "_loop"`
 - prepares scale/reveal timers for other styles
 
-This delayed bootstrap matters because funnytext often inherits its sprite and settings from the writer-routing arrays.
+This delayed bootstrap means funnytext inherits its sprite and settings from the writer-routing arrays.
 
 ---
 
@@ -170,7 +170,7 @@ Character reveal using:
 
 Intro animation followed by a looping display state.
 
-So funnytext is not one effect. It is a mini-framework for several stylized text behaviors.
+Funnytext is not one effect. It is a mini-framework for several stylized text behaviors.
 
 ---
 
@@ -213,5 +213,5 @@ Funnytext is a Chapter 3/4 specialization. Chapter 1 does not use this insertion
 
 ## Relationship To Other Pages
 
-- [Dialogue System](dialogue-system.md) explains the broader writer pipeline.
+- [Dialogue System](dialogue-system.md) explains the writer pipeline.
 - [Cutscene System](cutscene-system.md) explains the scenes that often trigger funnytext-backed text events.

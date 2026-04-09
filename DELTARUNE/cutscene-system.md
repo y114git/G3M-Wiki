@@ -11,7 +11,7 @@ The most important runtime roots are:
 - `scripts/c_cmd/c_cmd.gml`
 - many helper wrappers named `c_*`
 
-This page focuses on the shipped runtime as seen through UndertaleModTool.
+This page documents the runtime as seen through UndertaleModTool.
 
 For GameMaker event basics, `with`, and alarms, see:
 
@@ -33,16 +33,16 @@ function scr_cutscene_make()
 }
 ```
 
-This matters for modders because the cutscene object is usually not the scene author. The author is the room object that calls `scr_cutscene_make()`, then fills the queue by calling `c_*` helpers.
+The cutscene object is not the scene author. The room object calls `scr_cutscene_make()` and fills the queue with `c_*` helpers.
 
 ---
 
 ## Internal Data Model
 
-Chapter 4 shows the fullest shipped version of the controller state:
+Chapter 4 has the largest controller state (Chapters 2 and 3 use the same structure with fewer fields):
 
 ```gml
-waiting = 0;
+Waiting = 0;
 cs_wait_timer = 0;
 cs_wait_amount = 0;
 cs_wait_dialogue = 0;
@@ -268,7 +268,7 @@ The controller maintains:
 - `actor_selected`
 - `actor_selected_id`
 
-so the queue is not only an opcode list. It is also a small actor-routing environment.
+The queue is both an opcode list and a small actor-routing environment.
 
 ---
 
@@ -320,7 +320,7 @@ The real opcode interpreter lives in `scr_cutscene_commands()`, where `_c` is co
 - `"pan"`
 - `"panobj"`
 
-The wrapper-script names and the internal opcode strings do not always match one-for-one, so the wiki should document both levels.
+The wrapper-script names and the internal opcode strings do not always match one-for-one. Both levels are documented here.
 
 ---
 
@@ -442,13 +442,13 @@ The exact helper count is large, but most commands fall into clear groups.
 Internally the `"walk"` opcode creates `obj_move_actor`:
 
 ```gml
-actor_move.target = command_actor[i];
+Actor_move.target = command_actor[i];
 actor_move.direction_word = command_arg1[i];
 actor_move.speed = command_arg2[i];
 actor_move.time = command_arg3[i];
 ```
 
-So the effective argument mapping is:
+Argument mapping:
 
 - actor -> `command_actor[i]`
 - direction word -> `arg1`
@@ -462,7 +462,7 @@ In instant mode, the controller computes the destination directly with `lengthdi
 The `"walkdirect"` opcode instead creates `obj_move_to_point`:
 
 ```gml
-actor_move.movex = command_arg1[i];
+Actor_move.movex = command_arg1[i];
 actor_move.movey = command_arg2[i];
 ...
 if (command_arg3[i] >= 0)
@@ -495,7 +495,7 @@ if (_c == "msgset")
 }
 ```
 
-So the wrapper populates one `global.msg[]` slot, usually before a later `c_talk`.
+The wrapper populates one `global.msg[]` slot, usually before a later `c_talk`.
 
 ## `c_msgnext(text)`
 
@@ -506,7 +506,7 @@ This appends or advances the next message buffer slot through `msgnext(command_a
 The talk opcode creates the actual `obj_dialoguer`:
 
 ```gml
-mydialoguer = instance_create(0, 0, obj_dialoguer);
+Mydialoguer = instance_create(0, 0, obj_dialoguer);
 if (msgside >= 0)
     mydialoguer.side = msgside;
 if (stay)
@@ -518,7 +518,7 @@ if (preventcskip)
 mydialoguer.zurasu = zurasu;
 ```
 
-So message setup and box spawning are separate queue operations.
+Message setup and box spawning are separate queue operations.
 
 ## `c_msgside(...)`
 
@@ -530,7 +530,7 @@ The internal `"msgside"` opcode accepts symbolic arguments:
 - `"zurasuon"` -> `zurasu = 1`
 - `"zurasuoff"` -> `zurasu = 0`
 
-This command therefore controls both side and sliding-offset mode.
+This command controls both side and sliding-offset mode.
 
 ## `c_msgstay(value)`
 
@@ -550,7 +550,7 @@ if (command_arg2[i] != -2)
     global.fc = command_arg2[i];
 ```
 
-So it can change only expression, or expression plus face character.
+It can change only expression, or expression plus face character.
 
 ## `c_msc(id)`
 
@@ -561,11 +561,11 @@ global.msc = command_arg1[i];
 scr_text(global.msc);
 ```
 
-So cutscenes can switch into any `scr_text` scene block without calling `scr_writetext`.
+Cutscenes can switch into any `scr_text` scene block without calling `scr_writetext`.
 
 ## `c_var(...)`
 
-The `"var"` opcode is one of the most powerful commands. It can:
+The `"var"` opcode is a general-purpose command. It can:
 
 - directly set an instance variable
 - lerp an instance variable over time
@@ -584,7 +584,7 @@ The `"script"` opcode can:
 - schedule repeated execution via `scr_script_repeat`
 - cancel delayed scripts when `command_arg3 == -10`
 
-This makes the cutscene layer a true general-purpose scene orchestrator, not only a movement/text tool.
+The cutscene layer can set arbitrary instance variables, making it usable for any scene scripting, not limited to movement and dialogue.
 
 ## `c_mus(...)`
 
@@ -609,7 +609,7 @@ The `"mus"` / `"music"` opcode is actually a family of subcommands selected by `
 - `"loopsfxstop"`
 - `"loopsfxvolume"`
 
-So one wrapper family covers both background music and looped sound-effect control.
+One wrapper family covers both background music and looped sound-effect control.
 
 ## `c_soundplay(sound, volume, pitch)`
 
@@ -623,7 +623,7 @@ if (command_arg2[i] != 0)
     snd_pitch(_snd, command_arg3[i]);
 ```
 
-So the effective meaning is:
+Arguments:
 
 - `arg1` -> sound asset
 - `arg2` -> optional volume override
@@ -672,38 +672,205 @@ Higher-level wrappers often rewrite into lower-level opcodes before execution.
 
 ---
 
-## Chapter Differences
+## Complete Command Catalog
 
-## Chapter 2
+### Actor Selection & Management
 
-- establishes the queue model
-- smaller command vocabulary
-- mostly timer/dialogue waits
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_sel(name)` | actor name string | Select active actor by name |
+| `c_actortoobject(name, obj)` | actor, object | Bind actor name to object instance |
+| `c_actortokris(name)` | actor name | Bind actor to Kris instance |
+| `c_actortocaterpillar(name, slot)` | actor, party slot | Bind actor to caterpillar follower |
+| `c_actorsetsprites(d,u,l,r)` | 4 sprites | Set directional sprites for selected actor |
+| `c_actormoveparty(x,y,spd)` | position, speed | Move entire party to position |
+| `c_actormoveparty_single(slot,x,y,spd)` | slot, position, speed | Move single party member |
+| `c_instance(obj)` | object | Select instance of object as actor |
+| `c_terminatekillactors()` | — | Terminate cutscene and destroy actor objects |
 
-## Chapter 3
+### Movement
 
-- reuses the same framework for TV-show pacing and board-adjacent scenes
-- more theatrical presentation wrappers
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_walk(x, y, spd)` | target x/y, speed | Walk actor to position |
+| `c_walk_wait(x, y, spd)` | target x/y, speed | Walk and wait for arrival |
+| `c_walkdirect(x, y, spd)` | target x/y, speed | Walk directly (no pathfinding) |
+| `c_walkdirect_wait(x, y, spd)` | target x/y, speed | Walk directly and wait |
+| `c_walkdirect_speed(x, y, spd)` | x, y, speed | Walk directly at set speed |
+| `c_walkdirect_speed_wait(x, y, spd)` | x, y, speed | Walk directly at speed and wait |
+| `c_walktoobject(obj, spd)` | object, speed | Walk to object position |
+| `c_delaywalk(x, y, spd, delay)` | position, speed, frames | Walk after delay |
+| `c_delaywalkdirect(x, y, spd, del)` | position, speed, frames | Walk directly after delay |
+| `c_setxy(x, y)` | position | Teleport actor to position |
+| `c_addxy(dx, dy)` | offset | Move actor by offset |
+| `c_move_instance(obj, x, y, spd)` | object, position, speed | Move arbitrary instance |
+| `c_move_extra(x, y, spd)` | position, speed | Extra movement command |
+| `c_stickto(obj)` | object | Stick actor to object |
+| `c_stickto_stop()` | — | Stop sticking |
 
-## Chapter 4
+### Jumping
 
-- broadest shipped version
-- richer wait conditions
-- more message-control helpers
-- more custom-function hooks
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_jump(x, y, height, spd)` | position, arc height, speed | Jump arc to position |
+| `c_jump_in_place(height, time)` | height, duration | Jump in place |
+| `c_jump_sprite(spr, height, time)` | sprite, height, duration | Jump with sprite change |
+
+### Actor Properties
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_facing(dir)` | direction (0-3) | Set actor facing |
+| `c_delayfacing(dir, delay)` | direction, frames | Set facing after delay |
+| `c_facenext()` | — | Face toward next waypoint |
+| `c_sprite(spr)` | sprite | Set actor sprite |
+| `c_specialsprite(spr)` | sprite | Set special/override sprite |
+| `c_animate(spr, spd)` | sprite, speed | Play animation |
+| `c_imageindex(idx)` | frame index | Set sprite frame |
+| `c_imagespeed(spd)` | speed | Set animation speed |
+| `c_flip(xscale)` | scale | Flip actor horizontally |
+| `c_visible(val)` | 0/1 | Set actor visibility |
+| `c_depth(d)` | depth value | Set actor depth |
+| `c_depthobject(obj)` | object | Match depth to object |
+| `c_autodepth(val)` | 0/1 | Enable/disable automatic depth |
+| `c_autofacing(val)` | 0/1 | Enable/disable automatic facing |
+| `c_autowalk(val)` | 0/1 | Enable/disable walk animation |
+| `c_spin(spd)` | speed | Spin actor |
+| `c_emote(type)` | emote id | Show emote bubble |
+
+### Variables
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_var(name, val)` | variable, value | Set variable on selected actor |
+| `c_var_extra(name, val)` | variable, value | Set variable (alternate) |
+| `c_var_instance(obj, name, val)` | instance, variable, value | Set variable on specific instance |
+| `c_var_lerp(name, val, spd)` | variable, target, speed | Lerp variable over time |
+| `c_var_lerp_instance(obj, name, v, s)` | instance, variable, target, speed | Lerp on specific instance |
+| `c_globalvar(name, val)` | global variable name, value | Set a global variable |
+
+### Dialogue & Messages
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_msgset(str)` | text string | Set message text |
+| `c_msgsetloc(str, key)` | text, loc key | Set message with localization |
+| `c_msgsetsub(str, sub)` | text, substitution | Set message with substitution |
+| `c_msgsetsubloc(str, key, sub)` | text, key, sub | Localized message with substitution |
+| `c_msgnext(str)` | text string | Queue next dialogue page |
+| `c_msgnextloc(str, key)` | text, loc key | Queue next localized page |
+| `c_msgnextsub(str, sub)` | text, substitution | Queue next page with substitution |
+| `c_msgnextsubloc(str, key, sub)` | text, key, sub | Localized next page with substitution |
+| `c_talk()` | — | Execute pending message |
+| `c_talk_wait()` | — | Execute message and wait for close |
+| `c_speaker(name)` | speaker name | Set speaker (typer + portrait) |
+| `c_msgside(side)` | 0/1 | Set dialogue box side |
+| `c_msgstay(val)` | 0/1 | Keep dialogue box open after text |
+| `c_msgface(fc, fe)` | face char, face expression | Set portrait character and expression |
+| `c_fe(fe)` | face expression | Set face expression only |
+| `c_fefc(fe, fc)` | expression, character | Set both expression and character |
+| `c_msgpreventcskip(val)` | 0/1 | Prevent cancel-skip |
+| `c_msgzurasu(val)` | offset | Shift dialogue box position |
+| `c_runcheck(val)` | 0/1 | Enable run-check (choice selection) |
+
+### Waiting
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_wait(frames)` | frame count | Wait for N frames |
+| `c_waittalk()` | — | Wait for dialogue to finish |
+| `c_wait_talk()` | — | Alternate wait-for-talk |
+| `c_wait_if(condition)` | condition | Conditional wait |
+| `c_wait_box()` | — | Wait for box display |
+| `c_wait_box_end()` | — | Wait for box to close |
+| `c_wait_soundlength(snd)` | sound | Wait for sound to finish |
+| `c_waitcustom(func)` | function | Wait until custom function returns true |
+| `c_waitcustom_end()` | — | End custom wait |
+
+### Camera
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_pan(x, y, time)` | target x/y, time | Lerp camera to absolute position |
+| `c_pan_wait(x, y, time)` | target x/y, time | Pan and wait for completion |
+| `c_panspeed(dx, dy, time)` | velocity x/y, time | Offset camera by velocity |
+| `c_panspeed_wait(dx, dy, time)` | velocity x/y, time | Offset camera and wait |
+| `c_panobj(obj)` | object | Pan camera to object |
+| `c_pannable(val)` | 0/1 | Allow/disallow camera panning |
+
+### Audio
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_mus(subcmd, ...)` | subcommand + args | Music control (play, stop, fade, volume, pitch) |
+| `c_mus2(subcmd, ...)` | subcommand + args | Secondary music channel control |
+| `c_soundplay(snd, vol, pitch)` | sound, volume, pitch | Play sound effect |
+| `c_soundplay_wait(snd, vol, pitch)` | sound, volume, pitch | Play sound and wait |
+| `c_soundplay_x(snd, vol, pitch)` | sound, volume, pitch | Play sound (variant) |
+
+### Screen Effects
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_fadein(time)` | frame count | Fade in from black |
+| `c_fadeout(time)` | frame count | Fade out to black |
+| `c_fadeout_color(time, color)` | frames, color | Fade to specific color |
+| `c_shake(amount, time)` | intensity, duration | Shake screen |
+| `c_shakex(amount, time)` | intensity, duration | Horizontal screen shake |
+| `c_shakestep(amount, time)` | intensity, per-step duration | Step-based shake |
+| `c_shakestep_x(amount, time)` | intensity, per-step duration | Step-based horizontal shake |
+| `c_shakeobj(obj, amount, time)` | object, intensity, duration | Shake specific object |
+| `c_shakeobj_x(obj, amount, time)` | object, intensity, duration | Horizontal object shake |
+
+### Flow Control
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_cmd(opcode, a1..a6)` | raw opcode + args | Direct command insertion |
+| `c_cmd_x(opcode, actor, a1..a6)` | opcode, actor, args | Direct command with explicit actor |
+| `c_instant()` | — | Execute next commands instantly (no frame delay) |
+| `c_halt()` | — | Stop cutscene execution |
+| `c_customfunc(func)` | function id | Call custom function |
+| `c_delaycmd(opcode, delay, a1..a4)` | opcode, frames, args | Execute command after delay |
+| `c_delaycmd4(opcode, delay, a1..a4)` | opcode, frames, args | 4-arg delayed command |
+| `c_debugprint(str)` | string | Debug output |
+| `c_saveload()` | — | Trigger save/load UI |
+| `c_script_instance(obj, scr)` | object, script | Run script on instance |
+| `c_script_instance_stop(obj)` | object | Stop script on instance |
+| `c_arg_objectxy(obj)` | object | Use object position as args |
+
+### Chapter 3 Tenna-Specific
+
+| Command | Arguments | Purpose |
+|---|---|---|
+| `c_tenna_preset(id)` | preset id | Apply Tenna preset configuration |
+| `c_tenna_sprite(spr)` | sprite | Set Tenna sprite |
 
 ---
 
-## Modding Implications
+## `c_instant` Mode
 
-- If a scene freezes, inspect `waiting`, `cs_wait_*`, `current_command`, and `maximum_command`.
-- If a command targets the wrong actor, inspect `command_actor[i]` and `actor_selected_id`.
-- If dialogue ordering breaks, the cause is often an unsatisfied wait on `mydialoguer` or `cs_wait_box`, not the text string itself.
+When `c_instant()` is called, `instant` is set to `1`. The step handler then processes multiple commands per frame without waiting. This continues until a blocking command (wait, talk) resets `instant = 0`.
+
+Used for batching setup commands (sprite changes, variable sets, position teleports) that should execute atomically.
+
+---
+
+## Modding Reference
+
+| Goal | Inspect |
+|---|---|
+| Scene freezes | Check `waiting`, `cs_wait_*`, `current_command`, `maximum_command` |
+| Wrong actor targeted | Check `command_actor[i]` and `actor_selected_id` |
+| Dialogue ordering | Check `mydialoguer`, `cs_wait_box` wait conditions |
+| Add custom commands | Use `c_customfunc` or extend `scr_cutscene_master_commands_initialize` |
+| Add new wrapper | Create `c_*` script that calls `c_cmd` with a new opcode, add handler in step |
 
 ---
 
 ## Relationship To Other Pages
 
-- [Dialogue System](dialogue-system.md) explains how message commands feed the writer/dialoguer layer.
-- [Overworld Movement](overworld.md) explains the room actors that cutscenes commonly drive.
-- [Chapter Differences](chapter-differences.md) summarizes controller evolution by chapter.
+- [Dialogue System](dialogue-system.md) explains how message commands feed the writer/dialoguer layer
+- [Speaker System](speaker-system.md) explains the `c_speaker` name-to-typer mapping
+- [Overworld Movement](overworld.md) explains the room actors that cutscenes commonly drive
+- [Party Management](party-management.md) explains caterpillar actors used with `c_actortocaterpillar`

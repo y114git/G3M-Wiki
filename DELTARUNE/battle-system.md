@@ -1,4 +1,4 @@
-# Battle System
+﻿# Battle System
 
 The numbered chapters all center battle flow around `obj_battlecontroller`, but the runtime grows in three clear stages:
 
@@ -6,7 +6,7 @@ The numbered chapters all center battle flow around `obj_battlecontroller`, but 
 - Chapter 2: major menu / spell / ACT / ambush expansion
 - Chapters 3 and 4: Chapter 2 framework plus more forced-action, sprite-control, and encounter-specific overlays
 
-This page focuses on the shipped runtime objects and scripts modders inspect through UndertaleModTool.
+This page documents the runtime objects and scripts as seen through UndertaleModTool.
 
 For generic GameMaker engine behavior behind object events, alarms, and scope-changing with `with (...)`, see:
 
@@ -81,7 +81,7 @@ Important chapter difference:
 - Chapter 3 does the same, but adds Chapter 3-specific runtime state like ranking values and board-era intro strings
 - Chapter 4 switches to `camerax()` / `cameray()` for its encounter positioning baseline
 
-That is a meaningful engine-facing runtime change, not just content growth.
+Chapter 4 renames the controller to `obj_battlecontroller_ch4` with its own object hierarchy, not a shared parent.
 
 ---
 
@@ -193,7 +193,7 @@ Examples:
 - encounter `160` or `176` forces a Susie-only layout
 - encounter `186` forces a Kris + Susie layout
 
-This is a big modding detail: by Chapter 4, party composition can be rewritten inside the controller itself for special battles, not only in overworld prep.
+By Chapter 4, party composition can be rewritten inside the controller itself for special battles, not only in overworld prep.
 
 ---
 
@@ -209,7 +209,7 @@ global.battlemag[i] = global.mag[global.char[i]] + global.itemmag[global.char[i]
 
 The important runtime detail is that the battle controller does not recalculate from equipment ids directly. It trusts the precomputed `global.itemat/itemdf/itemmag` modifier arrays.
 
-So if a mod changes equipment behavior, the battle layer usually does not need patching unless the way those arrays are populated also changes.
+if a mod changes equipment behavior, the battle layer usually does not need patching unless the way those arrays are populated also changes.
 
 ---
 
@@ -352,7 +352,7 @@ global.battlespelldesc[__i][__ib] = global.spelldescb[global.char[__i]][__fj];
 global.battlespelltarget[__i][__ib] = global.spelltarget[global.char[__i]][__fj];
 ```
 
-So the actual menu layout is:
+The menu layout is:
 
 1. generated ACT-like commands first
 2. normal learned spells second
@@ -532,7 +532,7 @@ if (global.chapter == 4 && facevar == 1)
 
 ## Monster Runtime Data
 
-Battle monsters are not just “an object in a room”. They are mirrored across:
+Battle monsters are mirrored across:
 
 - monster instances
 - many `global.monster*` arrays
@@ -570,7 +570,7 @@ Chapter 2+ further fans this out into character-specific ACT arrays like:
 - `global.canactral`
 - `global.canactnoe`
 
-which are consumed by `scr_spellmenu_setup()`.
+Which are consumed by `scr_spellmenu_setup()`.
 
 ---
 
@@ -631,7 +631,7 @@ Observed handling:
 - `global.ambush == 1` calls `scr_ambush()`
 - `global.ambush == 2` sets `firststrike = 1` on monsters and grants starting TP
 
-So encounter openers can alter battle state before the first visible menu frame.
+Encounter openers can alter battle state before the first visible menu frame.
 
 ---
 
@@ -683,3 +683,15 @@ Inspect:
 - `scr_battle_force_action`
 - `scr_battle_sprite_set`
 - related cutscene scripts that call them
+
+---
+
+## Related Pages
+
+- [Damage System](damage-system.md) — full damage pipeline, defense formulas, element reduction, DEFEND mechanics
+- [Tension / TP System](tension-system.md) — TP gain, graze, and cost mechanics
+- [Spells & Abilities](spells-abilities.md) — spell costs, targets, and menu synthesis
+- [Monster Runtime](monster-runtime.md) — complete monster roster, stats, ACT menus
+- [Heart / SOUL Mechanics](heart-mechanics.md) — heart color modes and movement
+- [Game Over System](game-over-system.md) — death, game over modes, and cantdie mechanic
+- [Recruit System](recruit-system.md) — post-spare recruitment tracking
