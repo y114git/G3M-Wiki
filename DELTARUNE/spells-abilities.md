@@ -63,7 +63,7 @@ Practical opening loadout:
 - Susie: `4`
 - Ralsei: `3`, `2`
 
-This is the small early-game spell baseline.
+This is the early Chapter 1 spell set.
 
 ### Chapter 2
 
@@ -128,7 +128,7 @@ Spell 11 is especially important because it changes across later builds:
 - Chapter 3: `UltraHeal`
 - Chapter 4: dynamic naming branches including `OKHeal`, `Heal`, and `BetterHeal`
 
-That means modders should treat spell 11 as a chapter-sensitive runtime slot, not as one immutable spell definition.
+Spell 11 is a chapter-sensitive runtime slot, not a single immutable definition.
 
 ---
 
@@ -155,7 +155,7 @@ Used for SPARE behavior in battle runtime logic.
 
 Used for item behavior routed through `scr_spell`.
 
-This means battle item use is not a separate completely isolated subsystem; it is partly encoded as spell-style runtime cases.
+Battle item use is partly encoded as spell-style runtime cases.
 
 That becomes more important in Chapters 3 and 4 because the item-spell case range grows further.
 

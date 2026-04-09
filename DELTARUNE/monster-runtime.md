@@ -137,7 +137,7 @@ Monster setup does more than set combat stats. It also constructs the ACT vocabu
 - check text
 - special comments and reactions
 
-This is why ACT behavior belongs partly here and partly in [Battle System](battle-system.md).
+ACT data is authored here and rendered/routed by the battle controller.
 
 ---
 

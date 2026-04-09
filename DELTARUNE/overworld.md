@@ -127,7 +127,7 @@ if (global.chapter == 4)
 }
 ```
 
-This means Chapter 4 overworld presentation is materially more stateful than earlier chapters even before Step-event logic starts.
+Chapter 4 Create-time state is denser than earlier chapters before Step logic even begins.
 
 ---
 
@@ -165,7 +165,7 @@ So “dark world feel” is partly a movement-state and sprite-state change in `
 
 ## Entrance / Room Transition Placement
 
-This is one of the most important practical systems for recreating chapter flow.
+This transition path is one of the main chapter-flow entrypoints.
 
 ### Chapter 1
 
@@ -232,7 +232,7 @@ Common state includes:
 - `threebuffer`
 - `global.menuno`
 
-This means the player controller is not only locomotion. It is also the top-level input router for most ordinary overworld play.
+`obj_mainchara` handles movement, interaction routing, door checks, and menu opening.
 
 ---
 
@@ -244,7 +244,7 @@ If you only study Chapter 1 or Chapter 2, you miss large runtime shifts:
 - Chapter 3 has more cutscene-friendly player control flags
 - Chapter 4 adds church-specific sprite/state handling and more specialized overworld hazard families
 
-The later chapters do not just reuse the same Kris controller unchanged.
+Later chapters extend the same controller with additional state families instead of replacing it.
 
 ---
 

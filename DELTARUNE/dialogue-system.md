@@ -246,7 +246,7 @@ Meaning:
 - `alarm[2]` is used to delay the first text sound when the rate is fast
 - when the rate is slower, the code plays the first voice sound immediately from Create instead of waiting
 
-This small branch is easy to miss, but it affects how different typer styles feel.
+The first-sound path changes with `rate`.
 
 ---
 
@@ -304,13 +304,13 @@ So `^` is not only a generic “pause here” marker. It is a tiny embedded timi
 5. interprets control codes while advancing `wx` and `wy`
 6. draws visible characters, portraits, button icons, and special inserts
 
-This is one of the most important architectural facts in the whole text system: DELTARUNE splits parsing work across Create, Alarm, Draw, and helper scripts rather than keeping all text interpretation in one function.
+Parsing is split across Create, Alarm, Draw, and helper scripts.
 
 ---
 
 ## Text Format Codes
 
-Your baseline list is correct and belongs in the system page because these markers are part of DELTARUNE's own dialogue language, not just generic text.
+These markers are part of DELTARUNE's own inline text language.
 
 The most important control symbols are:
 
@@ -324,7 +324,7 @@ The most important control symbols are:
 | `%1` to `%4` | character-name substitution using `global.charname[1..4]` |
 | `*` | star-prompt related marker |
 
-These markers are one of the reasons DELTARUNE text is more than a raw string-print routine. Message strings contain embedded behavior.
+Message strings contain embedded behavior, not only glyph data.
 
 ---
 
@@ -455,7 +455,7 @@ Representative Chapter 4 branches include:
 - `\Tg` -> Gerson `85`
 - `\Tv` -> TV voice `84`
 
-This means a single text box can swap voice, font, spacing, and special rendering multiple times inside one message.
+One message can swap voice, font, spacing, and special rendering mid-line.
 
 ### `\s0` / `\s1` — skippable toggle
 
@@ -482,13 +482,13 @@ Chapter 4 recognizes color tags such as:
 
 These set `xcolor` and `colorchange = 1`, which the draw logic then uses for subsequent glyph rendering.
 
-This is one of the most important missing pieces in most fan documentation: DELTARUNE text strings are not just line-break strings with portraits. They are inline scripting containers.
+Text strings act as inline scripting containers.
 
 ---
 
 ## Other Inline Writer Tags
 
-Chapter 4 `obj_writer/Draw_0.gml` also implements several other tag families that are easy to miss.
+Chapter 4 `obj_writer/Draw_0.gml` also implements several additional tag families.
 
 ### `\C?` — choice box spawn
 
@@ -552,7 +552,7 @@ writerobj.settingb = global.writerobjsettingb[nextchar2var];
 object_made[nextchar2var] = 1;
 ```
 
-This means the text system can spawn arbitrary writer-attached helper objects directly from a text string, and in Chapter 3/4 those helper objects are very often `obj_funnytext`.
+The text system can spawn writer-attached helper objects directly from a text string; in Chapters 3/4 those are often `obj_funnytext`.
 
 That is the key bridge between:
 
@@ -593,7 +593,7 @@ In practical terms:
 - `global.writerobjx[slot]` / `global.writerobjy[slot]` offset the spawn point relative to the current text cursor
 - `global.writerobjsettinga[slot]` / `global.writerobjsettingb[slot]` are copied into the new object's `settinga` / `settingb`
 
-This is one of the most important Chapter 3/4 dialogue details and absolutely belongs in the wiki.
+This is a core Chapter 3/4 dialogue-path detail.
 
 ---
 
@@ -658,7 +658,7 @@ That is why DELTARUNE voices feel speech-like instead of chirping on every glyph
 
 ## Textsound Special Cases
 
-Later chapters add several speaker-specific sound branches in `scr_textsound()` instead of only calling `snd_play(textsound)`.
+Chapter 4 adds several speaker-specific sound branches in `scr_textsound()` instead of only calling `snd_play(textsound)`.
 
 Examples from Chapter 4:
 
@@ -704,7 +704,7 @@ colorchange = 1;
 xcolor = mycolor;
 ```
 
-The big design point here is that text style changes are centralized. DELTARUNE usually does not mutate writer fields one by one in every dialogue call. It assigns a typer id, and the typer id routes into this helper.
+Text style changes are centralized through `global.typer` and `scr_textsetup()`.
 
 ---
 
@@ -719,7 +719,7 @@ The big design point here is that text style changes are centralized. DELTARUNE 
 - spacing
 - special rendering mode
 
-Your older typer table is still a very useful baseline, but later chapters expand it substantially. Chapter 4 contains not only the classic ids `1..55`, `60`, `666`, `667`, `999`, but also many extra speaker/presentation ids:
+Chapter 4 extends the classic `global.typer` ids `1..55`, `60`, `666`, `667`, `999` with additional speaker/presentation ids:
 
 - `56` big Noelle voice
 - `57` big Berdly voice
@@ -868,7 +868,7 @@ if (instance_exists(obj_mainchara))
 }
 ```
 
-This means the dialog box is not always fixed. It tries to avoid covering the speaking area of the room.
+The dialog box side is camera- and player-position dependent.
 
 Important dialoguer fields:
 
@@ -944,7 +944,7 @@ This buffer model is essential for modders:
 
 `scr_text` is the giant message-routing script. It maps `global.msc` or direct scene ids to concrete `global.msg[]` contents.
 
-The reason the wiki needs to mention this explicitly is that DELTARUNE separates:
+The text runtime separates:
 
 - scene selection logic
 - string lookup/localization
@@ -970,7 +970,7 @@ The common default is:
 
 which routes into the large-font battle-style profile in `scr_texttype()`.
 
-This is why battle dialogue, warning text, ACT results, and many enemy reactions still feel like part of one coherent text runtime.
+Battle dialogue, warning text, ACT results, and enemy reactions share the same writer stack.
 
 ---
 
@@ -1007,13 +1007,13 @@ The writer also tracks face-related local fields such as:
 - `miniface_pos`
 - `miniface_drawn`
 
-This becomes more important in later chapters where battle dialogue, small inline faces, and stylized dialogue variants are more common.
+These fields are used more heavily in later battle and stylized dialogue flows.
 
 ---
 
 ## Specialized Writer Variants
 
-The core logic is still centered on `obj_writer`, but later chapters also use related variants or integrations such as:
+The core logic stays centered on `obj_writer`, with related variants such as:
 
 - `obj_writer_stay`
 - `obj_menuwriter`

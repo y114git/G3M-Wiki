@@ -5,7 +5,7 @@ The damage pipeline has one major breakpoint:
 - Chapter 1 uses the older direct damage model
 - Chapters 2, 3, and 4 use the newer layered model
 
-So the most important correction is this: later chapters do not revert or replace the Chapter 2 damage framework. They continue building on it.
+Chapters 3 and 4 keep the Chapter 2 damage framework: `scr_damage_calculation`, `scr_element_damage_reduction`, and later armor-element fields remain in use.
 
 ---
 
@@ -56,7 +56,7 @@ Later runtimes move to the newer layered flow:
 5. HP is reduced
 6. hurt / death / game-over side effects are triggered
 
-That means any documentation that phrases this as a Chapter 1 vs Chapter 2 split only is incomplete; Chapters 3 and 4 remain on the Chapter 2-style defensive model.
+The effective split is Chapter 1 vs Chapter 2+, not Chapter 1 vs Chapter 2 only.
 
 ---
 
@@ -116,7 +116,7 @@ It performs the same high-level responsibilities:
 - trigger dodge behavior on zero-damage hits where allowed
 - call defeat logic when HP reaches zero
 
-The exact content built on top of this grows massively in later chapters because the enemy roster and attack systems become much larger, but the core entry point remains recognizable.
+The entrypoint stays the same while later chapters add more enemy-specific and encounter-specific callers.
 
 ---
 
@@ -145,7 +145,7 @@ not:
 
 ## Practical Modding Notes
 
-If you want to change incoming-damage behavior in later chapters, inspect:
+Incoming-damage edits in Chapter 2+ typically touch:
 
 - `scr_damage`
 - `scr_damage_calculation`
