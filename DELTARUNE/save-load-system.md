@@ -1,4 +1,4 @@
-# Save & Load System
+﻿# Save & Load System
 
 Each numbered DELTARUNE chapter owns its own save/load scripts:
 
@@ -21,10 +21,182 @@ The launcher does not. Numbered chapters write plain-text save files through `os
 Chapter 4 uses:
 
 ```gml
-file = "filech" + string(global.chapter) + "_" + string(arg0);
+File = "filech" + string(global.chapter) + "_" + string(arg0);
 ```
 
 Chapter 1 hardcodes `filech1_`.
+
+---
+
+## Slot Number Map
+
+The numeric suffix after `filech<chapter>_` is part of the runtime contract. Numbered chapters do not treat all suffixes as interchangeable user save slots.
+
+Confirmed slot meanings:
+
+| Slot suffix | Meaning | Evidence |
+|---:|---|---|
+| `0` | main save file 1 | checked by launcher/device menu as primary save slot |
+| `1` | main save file 2 | checked by launcher/device menu as primary save slot |
+| `2` | main save file 3 | checked by launcher/device menu as primary save slot |
+| `3` | completion copy for file 1 | `scr_completed_chapter_in_slot(arg0, 0)` checks `filech<chapter>_3` |
+| `4` | completion copy for file 2 | `scr_completed_chapter_in_slot(arg0, 1)` checks `filech<chapter>_4` |
+| `5` | completion copy for file 3 | `scr_completed_chapter_in_slot(arg0, 2)` checks `filech<chapter>_5` |
+| `9` | temp / recent recovery slot | written by `scr_save()` and `scr_tempsave()`, loaded by `scr_tempload()` in Chapters 1, 2, 3, and 4 |
+
+The code uses three distinct suffix groups:
+
+- `0..2`: primary user-facing save slots
+- `3..5`: completion-copy slots associated with `0..2`
+- `9`: temp/recovery slot used by `scr_tempsave()` and `scr_tempload()`
+
+### Primary slots `0..2`
+
+Primary slot detection in `CHAPTER_SELECT` and `DEVICE_MENU` only checks:
+
+- `filech<chapter>_0`
+- `filech<chapter>_1`
+- `filech<chapter>_2`
+
+For example, Chapter 4 `DEVICE_MENU/Create_0.gml` uses:
+
+```gml
+if (ossafe_file_exists("filech" + CH + "_0")) FILE[0] = 1;
+if (ossafe_file_exists("filech" + CH + "_1")) FILE[1] = 1;
+if (ossafe_file_exists("filech" + CH + "_2")) FILE[2] = 1;
+```
+
+Visible user-facing save slots are the `0..2` group.
+
+### Completion slots `3..5`
+
+Completion-file checks are not launcher-only. They exist in chapter runtime code as well.
+
+`CHAPTER_SELECT/scripts/scr_chapter_save_file_exists.gml`:
+
+```gml
+function scr_completed_chapter_any_slot(arg0)
+{
+    for (var i = 0; i < 3; i++)
+    {
+        if (ossafe_file_exists("filech" + string(arg0) + "_" + string(i + 3)))
+        {
+            ...
+        }
+    }
+}
+```
+
+And:
+
+```gml
+function scr_completed_chapter_in_slot(arg0, arg1)
+{
+    var _file_exists = ossafe_file_exists("filech" + string(arg0) + "_" + string(arg1 + 3));
+    return _file_exists;
+}
+```
+
+The same `scr_chapter_save_file_exists.gml` helper already exists in Chapter 1 and Chapter 2. Chapter 3 and Chapter 4 additionally expose an explicit completion-write helper.
+
+`CHAPTER_3/scripts/scr_complete_save_file.gml`:
+
+```gml
+_remfilechoice = global.filechoice;
+global.filechoice += 3;
+scr_set_ini_value(global.chapter, global.filechoice, "SideB", scr_sideb_active());
+scr_save();
+global.filechoice = _remfilechoice;
+```
+
+A normal filechoice of:
+
+- `0` saves completion data into slot `3`
+- `1` saves completion data into slot `4`
+- `2` saves completion data into slot `5`
+
+The practical chapter split is:
+
+- Chapter 1: completion slots `3..5` are part of the shared file-existence and metadata model
+- Chapter 2: same `3..5` completion-slot checks are present
+- Chapter 3: `scr_complete_save_file()` writes to `filechoice + 3`
+- Chapter 4: same explicit completion-write path as Chapter 3
+
+### Temp / recent slot `9`
+
+Slot `9` is not Chapter 4-specific. The same pattern exists in Chapters 1, 2, 3, and 4.
+
+Chapter 1 `scr_save()`:
+
+```gml
+scr_saveprocess(global.filechoice);
+filechoicebk2 = global.filechoice;
+global.filechoice = 9;
+scr_saveprocess(9);
+global.filechoice = filechoicebk2;
+```
+
+The Chapter 2, Chapter 3, and Chapter 4 `scr_save()` scripts use the same sequence.
+
+Chapter 1 `scr_tempsave()`:
+
+```gml
+Filechoicebk2 = global.filechoice;
+global.filechoice = 9;
+scr_saveprocess(global.filechoice);
+global.filechoice = filechoicebk2;
+```
+
+Chapter 1 `scr_tempload()`:
+
+```gml
+Filechoicebk3 = global.filechoice;
+global.filechoice = 9;
+scr_load();
+global.filechoice = filechoicebk3;
+```
+
+The same helper pair exists in:
+
+- `CHAPTER_1/scripts/scr_tempsave.gml`
+- `CHAPTER_1/scripts/scr_tempload.gml`
+- `CHAPTER_2/scripts/scr_tempsave.gml`
+- `CHAPTER_2/scripts/scr_tempload.gml`
+- `CHAPTER_3/scripts/scr_tempsave.gml`
+- `CHAPTER_3/scripts/scr_tempload.gml`
+- `CHAPTER_4/scripts/scr_tempsave.gml`
+- `CHAPTER_4/scripts/scr_tempload.gml`
+
+Each numbered chapter also refreshes slot `9` after a successful load:
+
+- Chapter 1 `scr_load.gml` ends with `scr_tempsave();`
+- Chapter 2 `scr_load.gml` ends with `scr_tempsave();`
+- Chapter 3 `scr_load.gml` ends with `scr_tempsave();`
+- Chapter 4 `scr_load.gml` ends with `scr_tempsave();`
+
+This makes slot `9` a rolling post-load / post-save recovery image, not a normal save-select slot.
+
+### Slot `9` load semantics by chapter
+
+Slot `9` also affects room-fixup behavior during `scr_load()`.
+
+- Chapter 1: `scr_load.gml` wraps room validation in `if (global.filechoice != 9)`
+- Chapter 2: same `if (global.filechoice != 9)` guard
+- Chapter 3: no equivalent `filechoice != 9` guard in the final room-resolution block
+- Chapter 4: same `if (global.filechoice != 9)` guard as Chapters 1 and 2
+
+Representative Chapter 1 / 2 / 4 pattern:
+
+```gml
+if (global.filechoice != 9)
+{
+    var valid_room_index = scr_get_valid_room(global.chapter, global.currentroom);
+    global.currentroom = scr_get_id_by_room_index(valid_room_index);
+    ...
+}
+```
+
+In Chapters 1, 2, and 4, slot `9` also bypasses the normal room-repair path used for primary save slots.
 
 ---
 
@@ -105,7 +277,7 @@ Then spell loadout for `j = 0 .. 11`:
 
 1. `global.spell[i][j]`
 
-So each character block is:
+Each character block is:
 
 - 10 base fields
 - 4 × 10 modifier fields
@@ -174,7 +346,7 @@ Written last:
 2. `global.currentroom`
 3. `global.time`
 
-That is the actual Chapter 4 PC field order.
+Chapter 4 PC field order:
 
 ---
 
@@ -235,7 +407,7 @@ The logical order stays the same.
 After loading the payload, Chapter 4 restores audio:
 
 ```gml
-audio_group_set_gain(1, global.flag[15], 0);
+Audio_group_set_gain(1, global.flag[15], 0);
 audio_set_master_gain(0, global.flag[17]);
 ```
 
@@ -267,7 +439,7 @@ if (scr_completed_chapter_any_slot(4) && global.plot >= 243)
 }
 ```
 
-So room restoration is not just “read saved room id and go there.”
+Room restoration involves remapping saved room ids through `scr_room_index`, not a direct `room_goto`.
 
 ---
 
@@ -290,7 +462,7 @@ for (var i = 0; i < array_length(adjusted_list); i += 1)
 }
 ```
 
-So sparse or sentinel item ids in `global.item[]` can be stripped during load.
+Sparse or sentinel item ids in `global.item[]` can be stripped during load.
 
 ---
 

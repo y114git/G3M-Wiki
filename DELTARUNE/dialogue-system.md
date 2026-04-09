@@ -16,7 +16,7 @@ The most important helper scripts are:
 - `scripts/scr_textsound/scr_textsound.gml`
 - Chapter 2+ message/cutscene wrappers such as `c_msgset`, `c_msgsetloc`, `c_msgnext`, `c_msgstay`
 
-This page is written from the shipped runtime opened through UndertaleModTool.
+This page documents the runtime as seen through UndertaleModTool.
 
 For GameMaker alarms and scope rules, see:
 
@@ -86,7 +86,7 @@ Its arguments are:
 | `arg2` | portrait index assigned to `global.fc` |
 | `arg3` | writer style override assigned to `global.typer` |
 
-This helper is important because it shows the standard DELTARUNE message bootstrap order:
+This shows the standard DELTARUNE message bootstrap order:
 
 1. choose portrait
 2. choose scene id
@@ -101,7 +101,7 @@ This helper is important because it shows the standard DELTARUNE message bootstr
 The writer expects `global.msg[]` and `global.typer` to already be prepared. Chapter 4 Create code begins:
 
 ```gml
-skipme = 0;
+Skipme = 0;
 forcebutton1 = 0;
 textsound = snd_text;
 charline = 33;
@@ -127,7 +127,7 @@ if (global.flag[6] == 1)
 and later continues with:
 
 ```gml
-f = 1;
+F = 1;
 if (global.darkzone == 1)
 {
     f = 2;
@@ -153,7 +153,7 @@ msgno = 0;
 and finally:
 
 ```gml
-mystring = global.msg[0];
+Mystring = global.msg[0];
 for (j = 0; j < 100; j += 1)
 {
     nstring[j] = global.msg[j];
@@ -170,7 +170,7 @@ else
 }
 ```
 
-So the writer performs three jobs during Create:
+The writer performs three jobs during Create:
 
 1. initializes default rendering/timing state
 2. applies a style profile through `scr_texttype()`
@@ -289,13 +289,13 @@ The `^` timing ladder in Chapter 4 is explicit:
 - `^8` adds 90 frames
 - `^9` adds 150 frames
 
-So `^` is not only a generic “pause here” marker. It is a tiny embedded timing language.
+`^` is an embedded timing language, not a simple pause marker.
 
 ---
 
 ## Draw Event Parsing Model
 
-`obj_writer/Draw_0.gml` is not only a renderer. It is also a major parser for inline control sequences. The Draw event:
+`obj_writer/Draw_0.gml` is both renderer and parser for inline control sequences. The Draw event:
 
 1. reads current input state (`button1`, `button2`, debug automash)
 2. applies skip/force flags
@@ -345,13 +345,13 @@ if (nextchar == "E")
 }
 ```
 
-changes `global.fe`, the current portrait expression. It supports:
+Changes `global.fe`, the current portrait expression. It supports:
 
 - digits `0..9`
 - uppercase letters `A..Z`
 - lowercase letters `a..z`
 
-so expression ids are not limited to single decimal digits.
+Expression ids are not limited to single decimal digits.
 
 ### `\F?` — face character
 
@@ -392,7 +392,7 @@ else
 }
 ```
 
-So portrait tags do not only change the face sprite. They also reflow the text box.
+Portrait tags change the face sprite and also reflow the text box.
 
 ### `\f?` — small-face spawn
 
@@ -410,7 +410,7 @@ When `nextchar == "f"` and no face has yet been inserted, the writer reads a num
 - `global.smstring[]`
 - `global.smcolor[]`
 
-This is a huge detail for modders because it shows that inline mini-portraits are driven by a preconfigured face-template table, not only by one-off room code.
+Inline mini-portraits are driven by a preconfigured face-template table, not one-off room code.
 
 ### `\*?` — button icon embed
 
@@ -421,11 +421,11 @@ var _sprite = scr_getbuttonsprite(nextchar2, true);
 draw_sprite_ext(_sprite, 0, wx + x_offset, wy + 2 + y_offset, 2, 2, 0, c_white, 1);
 ```
 
-So inline controller prompts are real writer tags, not separate HUD widgets.
+Inline controller prompts are real writer tags, not separate HUD widgets.
 
 ### `\T?` — change typer mid-line
 
-This is one of the most powerful inline commands. It changes `global.typer` and immediately calls `scr_texttype()`.
+This command changes `global.typer` mid-line and immediately calls `scr_texttype()`.
 
 Representative Chapter 4 branches include:
 
@@ -464,7 +464,7 @@ The writer directly toggles:
 - `\s0` -> `skippable = 0`
 - `\s1` -> `skippable = 1`
 
-So skippability can change mid-line.
+Skippability can change mid-line.
 
 ### `\c?` — color change
 
@@ -499,7 +499,7 @@ Supported values include:
 - `\C1` -> `obj_choicer_old`
 - `\C2`, `\C3`, `\C4` -> `obj_choicer_neo` with `choicetotal = real(nextchar2) - 1`
 
-So the text string itself can request a choice box.
+The text string itself can request a choice box.
 
 ### `\M?` — set `global.flag[20]`
 
@@ -517,14 +517,14 @@ This is a rare example of a text string directly mutating global story/menu stat
 snd_play(global.writersnd[i]);
 ```
 
-when `nextchar == "S"`. So `\S0` through `\S9` can trigger one of the preloaded writer sound slots. The code only allows it once per relevant window because of `sound_played`.
+When `nextchar == "S"`. So `\S0` through `\S9` can trigger one of the preloaded writer sound slots. The code only allows it once per relevant window because of `sound_played`.
 
 ### `\I?` — draw inline sprite
 
 The `\I` tag draws a sprite from `global.writerimg[i]` at the current writer position:
 
 ```gml
-draw_sprite(global.writerimg[i], 0, wx, wy + 4);
+Draw_sprite(global.writerimg[i], 0, wx, wy + 4);
 ```
 
 This is different from funnytext. It is a static inline image insert.
@@ -538,7 +538,7 @@ The lowercase `\m` tag:
 - draws the image near the writing origin rather than at the current glyph position
 - animates the frame through `miniface_pos`
 
-So this is the mini-portrait / mini-image layer used inside the text box itself.
+This is the mini-portrait / mini-image layer used inside the text box itself.
 
 ### `\O?` — spawn writer-owned object
 
@@ -581,7 +581,7 @@ global.writerobjy[i] = 0;
 3. Scripts such as `scr_funnytext_init(slot, x, y, sprite, settinga, settingb)` rewrite one slot's configuration.
 4. A dialogue string later uses `\O<digit>` to spawn the configured object for that slot.
 
-So if a modder wants funnytext inside dialogue, the runtime pattern is not “hardcode funnytext into the writer.” The pattern is:
+if a modder wants funnytext inside dialogue, the runtime pattern is not “hardcode funnytext into the writer.” The pattern is:
 
 - configure a writer-object slot first
 - then reference that slot from the string with `\O0`..`\O9`
@@ -615,7 +615,7 @@ These are not decorative. They change the writer state machine.
 This script is the per-character sound layer. Chapter 4 begins:
 
 ```gml
-playtextsound = 1;
+Playtextsound = 1;
 if (button2_h() == 1)
 {
     var dontplaysound = true;
@@ -637,7 +637,7 @@ if (skippable == 0)
 }
 ```
 
-So fast-forward usually suppresses voice bleeps, but:
+Fast-forward usually suppresses voice bleeps, but:
 
 - if `runcheck` says the line should still behave as paced text, sound may continue
 - if `skippable == 0`, sound is forced on even while the player is trying to advance quickly
@@ -658,7 +658,7 @@ That is why DELTARUNE voices feel speech-like instead of chirping on every glyph
 
 ## Textsound Special Cases
 
-Chapter 4 adds several speaker-specific sound branches in `scr_textsound()` instead of only calling `snd_play(textsound)`.
+`scr_textsound()` grows with each chapter (Ch1: 89 lines, Ch2: 113, Ch3: 139, Ch4: 207). Later chapters add more speaker-specific sound branches instead of only calling `snd_play(textsound)`.
 
 Examples from Chapter 4:
 
@@ -680,7 +680,7 @@ with (obj_face_parent)
 miniface_pos++;
 ```
 
-So writer sound and face animation remain tightly coupled.
+Writer sound and face animation remain tightly coupled.
 
 ---
 
@@ -689,7 +689,7 @@ So writer sound and face animation remain tightly coupled.
 This helper is the low-level style applier used by `scr_texttype()`. Its classic role is still the same in later chapters:
 
 ```gml
-myfont = arg0;
+Myfont = arg0;
 mycolor = arg1;
 writingx = arg2;
 writingy = arg3;
@@ -749,7 +749,7 @@ Chapter 4 extends the classic `global.typer` ids `1..55`, `60`, `666`, `667`, `9
 - `88` black-text jack low voice
 - `100` 8-bit font style
 
-So by Chapter 4, `global.typer` is not just a small speaker table. It is a large style-routing language for many UI and story contexts.
+By Chapter 4, `global.typer` covers many UI and story contexts beyond dialogue:
 
 ---
 
@@ -816,10 +816,10 @@ else if (myfont == 11)
 and at the end:
 
 ```gml
-vspace += extra_ja_vspace;
+Vspace += extra_ja_vspace;
 ```
 
-So Japanese handling is not a generic “different strings only” layer. It directly changes writer geometry and sometimes `textscale`.
+Japanese handling is not a generic “different strings only” layer. It directly changes writer geometry and sometimes `textscale`.
 
 ---
 
@@ -828,7 +828,7 @@ So Japanese handling is not a generic “different strings only” layer. It dir
 Chapter 4 `obj_dialoguer/Create_0.gml` shows the high-level controller state:
 
 ```gml
-cur_jewel = 0;
+Cur_jewel = 0;
 active = 0;
 alarm[0] = 1;
 skippable = 1;
@@ -886,7 +886,7 @@ By Chapter 4 this object is far more configurable than a simple “spawn box and
 
 ## Input, Fast-Forward, and Automash
 
-The writer Draw event also implements input orchestration directly.
+The writer Draw event also handles input processing directly.
 
 Representative logic:
 
@@ -950,7 +950,7 @@ The text runtime separates:
 - string lookup/localization
 - actual timed rendering
 
-So when a line is wrong, the bug may be in `scr_text` or in a cutscene helper, not in the writer.
+When a line is wrong, the bug may be in `scr_text` or in a cutscene helper, not in the writer.
 
 ---
 
@@ -968,7 +968,7 @@ The common default is:
 
 - `global.battletyper = 4`
 
-which routes into the large-font battle-style profile in `scr_texttype()`.
+Which routes into the large-font battle-style profile in `scr_texttype()`.
 
 Battle dialogue, warning text, ACT results, and enemy reactions share the same writer stack.
 
@@ -996,7 +996,7 @@ with (obj_face_parent)
 }
 ```
 
-So mouth animation is driven by character-reveal timing, not by a separate lip-sync system.
+Mouth animation is driven by character-reveal timing, not by a separate lip-sync system.
 
 The writer also tracks face-related local fields such as:
 
@@ -1045,7 +1045,7 @@ These commands bridge:
 - localized string resolution
 - normal `obj_dialoguer` / `obj_writer` behavior
 
-So later DELTARUNE chapters effectively layer a small scene language on top of the base text engine instead of replacing it.
+Later DELTARUNE chapters effectively layer a small scene language on top of the base text engine instead of replacing it.
 
 For the queue/controller side, see [Cutscene System](cutscene-system.md).
 
@@ -1080,13 +1080,13 @@ For the queue/controller side, see [Cutscene System](cutscene-system.md).
 - adds more room-/speaker-specific sound routing inside `scr_textsound()`
 - gives `obj_dialoguer` more box, stay, and skip-control fields
 
-Chapter 4 is therefore not just “the same writer with more text.” It is the most constrained and controllable shipped version of the runtime.
+Chapter 4 adds more typer ids, anti-mash controls, and message-control fields on top of the Chapter 2 foundation.
 
 ---
 
 ## Recreating DELTARUNE Dialogue Faithfully
 
-To reproduce the real runtime behavior, you need all of these layers together:
+To reproduce DELTARUNE's dialogue behavior, all of these layers are needed:
 
 1. message preparation through `global.msg[]`
 2. optional `scr_text(msc)` scene routing
@@ -1104,5 +1104,6 @@ If you only rebuild a typewriter and a text box, you miss a large part of how re
 ## Relationship To Other Pages
 
 - [Cutscene System](cutscene-system.md) explains the queue language that frequently drives later dialogue.
+- [Speaker System](speaker-system.md) explains how speaker names map to typer ids and face characters.
 - [Funnytext System](funnytext-system.md) explains the animated text-object layer used in showier scenes.
 - [Battle System](battle-system.md) explains how battle text feeds into the same writer stack.

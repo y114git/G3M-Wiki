@@ -1,4 +1,4 @@
-# Localization System
+﻿# Localization System
 
 DELTARUNE's shipped runtime supports English and Japanese, but it does not implement them the same way in every target.
 
@@ -44,7 +44,7 @@ Ship:
 
 - `datafiles/lang/lang_ja.json`
 
-The practical meaning is:
+In practice:
 
 - English is largely embedded directly in code in later chapters
 - Japanese is retrieved through the localization map
@@ -80,7 +80,7 @@ The later form:
 - tracks missing ids in `global.lang_missing_map` logic
 - Chapters 3 and 4 also print a debug message with the missing id
 
-So the old statement that all chapters behave identically here is incorrect.
+Chapters 2+ add `"--missing-string--"` fallback and `global.lang_missing_map` tracking, which Chapter 1 does not have.
 
 ---
 
@@ -125,7 +125,7 @@ global.charname[1] = scr_84_get_lang_string("...");
 Typical code pattern:
 
 ```gml
-weaponnametemp = stringsetloc("Wood Blade", "scr_weaponinfo_...");
+Weaponnametemp = stringsetloc("Wood Blade", "scr_weaponinfo_...");
 ```
 
 This is a real structural shift:
@@ -170,7 +170,7 @@ Common priority:
 
 - `[LANG] LANG`
 
-inside `true_config.ini`.
+Inside `true_config.ini`.
 
 ---
 
@@ -189,7 +189,7 @@ That makes `CHAPTER_SELECT` a separate localization model from the numbered chap
 
 ---
 
-## Why This Matters For Modding
+## Modding Notes
 
 If you are editing numbered chapters in UndertaleModTool:
 

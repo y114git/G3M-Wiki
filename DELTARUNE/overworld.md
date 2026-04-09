@@ -1,4 +1,4 @@
-# Overworld Movement
+﻿# Overworld Movement
 
 The main overworld controller in the numbered chapters is `obj_mainchara`. It owns:
 
@@ -9,7 +9,7 @@ The main overworld controller in the numbered chapters is `obj_mainchara`. It ow
 - overworld battle collision support
 - later chapter movement extensions such as sword state or climbing
 
-This page focuses on the shipped runtime implementation visible in the extracted chapter payloads.
+This page documents `obj_mainchara` as seen through UndertaleModTool.
 
 ---
 
@@ -71,7 +71,7 @@ It also upgrades room-entry logic:
 - checks marker existence with `i_ex(...)`
 - falls back to `obj_markerAny` or room center if a specific marker is missing
 
-This is a substantial robustness improvement over Chapter 1.
+Chapter 2 adds `i_ex()` existence checks and `obj_markerAny` fallback for missing markers.
 
 ---
 
@@ -159,7 +159,7 @@ and the dark world usually enables:
 - doubled sprite scale
 - dark sprite set
 
-So “dark world feel” is partly a movement-state and sprite-state change in `obj_mainchara`, not only a room-art difference.
+Dark World mode changes movement speed and sprite sets inside `obj_mainchara`, not only room art.
 
 ---
 
@@ -213,7 +213,7 @@ Related object families grow across chapters:
 - Chapter 2: adds more overworld enemy / bullet-area support
 - Chapter 4: adds darkness, knight-sword, lantern-flame, and more specialized overworld danger objects
 
-So overworld combat is not a side system. It is attached to the main player controller from the start and expands significantly later.
+Overworld combat is attached to the main player controller from Chapter 1 onward and grows with each chapter.
 
 ---
 
@@ -236,47 +236,24 @@ Common state includes:
 
 ---
 
-## Why Chapters 3 And 4 Matter
+## Modding Reference
 
-If you only study Chapter 1 or Chapter 2, you miss large runtime shifts:
-
-- Chapter 3 adds climbing and more special movement state
-- Chapter 3 has more cutscene-friendly player control flags
-- Chapter 4 adds church-specific sprite/state handling and more specialized overworld hazard families
-
-Later chapters extend the same controller with additional state families instead of replacing it.
+| Goal | Inspect |
+|---|---|
+| Change base player speed | `bwspeed` in `obj_mainchara` Create |
+| Change room-entry placement | `global.entrance` switch in `obj_mainchara`, marker objects |
+| Change overworld battle | `obj_overworldheart`, `obj_overworldbulletparent` |
+| Change follower behavior | `scr_makecaterpillar`, caterpillar alignment offsets |
+| Add sword/climbing state | Extend `swordmode`/`climbmode` branches in `obj_mainchara` Step |
+| Change menu opening | `global.menuno` and interaction buffer state |
+| Change NPC interaction | `scr_interact`, NPC objects in room |
 
 ---
 
-## What To Patch For Mods
+## Relationship To Other Pages
 
-### To change base player movement
-
-Inspect:
-
-- `obj_mainchara`
-
-### To change room-entry placement
-
-Inspect:
-
-- `obj_mainchara`
-- marker objects in the relevant room
-- door objects that set `global.entrance`
-
-### To change overworld battle behavior
-
-Inspect:
-
-- `obj_mainchara`
-- `obj_overworldheart`
-- `obj_overworldbulletparent`
-- chapter-specific overworld hazard objects
-
-### To change chapter-specific traversal mechanics
-
-Inspect:
-
-- Chapter 2 sword-related state in `obj_mainchara`
-- Chapter 3 climbing-related state in `obj_mainchara`
-- Chapter 4 church/darkness presentation branches in `obj_mainchara`
+- [Party Management](party-management.md) explains the caterpillar follower system
+- [Cutscene System](cutscene-system.md) explains how cutscenes drive overworld actors
+- [Board System](board-system.md) explains the grid-based overworld replacement in Ch3
+- [Battle System](battle-system.md) explains how overworld encounters transition to battle
+- [Global Variables](global-variables.md) explains `global.entrance`, `global.darkzone`, `global.interact`

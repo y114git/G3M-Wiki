@@ -1,4 +1,4 @@
-# DELTARUNE — Runtime Code Reference
+﻿# DELTARUNE — Runtime Code Reference
 
 This section documents how DELTARUNE is structured in its shipped form, as a player or modder actually encounters it in:
 
@@ -32,28 +32,26 @@ For players and modders, the important mental model is:
 3. It transfers control to the chapter-specific runtime.
 4. Each chapter then runs its own codebase, rooms, battle logic, save/load logic, and localization helpers.
 
-On Windows, chapter switching uses `game_change()` and `-game data.win ...` style launch arguments. Launcher logic, save metadata, and chapter runtime logic therefore live in separate payloads.
+On Windows, chapter switching uses `game_change()` and `-game data.win ...` style launch arguments. Launcher logic, save metadata, and chapter runtime logic live in separate payloads.
 
 ---
 
 ## What Changes Between Builds
 
-The current wiki is not just about Chapter 1 and Chapter 2.
-
-The runtime data shows that Chapters 3 and 4 are not small extensions of Chapter 2. They expand the shipped codebase with major new systems:
+Chapters 3 and 4 add large new systems on top of the Chapter 2 codebase:
 
 - Chapter 3 adds the board-game overworld layer (`scr_board_*`, many `obj_board_*` objects)
 - Chapter 3 adds a full rhythm-game stack (`scr_rhythmgame_*`, `obj_rhythmgame*`)
-- Chapter 3 expands Tenna-, TV-, and game-show-specific orchestration heavily
-- Chapter 4 keeps the rhythm stack and shifts major content into church / prophecy / Gerson / bell / piano / climb systems
-- Chapter 4 adds further spell, item, room, and event-specific branches rather than reusing Chapter 2 unchanged
-- `CHAPTER_SELECT` remains a lightweight launcher and metadata UI, not a gameplay chapter
+- Chapter 3 adds Tenna, TV-show, and game-show scripting (`c_tenna_*`, dedicated controller objects)
+- Chapter 4 keeps the rhythm stack and adds church / prophecy / Gerson / bell / piano / climb content
+- Chapter 4 adds further spell, item, room, and event-specific branches
+- `CHAPTER_SELECT` is a launcher and metadata UI, not a gameplay chapter
 
 ---
 
 ## Localization Reality
 
-The shipped runtime does not use one single localization strategy everywhere.
+DELTARUNE uses different localization strategies depending on the target:
 
 | Target | Runtime behavior |
 |---|---|
@@ -95,19 +93,41 @@ Whenever possible, pages should describe:
 
 ## Pages
 
-- [Global Variables](global-variables.md)
+### Core Systems
+
 - [Battle System](battle-system.md)
 - [Damage System](damage-system.md)
+- [Tension / TP System](tension-system.md)
+- [Heart / SOUL Mechanics](heart-mechanics.md)
 - [Spells & Abilities](spells-abilities.md)
-- [Items & Equipment](items-equipment.md)
-- [Save & Load System](save-load-system.md)
-- [Dialogue System](dialogue-system.md)
 - [Cutscene System](cutscene-system.md)
+- [Dialogue System](dialogue-system.md)
+- [Speaker System](speaker-system.md)
 - [Funnytext System](funnytext-system.md)
-- [Overworld Movement](overworld.md)
+
+### Character & Party
+
+- [Party Management](party-management.md)
+- [Level-Up & Stat Growth](level-up-system.md)
 - [Monster Runtime](monster-runtime.md)
+- [Recruit System](recruit-system.md)
+
+### World & Progression
+
+- [Overworld Movement](overworld.md)
 - [Board System](board-system.md)
 - [Rhythm System](rhythm-system.md)
+- [Save & Load System](save-load-system.md)
+- [Game Over System](game-over-system.md)
+
+### Items & Equipment
+
+- [Items & Equipment](items-equipment.md)
+- [Fusion System](fusion-system.md)
+
+### Runtime & Architecture
+
 - [Chapter Differences](chapter-differences.md)
 - [CHAPTER_SELECT Launcher](chapter-select.md)
+- [Global Variables](global-variables.md)
 - [Localization System](localization.md)

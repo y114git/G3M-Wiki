@@ -1,160 +1,287 @@
-# Damage System
+﻿# Damage System
 
-The damage pipeline has one major breakpoint:
-
-- Chapter 1 uses the older direct damage model
-- Chapters 2, 3, and 4 use the newer layered model
-
-Chapters 3 and 4 keep the Chapter 2 damage framework: `scr_damage_calculation`, `scr_element_damage_reduction`, and later armor-element fields remain in use.
+The damage pipeline differs between Chapter 1 and Chapters 2+. Chapter 1 uses a flat defense subtraction. Chapters 2, 3, and 4 use a scaled per-point model with elemental reduction.
 
 ---
 
-## Core Runtime Scripts
+## Core Scripts
 
-Numbered chapters include:
-
-- `scr_damage`
-- `scr_damage_enemy`
-
-Later chapters also rely on:
-
-- `scr_damage_calculation`
-- `scr_element_damage_reduction`
+| Script | Purpose |
+|---|---|
+| `scr_damage` | Incoming damage to party members (from enemy bullets) |
+| `scr_damage_enemy` | Outgoing damage to enemies (from player attacks/spells) |
+| `scr_damage_calculation` | Defense scaling helper (Ch2+) |
+| `scr_element_damage_reduction` | Elemental resistance multiplier (Ch2+) |
+| `scr_damage_all` | Area damage to all party members |
+| `scr_damage_all_overworld` | Overworld-mode area damage |
+| `scr_damage_cache` | Caches damage state before processing |
+| `scr_dead` | Individual party member death handler |
 
 ---
 
-## Damage To Party Members
+## `scr_damage` — Full Pipeline
 
-### Chapter 1
+The party-damage script runs when `global.inv < 0` (invulnerability expired). The full sequence:
 
-Chapter 1 uses the older direct `scr_damage` path:
-
-- invincibility gate
-- target resolution
-- flat DEF subtraction
-- DEFEND reduction
-- HP subtraction
-- death / game over checks
-- damage-number and hurt-state side effects
-
-The characteristic formula is the familiar flat defense reduction:
+### 1. Element Resolution
 
 ```gml
-tdamage = ceil(tdamage - (global.battledf[target] * 3));
+var __element = 0;
+if (variable_instance_exists(id, "element") && is_real(element))
+{
+    __element = element;
+}
 ```
 
-This is the Chapter 1-era baseline.
+Enemy bullets can carry an `element` instance variable. If present, it feeds into elemental reduction later.
 
-### Chapters 2, 3, and 4
+### 2. Encounter-Specific Modifiers
 
-Later runtimes move to the newer layered flow:
+Chapter 4 applies pre-defense modifiers depending on the encounter:
 
-1. raw incoming damage is prepared
-2. `scr_damage_calculation(...)` applies defense scaling
-3. `scr_element_damage_reduction(...)` applies elemental reduction
-4. DEFEND reduction is applied
-5. HP is reduced
-6. hurt / death / game-over side effects are triggered
+| Condition | Effect |
+|---|---|
+| Encounter 157 solo Kris (no Susie/Ralsei heroes) | `damage *= 0.7` |
+| Jackenstein enemy with `scaredycat == true` | `damage *= 1.5` |
+| Titan enemy with `forcehitralsei == true` | `damage *= 0.5`, forced target Ralsei |
+| Titan encounter with armor id 23 equipped | `damage *= 0.5` |
 
-The effective split is Chapter 1 vs Chapter 2+, not Chapter 1 vs Chapter 2 only.
+### 3. Target Resolution
 
----
+The `target` variable determines who takes the hit:
 
-## `scr_damage_calculation`
+| Target | Meaning |
+|---:|---|
+| `0` | Party slot 0 |
+| `1` | Party slot 1 |
+| `2` | Party slot 2 |
+| `3` | All party members |
+| `4` | Smart random — picks a target, rerolls if below 50% average HP, rerolls again for slot 0 if below 35% HP |
 
-This helper exists in Chapters 2, 3, and 4.
+If the target is already at 0 HP, `scr_randomtarget_old()` picks a different living member.
 
-It replaces the older simple `DEF * 3` subtraction with a per-point scaling model that depends on current incoming damage relative to the target's max HP.
+### 4. Defense Calculation
 
-Broadly:
+#### Chapter 1
 
-- big incoming hits lose more per DEF point
-- smaller incoming hits lose less per DEF point
-- damage is still clamped to a minimum of 1
+Flat subtraction:
 
-This makes later-chapter defense feel less linear than Chapter 1.
+```gml
+Tdamage = ceil(tdamage - (global.battledf[target] * 3));
+```
 
----
+Each point of DEF removes 3 damage.
 
-## Element Resistance
+#### Chapters 2, 3, 4
 
-`scr_element_damage_reduction` is part of the later runtime family:
+The `scr_damage_calculation` function uses HP-aware per-point scaling:
 
-- Chapter 1: not part of the later resistance model
-- Chapters 2, 3, 4: present and used
+```gml
+function scr_damage_calculation(arg0, arg1)
+{
+    var _tdamage = arg0;
+    var _tdef = global.battledf[arg1];
+    var _tmaxhp = global.maxhp[global.char[arg1]];
+    var _finaldamage = 1;
+    var _hpthresholda = _tmaxhp / 5;   // 20% of max HP
+    var _hpthresholdb = _tmaxhp / 8;   // 12.5% of max HP
+    for (var _di = 0; _di < _tdef; _di++)
+    {
+        if (_tdamage > _hpthresholda)
+            _tdamage -= 3;
+        else if (_tdamage > _hpthresholdb)
+            _tdamage -= 2;
+        else
+            _tdamage -= 1;
+    }
+    return max(_tdamage, _finaldamage);
+}
+```
 
-It works with:
+Per point of DEF, damage is reduced by:
+- **3** if remaining damage > 20% of target's max HP
+- **2** if remaining damage > 12.5% of target's max HP
+- **1** otherwise
 
-- `global.itemelement[i][q]`
-- `global.itemelementamount[i][q]`
+Result is clamped to minimum 1.
 
-This is one of the clearest mechanical differences between Chapter 1 and the later builds.
+### 5. DEFEND Action Reduction
 
----
+If the target party member chose DEFEND (`global.charaction[target] == 10`):
 
-## DEFEND
+| Target type | Formula |
+|---|---|
+| Single target (`target < 3`) | `tdamage = ceil((2 * tdamage) / 3)` — removes ~33% |
+| All-party (`target == 3`) | `tdamage = ceil((3 * tdamage) / 4)` — removes ~25% |
 
-Across the later runtime family, DEFEND still reduces incoming damage, but it is layered on top of the newer damage pipeline rather than standing alone.
+### 6. Elemental Reduction
 
-So in practical terms:
+Applied after DEFEND:
 
-- Chapter 1 DEFEND interacts with the old flat-defense model
-- Chapters 2, 3, and 4 DEFEND interacts with the newer defense-plus-element system
+```gml
+Tdamage = ceil(tdamage * scr_element_damage_reduction(__element, global.char[target]));
+```
 
----
-
-## Damage To Enemies
-
-`scr_damage_enemy(slot, damage)` remains the core enemy-damage entry point across the numbered chapters.
-
-It performs the same high-level responsibilities:
-
-- subtract HP from the targeted monster slot
-- spawn `obj_dmgwriter`
-- trigger monster hurt / shake state
-- register hit offset tracking
-- trigger dodge behavior on zero-damage hits where allowed
-- call defeat logic when HP reaches zero
-
-The entrypoint stays the same while later chapters add more enemy-specific and encounter-specific callers.
-
----
-
-## Why Chapter 3 And 4 Matter Here
-
-The old documentation problem is not that it described Chapter 1 and Chapter 2 incorrectly in spirit. The real problem is that it stopped too early.
-
-Chapter 3 and Chapter 4 still inherit the Chapter 2-era damage architecture:
-
-- defense scaling
-- elemental reduction
-- larger item / equipment influence
-- much larger enemy object set using the same broad damage entry points
-
-So for modding modern DELTARUNE builds, the correct split is:
-
-- Chapter 1
-- Chapter 2+
-
-not:
-
-- Chapter 1
-- Chapter 2 only
+Final damage is clamped to minimum 1.
 
 ---
 
-## Practical Modding Notes
+## `scr_element_damage_reduction` — Full Algorithm
 
-Incoming-damage edits in Chapter 2+ typically touch:
+```gml
+function scr_element_damage_reduction(arg0, arg1)
+{
+    var ___element = arg0;
+    var ___char = arg1;
+    var ___reduction = 1;
+    if (___element != 0)
+    {
+        for (var ___itemi = 0; ___itemi < 2; ___itemi++)
+        {
+            if (global.itemelement[___char][___itemi + 1] != 0)
+            {
+                // Direct element match
+                if (global.itemelement[___char][___itemi + 1] == ___element)
+                    ___reduction -= global.itemelementamount[___char][___itemi + 1];
 
-- `scr_damage`
-- `scr_damage_calculation`
-- `scr_element_damage_reduction`
+                // Element 9 covers elements 2 AND 8
+                if (global.itemelement[___char][___itemi + 1] == 9)
+                {
+                    if (___element == 2 || ___element == 8)
+                        ___reduction -= global.itemelementamount[___char][___itemi + 1];
+                }
 
-If you want to change outgoing player damage against monsters, inspect:
+                // Element 10 is universal — reduces ALL elemental damage
+                if (global.itemelement[___char][___itemi + 1] == 10)
+                    ___reduction -= global.itemelementamount[___char][___itemi + 1];
+            }
+        }
+    }
+    if (___reduction < 0.25)
+        ___reduction = 0.25;
+    return ___reduction;
+}
+```
 
-- `scr_damage_enemy`
-- `scr_spell`
-- attack-specific enemy / hero scripts that decide the raw damage value before it reaches `scr_damage_enemy`
+Key mechanics:
 
-If you are patching Chapter 1, do not assume those later helper scripts exist or are used the same way.
+- Only armor slots 1 and 2 (index `___itemi + 1`) are checked — the weapon slot (0) is excluded
+- Element 0 = no element (no reduction applied)
+- Element 9 = dual-coverage, resists both element 2 and element 8
+- Element 10 = universal resistance against all non-zero elements
+- Minimum multiplier is `0.25` (75% maximum damage reduction)
+- The return value multiplies the post-defense damage
+
+---
+
+## Invulnerability Timer
+
+After damage is applied:
+
+```gml
+global.inv = global.invc * 40;
+```
+
+`global.invc` defaults to `1`, giving 40 frames of invulnerability. Equipment or battle state can modify `global.invc` to change the window.
+
+Damage only processes when `global.inv < 0`. Each frame, `global.inv` is decremented by the battle system.
+
+---
+
+## Death Processing
+
+When a party member's HP drops to 0 or below:
+
+```gml
+Hpdiff = abs(global.hp[chartarget] - (global.maxhp[chartarget] / 2));
+doomtype = 4;
+global.hp[chartarget] = round(-global.maxhp[chartarget] / 2);
+scr_dead(target);
+```
+
+The downed HP is pinned to `-maxhp / 2`. Negative HP is displayed as the "downed" state.
+
+If a downed character is hit again:
+
+```gml
+global.hp[chartarget] -= round(tdamage / 4);
+```
+
+Further damage to downed members deals 25% of the incoming value.
+
+### `cantdie` Mechanic
+
+Chapter 4 introduces encounters where Kris cannot die:
+
+```gml
+if (i_ex(obj_dw_church_trueclimbadventure))
+    cantdie = true;
+if (i_ex(obj_titan_enemy) && obj_titan_enemy.phase == 8)
+    cantdie = true;
+```
+
+When `cantdie` is active, Kris's HP is clamped to minimum 1.
+
+### Game Over Trigger
+
+Game over fires when all occupied party slots have HP ≤ 0:
+
+```gml
+Gameover = 1;
+if (global.char[0] != 0 && global.hp[global.char[0]] > 0) gameover = 0;
+if (global.char[1] != 0 && global.hp[global.char[1]] > 0) gameover = 0;
+if (global.char[2] != 0 && global.hp[global.char[2]] > 0) gameover = 0;
+if (gameover == 1) scr_gameover();
+```
+
+---
+
+## `scr_damage_enemy` — Outgoing Damage
+
+This script applies processed damage to a monster slot:
+
+1. Subtracts HP from `global.monsterhp[slot]`
+2. Spawns `obj_dmgwriter` at the monster's position
+3. Triggers hurt state / shake on the monster instance
+4. Handles dodge behavior on zero-damage hits
+5. Calls defeat logic when HP ≤ 0
+
+The entry point remains the same across all chapters. Callers (spell scripts, attack scripts) determine the raw damage value.
+
+---
+
+## All-Party Damage Branch
+
+When `target == 3`, the damage loop applies individually to each occupied slot:
+
+```gml
+for (hpi = 0; hpi < 3; hpi += 1)
+{
+    chartarget = global.char[hpi];
+    if (global.hp[chartarget] >= 0)
+    {
+        tdamage = scr_damage_calculation(tdamage, hpi);
+        tdamage = ceil(tdamage * scr_element_damage_reduction(__element, chartarget));
+        if (global.charaction[hpi] == 10)
+            global.hp[chartarget] -= ceil((3 * tdamage) / 4);
+        else
+            global.hp[chartarget] -= tdamage;
+    }
+}
+```
+
+Each member is calculated independently with their own DEF, element resistance, and DEFEND state.
+
+---
+
+## Modding Reference
+
+| Goal | Inspect |
+|---|---|
+| Change defense scaling | `scr_damage_calculation` |
+| Change element resistance caps/rules | `scr_element_damage_reduction` |
+| Change invulnerability window | `global.invc` initialization in `scr_gamestart` |
+| Change DEFEND reduction | `scr_damage` — charaction == 10 branches |
+| Change encounter-specific modifiers | `scr_damage` — top-level Chapter 4 branches |
+| Change death/downed behavior | `scr_damage` — HP ≤ 0 branches, `scr_dead` |
+| Change enemy damage intake | `scr_damage_enemy` |

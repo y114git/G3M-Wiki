@@ -1,25 +1,42 @@
-# Table of Contents
+# Summary
 
-* [Overview](README.md)
+- [Introduction](README.md)
 
 ## Core Systems
 
-* [Global Variables](global-variables.md)
-* [Battle System](battle-system.md)
-* [Damage System](damage-system.md)
-* [Spells & Abilities](spells-abilities.md)
-* [Items & Equipment](items-equipment.md)
-* [Save & Load System](save-load-system.md)
-* [Dialogue System](dialogue-system.md)
-* [Cutscene System](cutscene-system.md)
-* [Funnytext System](funnytext-system.md)
-* [Overworld Movement](overworld.md)
-* [Monster Runtime](monster-runtime.md)
-* [Board System](board-system.md)
-* [Rhythm System](rhythm-system.md)
+- [Battle System](battle-system.md)
+- [Damage System](damage-system.md)
+- [Tension / TP System](tension-system.md)
+- [Heart / SOUL Mechanics](heart-mechanics.md)
+- [Spells & Abilities](spells-abilities.md)
+- [Cutscene System](cutscene-system.md)
+- [Dialogue System](dialogue-system.md)
+- [Speaker System](speaker-system.md)
+- [Funnytext System](funnytext-system.md)
 
-## Reference
+## Character & Party
 
-* [Chapter Differences](chapter-differences.md)
-* [CHAPTER_SELECT Launcher](chapter-select.md)
-* [Localization System](localization.md)
+- [Party Management](party-management.md)
+- [Level-Up & Stat Growth](level-up-system.md)
+- [Monster Runtime](monster-runtime.md)
+- [Recruit System](recruit-system.md)
+
+## World & Progression
+
+- [Overworld Movement](overworld.md)
+- [Board System](board-system.md)
+- [Rhythm System](rhythm-system.md)
+- [Save & Load System](save-load-system.md)
+- [Game Over System](game-over-system.md)
+
+## Items & Equipment
+
+- [Items & Equipment](items-equipment.md)
+- [Fusion System](fusion-system.md)
+
+## Runtime & Architecture
+
+- [Chapter Differences](chapter-differences.md)
+- [Chapter Select](chapter-select.md)
+- [Global Variables](global-variables.md)
+- [Localization](localization.md)

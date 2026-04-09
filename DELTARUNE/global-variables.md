@@ -2,7 +2,7 @@
 
 DELTARUNE stores most long-lived runtime state in `global.*` variables.
 
-This page is written from the shipped runtime data, not from editor-side project assumptions.
+This page documents the `global.` namespace as seen through UndertaleModTool.
 
 The main initialization root is:
 
@@ -36,7 +36,7 @@ That includes:
 - chapter progression
 - overworld transitions
 - item/equipment modifiers
-- cutscene orchestration
+- cutscene scripting
 
 A subsystem can usually be traced by locating:
 
@@ -240,7 +240,7 @@ global.char[1] = 0;
 global.char[2] = 0;
 ```
 
-So the game starts with slot 0 occupied by Kris (`1`) and the other two active slots empty.
+The game starts with slot 0 occupied by Kris (`1`) and the other two active slots empty.
 
 Character ids used in battle/party logic:
 
@@ -299,7 +299,7 @@ Important note: despite the name, in battle Create an occupied slot gets:
 global.charcantarget[i] = 1;
 ```
 
-so this array should be understood from actual usage context, not only from the variable name.
+This array should be understood from usage context, not from the variable name alone.
 
 ### `global.chardead[]`
 
@@ -322,7 +322,7 @@ Do not confuse this with:
 - `global.inv`
 - `global.invc`
 
-which are a different invulnerability timing system.
+Which are a different invulnerability timing system.
 
 ### `global.charaction[]`
 
@@ -519,7 +519,7 @@ All chapters have:
 - `global.armor` expands to 48 slots
 - `global.pocketitem[0..71]` is added
 
-This is not a cosmetic change; it changes save format and item management logic.
+This changes save format and item management logic.
 
 ### Gold / level progression
 
@@ -930,7 +930,7 @@ Chapter 2+ seeds:
 - `global.flag[224]`
 - `global.flag[225]`
 
-using `choose(...)` and `random(...)`.
+Using `choose(...)` and `random(...)`.
 
 ### Chapter 3+ startup progression flags
 
@@ -972,6 +972,56 @@ This is exactly why a serious DELTARUNE wiki cannot treat `global.flag` as “ju
 
 ---
 
+## Runtime State Globals
+
+### `global.tempflag[0..200]`
+
+Per-session state array. Not persisted in save files. Reset on game restart.
+
+Common uses:
+
+| Index | Purpose |
+|---:|---|
+| 5–7 | King boss phase unlocks (Courage, RedBuster, DualHeal) |
+| 9 | Room-restart entry signal (game-over mode 2) |
+| 89 | Jackenstein death counter (≥3 enables 1.5x TP bonus) |
+| 100 | Jackenstein Unleash phase counter |
+
+### `global.encounterno`
+
+Current encounter id. Set by `scr_encountersetup`. Used by:
+- Monster setup conditional logic (encounter-specific ACT menus)
+- Damage modifiers (encounter 157 = solo Kris 0.7x damage)
+- Battle controller for encounter-specific behavior
+
+### `global.fighting`
+
+Battle state flag:
+- `0` = not in battle
+- `1` = in battle
+
+Used by `scr_speaker` to select battle-specific typer ids.
+
+### `global.darkzone`
+
+World state flag:
+- `0` = Light World
+- `1` = Dark World
+
+Used by `scr_speaker` for typer selection, `scr_setparty` for follower alignment offsets, and sprite scale adjustments.
+
+### `global.menuno`
+
+Current menu page/state id. Used by the overworld menu system for page tracking.
+
+### `global.inv` / `global.invc`
+
+Invulnerability timer and multiplier:
+- `global.inv` decrements each frame; damage only processes when `< 0`
+- `global.invc` defaults to `1`, giving `invc * 40` frames of invulnerability after a hit
+
+---
+
 ## Audio Globals
 
 Common audio globals:
@@ -994,10 +1044,10 @@ Settings flags:
 
 - `global.flag[16]` and `global.flag[17]`
 
-are then used to restore audio volume, including:
+Are then used to restore audio volume, including:
 
 ```gml
-audio_set_master_gain(0, global.flag[17]);
+Audio_set_master_gain(0, global.flag[17]);
 ```
 
 ---
@@ -1014,7 +1064,7 @@ global.cinstance[1] = ...
 global.cinstance[2] = ...
 ```
 
-These act as reusable cutscene/runtime instance handles and are part of the later orchestration stack.
+These act as reusable cutscene/runtime instance handles and are part of the cutscene variable stack.
 
 ---
 
@@ -1026,7 +1076,7 @@ Later chapters include:
 
 and it is currently empty in the extracted runtime.
 
-That is important because it is an obvious extension point: the runtime has a named place for extra global-save handling even if the shipped build leaves it blank.
+This is an extension point: the runtime has a named place for extra global-save handling even if the current build leaves it blank.
 
 ---
 
