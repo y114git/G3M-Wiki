@@ -32,7 +32,7 @@ For players and modders, the important mental model is:
 3. It transfers control to the chapter-specific runtime.
 4. Each chapter then runs its own codebase, rooms, battle logic, save/load logic, and localization helpers.
 
-On Windows, chapter switching is performed with `game_change()` and `-game data.win ...` style launch arguments. From a modding perspective, this is why launcher behavior, save metadata, and per-chapter game logic must be studied separately.
+On Windows, chapter switching uses `game_change()` and `-game data.win ...` style launch arguments. Launcher logic, save metadata, and chapter runtime logic therefore live in separate payloads.
 
 ---
 
@@ -75,7 +75,7 @@ Save handling is chapter-specific at runtime.
 - Chapter 4 writes `filech4_<slot>`
 - shared lightweight metadata and launcher-visible settings are coordinated through INI/config files such as `dr.ini` and `true_config.ini`
 
-This means a modder patching a chapter payload through UndertaleModTool must treat save logic as part of that chapter's runtime, not as a single universal script shared by every payload.
+Save logic belongs to each numbered chapter payload. There is no single cross-chapter save script shared by all targets.
 
 ---
 

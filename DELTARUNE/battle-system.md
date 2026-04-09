@@ -265,7 +265,7 @@ Special values:
 - negative spell ids are used for generated ACT-like commands
 - normal spell ids are appended after the ACT-generated segment
 
-This is one of the most important battle-system structures for modders. If you add a spell, ACT variant, or custom party command in later chapters, `scr_spellmenu_setup()` is often where the menu integration must happen.
+`scr_spellmenu_setup()` is the menu-integration layer for later spell, ACT, and party-command variants.
 
 ---
 
@@ -293,6 +293,240 @@ Chapter 2+ adds finer-grained acting coordination through:
 - `global.actingchoice`
 
 These are used to support more complex ACT choreography and later scripted interactions.
+
+---
+
+## `scr_spellmenu_setup()` Actual Layout
+
+Chapter 2+ builds the spell/ACT menu in two passes.
+
+### Pass 1: generated ACT-style commands
+
+For each active battle slot `__i = 0 .. 2` and ACT slot `__fj = 0 .. 5`, the script checks character-specific ACT permission arrays and writes synthetic entries into the later battle menu arrays.
+
+Kris path:
+
+```gml
+if (global.char[__i] == 1)
+{
+    if (global.canact[0][__fj] == 1)
+    {
+        global.battlespell[__i][__fj] = -1;
+        global.battlespellcost[__i][__fj] = global.actcost[0][__fj];
+        global.battlespellname[__i][__fj] = global.actname[0][__fj];
+        global.battlespelldesc[__i][__fj] = global.actdesc[0][__fj];
+        global.battlespelltarget[__i][__fj] = 0;
+        global.battlespellspecial[__i][__fj] = 1;
+    }
+}
+```
+
+Susie, Ralsei, and Noelle use:
+
+- `global.canactsus`, `global.actcostsus`, `global.actnamesus`, `global.actdescsus`
+- `global.canactral`, `global.actcostral`, `global.actnameral`, `global.actdescral`
+- `global.canactnoe`, `global.actcostnoe`, `global.actnamenoe`, `global.actdescnoe`
+
+and write:
+
+- `global.battlespell[slot][index] = -1`
+- `global.battlespelltarget[slot][index] = 2`
+- `global.battlespellspecial[slot][index] = 2`, `3`, or `4`
+
+If more than one monster type is present, `__actnamecheck` forces:
+
+- `S-Action`
+- `R-Action`
+- `N-Action`
+
+### Pass 2: learned spells
+
+After `scr_spellinfo_all()`, learned spells are appended after the ACT segment:
+
+```gml
+__ib = global.battleactcount[__i] + __fj;
+global.battlespell[__i][__ib] = global.spell[global.char[__i]][__fj];
+global.battlespellcost[__i][__ib] = global.spellcost[global.char[__i]][__fj];
+global.battlespellname[__i][__ib] = global.spellnameb[global.char[__i]][__fj];
+global.battlespelldesc[__i][__ib] = global.spelldescb[global.char[__i]][__fj];
+global.battlespelltarget[__i][__ib] = global.spelltarget[global.char[__i]][__fj];
+```
+
+So the actual menu layout is:
+
+1. generated ACT-like commands first
+2. normal learned spells second
+
+---
+
+## `obj_battlecontroller` Step Event: Top-Level Gates
+
+Chapter 4 `Step_0.gml` begins with encounter-specific hard gates that can `exit;` before the normal battle state machine runs.
+
+Examples:
+
+- Gerson intro checks on `obj_balthizard_enemy`
+- `obj_holywatercooler_enemy.introcon`
+- `soundbattle == true`
+- hammer/titan/rematch end-state checks
+
+These branches live inside the controller, not only inside enemy objects.
+
+---
+
+## Victory Branch In Step
+
+When `victory == 1 && victoried == 0`, Chapter 4 immediately sets:
+
+```gml
+global.faceaction[0] = 0;
+global.faceaction[1] = 0;
+global.faceaction[2] = 0;
+global.battleend = 1;
+global.mnfight = -1;
+global.myfight = 7;
+```
+
+Then it destroys:
+
+- `battlewriter`
+- `obj_face`
+- `obj_smallface`
+
+and revives dead party members to one-eighth max HP:
+
+```gml
+if (global.hp[i] < 1)
+{
+    global.hp[i] = round(global.maxhp[i] / 8);
+}
+```
+
+### Reward calculation
+
+Chapter 4 modifies `global.monstergold[3]` before awarding it:
+
+```gml
+global.monstergold[3] += floor(global.tension / 10) * global.chapter;
+if (global.charweapon[1] == 8)  global.monstergold[3] += floor(global.monstergold[3] / 20);
+if (global.charweapon[1] == 53) global.monstergold[3] += floor(global.monstergold[3] / 20);
+global.monstergold[3] *= 1 + (scr_armorcheck_equipped_party(8) * 0.05);
+global.monstergold[3] *= 1 + (scr_armorcheck_equipped_party(21) * 0.3);
+global.monstergold[3] -= global.monstergold[3] * (scr_armorcheck_equipped_party(54) * 0.1);
+global.monstergold[3] = floor(global.monstergold[3]);
+```
+
+Then:
+
+- `global.flag[37] == 1` forces zero gold
+- `global.flag[63] == 1` uses alternate victory text and calls `scr_levelup()`
+
+### Victory writer creation
+
+The controller builds victory text directly:
+
+```gml
+global.battlemsg[0] = stringsetsubloc("* You won^1!&* Got ~1 EXP and ~2 D$./%", string(global.monsterexp[3]), string(global.monstergold[3]), ...);
+global.msg[0] = global.battlemsg[0];
+global.typer = global.battletyper;
+lastbattlewriter = scr_battletext();
+```
+
+---
+
+## Main Command Menu: `global.bmenuno == 0`
+
+The root player-input branch is:
+
+```gml
+if (global.myfight == 0)
+{
+    if (global.bmenuno == 0)
+    {
+        ...
+    }
+}
+```
+
+This state uses `global.bmenucoord[0][global.charturn]` as the top-level command cursor.
+
+### Horizontal navigation
+
+Left/right input wraps between command ids `0 .. 4`.
+
+Restrictions are applied directly at cursor time:
+
+- `disableitembutton == 1` skips command `2`
+- `disablesusieattack == 1` blocks command `0` when `global.charturn == 1`
+
+### Confirm routing
+
+Pressing confirm routes by command id:
+
+- `0` -> `global.bmenuno = 1`
+- `1` -> `global.bmenuno = 2` for non-Kris, `11` for Kris
+- `2` -> `global.bmenuno = 4` if an item exists
+- `3` -> `global.bmenuno = 12`
+- `4` -> immediate defend commit
+
+The defend path executes directly:
+
+```gml
+scr_tensionheal(40); // or 5 in some Chapter 4 encounters
+global.faceaction[global.charturn] = 4;
+global.charaction[global.charturn] = 10;
+scr_nexthero();
+```
+
+---
+
+## Spell Menu: `global.bmenuno == 2`
+
+Chapter 4 still contains a direct spell-menu branch:
+
+```gml
+if (global.bmenuno == 2 && global.flag[34] == 1)
+{
+    ...
+}
+```
+
+Inside this branch:
+
+- `battlewriter.skipme = 1`
+- writer/face/smallface depths are pushed to `10`
+- spell cursor uses `global.bmenucoord[2][global.charturn]`
+- the selected spell id comes from `global.spell[thischar][spellcoord]`
+- current TP preview is written into `global.tensionselect`
+
+Cursor motion is hand-authored around the spell-slot table:
+
+- left/right move between odd/even neighbors
+- up/down move by 2
+- one branch special-cases slot `5` when spell `6` exists and spell `7` does not
+
+---
+
+## Battle Writer Recreation In Step
+
+At root menu state, if the current battle writer no longer exists, Step recreates it:
+
+```gml
+global.msg[0] = global.battlemsg[0];
+global.typer = global.battletyper;
+scr_battletext();
+```
+
+Chapter 4 can also rewrite the current speaker just before recreation:
+
+```gml
+if (global.chapter == 4 && facevar == 1)
+{
+    scr_speaker("susie");
+    global.fe = 17;
+    facevar = 0;
+}
+```
 
 ---
 
@@ -382,7 +616,7 @@ Battle UI text still goes through the same text runtime as overworld dialogue, b
 
 and stores the returned writer in `battlewriter`.
 
-This means battle text is not a separate text engine. It is the same writer stack, configured differently.
+Battle text uses the normal writer stack with battle-specific defaults.
 
 See [Dialogue System](dialogue-system.md).
 
@@ -403,7 +637,7 @@ So encounter openers can alter battle state before the first visible menu frame.
 
 ## Encounter-Specific Battle State
 
-One of the most important later-chapter realities is that battle controller Create contains many hand-authored encounter exceptions.
+Chapter 3 and Chapter 4 `obj_battlecontroller/Create_0.gml` contain many encounter-specific branches.
 
 Examples include:
 
@@ -412,7 +646,7 @@ Examples include:
 - special mercy modes in Chapter 4
 - battle-specific party rewrites in Chapter 4
 
-This means “the battle system” in DELTARUNE is not only generic framework plus monster objects. It is also a large number of encounter-specific branches embedded directly in battle bootstrap and step logic.
+Battle runtime behavior is split between the generic controller framework and many encounter-specific Create/Step branches.
 
 ---
 

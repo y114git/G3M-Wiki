@@ -1,6 +1,6 @@
 # Funnytext System
 
-`obj_funnytext` is a specialized animated text-object family used for showy title cards, board-game labels, TV-style callouts, and other non-standard text reveals. It is not a replacement for `obj_writer`; it is a companion layer that later chapters attach to writer-driven scenes.
+`obj_funnytext` is an animated text-object family used for title cards, board labels, TV callouts, and other non-standard text reveals. It runs alongside `obj_writer` and is integrated through writer-owned object slots in Chapters 3 and 4.
 
 The main roots are:
 
@@ -44,7 +44,7 @@ global.writerobjx[i] = 0;
 global.writerobjy[i] = 0;
 ```
 
-This means funnytext is not an exceptional one-off object. It is part of a general writer-owned object insertion system.
+These defaults make funnytext part of the standard writer-owned object insertion system.
 
 ---
 
@@ -56,7 +56,7 @@ The intended setup flow is:
 2. configure that slot with `scr_funnytext_init(slot, x, y, sprite, settinga, settingb)`
 3. later place `\O<slot>` inside the dialogue string
 
-The reason this works is that `obj_writer/Draw_0.gml` has a dedicated `\O` tag handler:
+`obj_writer/Draw_0.gml` inserts those configured objects through the `\O` tag:
 
 ```gml
 var writerobj = instance_create(wx + global.writerobjx[nextchar2var], wy + global.writerobjy[nextchar2var], global.writerobj[nextchar2var]);
@@ -181,7 +181,7 @@ The Step event watches writer lifecycle:
 - if `obj_writer.halt` is reached, it marks `writerfinished = 1`
 - if no `obj_writer` exists anymore, the funnytext object destroys itself
 
-That means funnytext remains subordinate to the main text runtime even when it looks visually independent.
+`obj_funnytext` still follows writer lifecycle and destroys itself when the owning writer is gone.
 
 ---
 
@@ -199,7 +199,7 @@ That means funnytext remains subordinate to the main text runtime even when it l
 - keeps the same broad system
 - retunes defaults such as `typingnoise = 190`
 
-Funnytext is therefore a later-chapter specialization, not part of the minimal Chapter 1 baseline.
+Funnytext is a Chapter 3/4 specialization. Chapter 1 does not use this insertion model.
 
 ---
 

@@ -43,7 +43,7 @@ performer.image_yscale = 2;
 performer.rhythmer = id;
 ```
 
-This tells us:
+Runtime consequences:
 
 - note charts are selected by function, not one flat table
 - performer visuals are created at runtime

@@ -1,6 +1,6 @@
 # Cutscene System
 
-DELTARUNE's later chapters do not drive story scenes by hardcoding every action inside one giant room event. Instead, they build a command queue inside `obj_cutscene_master` and then execute that queue step by step. In practice this becomes a lightweight cutscene language layered on top of normal GML.
+Chapters 2, 3, and 4 assemble scenes as queued commands on `obj_cutscene_master`. The queue is a lightweight command layer on top of normal GML.
 
 The most important runtime roots are:
 
@@ -174,7 +174,7 @@ if (!waiting)
 }
 ```
 
-This is why DELTARUNE cutscenes can chain multiple instant staging operations in one frame and only pause when speech, movement, timers, or conditional checks require it.
+The loop can consume multiple non-blocking commands in one frame and stops only when a command sets a wait state.
 
 ---
 
@@ -202,7 +202,7 @@ Two details matter here:
 - the currently selected actor is copied into `command_actor[i]` at execution time, so actor selection is not only an enqueue-time concern
 - `breakme` is the low-level “stop processing further commands this frame” flag used by wait-producing commands
 
-This is why some commands do not merely set `waiting = 1`; they also set `breakme = 1` so the loop stops immediately.
+Commands that produce waits often set both `waiting = 1` and `breakme = 1`.
 
 ---
 
@@ -471,7 +471,7 @@ else
     __walktime = point_distance(...) / -command_arg3[i];
 ```
 
-This means `arg3` is overloaded:
+`arg3` is overloaded:
 
 - non-negative -> direct move duration / max steps
 - negative -> interpret absolute value as speed and derive travel time from distance
@@ -639,7 +639,7 @@ In instant mode:
 - `"pan"` teleports the camera directly to absolute coordinates
 - `"panspeed"` offsets the camera by velocity-times-time
 
-That difference is easy to miss unless the wiki spells it out.
+The two camera commands use different coordinate models.
 
 ---
 
@@ -668,7 +668,7 @@ Movement commands also have a staging pattern:
 - some spawn mover helper objects such as `obj_move_actor` or `obj_move_to_point`
 - some rewrite themselves from higher-level forms into lower-level forms before execution
 
-This is why a scene script that looks simple can still produce very nuanced runtime behavior.
+Higher-level wrappers often rewrite into lower-level opcodes before execution.
 
 ---
 

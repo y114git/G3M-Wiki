@@ -69,7 +69,7 @@ function scr_84_get_lang_string(arg0)
 }
 ```
 
-This is important because it means the older runtime does not include the stronger missing-string diagnostics added later.
+Chapter 1 lacks the stronger missing-string diagnostics added in Chapter 3+.
 
 ### Chapters 2, 3, and 4
 
@@ -106,7 +106,7 @@ Behavior:
 - Japanese mode: resolve the provided localization key from `global.lang_map`
 - return the processed string through `stringset(...)`
 
-This is the main localization pattern for later chapters.
+This is the main Chapter 2+ localization pattern.
 
 ---
 

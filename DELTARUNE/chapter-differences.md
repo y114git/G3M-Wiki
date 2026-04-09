@@ -16,7 +16,7 @@ It is written from the perspective of the shipped game data that modders inspect
 | Chapter 4 | 955 | 1575 | 327 |
 | Chapter Select | 56 | 18 | 3 |
 
-The jump from Chapter 1 to Chapter 2 is the first major systemic expansion. Chapters 3 and 4 then continue on top of the Chapter 2-era runtime conventions rather than reverting to the Chapter 1 model.
+The first structural breakpoint is Chapter 1 vs Chapter 2. Chapters 3 and 4 keep the Chapter 2-era array sizes, save layout families, cutscene model, and battle-side support systems.
 
 ---
 
@@ -84,7 +84,7 @@ Important:
 | Susie | 230 | 22 | 2 | 3 | 24 | 25 | 10 |
 | Ralsei | 180 | 15 | 2 | 14 | 25 | 25 | 10 |
 
-The Chapter 4 runtime keeps the same expanded stat-array infrastructure as Chapters 2 and 3, but applies a different opening equipment baseline again. Noelle data is still initialized in the later runtime structures, even though the opening Chapter 4 party setup centers on Kris / Susie / Ralsei.
+Chapter 4 keeps the expanded Chapter 2+ stat arrays and later-party data layout. `scr_gamestart` still initializes Noelle-side structures even though the opening Chapter 4 party state centers on Kris / Susie / Ralsei.
 
 ---
 
@@ -152,7 +152,7 @@ Shared player-facing spell IDs remain centered on:
 - spell 11 is now more conditional in `scr_spellinfo`, with multiple names such as `OKHeal`, `Heal`, and `BetterHeal` depending on runtime state
 - item-use spell handling expands further through `263`
 
-This means the old documentation that effectively stops at Chapter 2 is no longer sufficient for modding battle behavior in Chapters 3 and 4.
+Chapter 3 and Chapter 4 keep extending the same spell-id space and item-spell ranges, so Chapter 2-only spell documentation is incomplete.
 
 ---
 

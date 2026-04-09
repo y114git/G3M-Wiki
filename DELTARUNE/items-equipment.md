@@ -32,7 +32,7 @@ DELTARUNE splits inventory data into several layers:
 - cached display/value/usable data filled by `scr_iteminfo_all`
 - separate but parallel weapon and armor metadata scripts
 
-That means an item slot and an item definition are not the same thing.
+Inventory slots and item definitions are separate layers.
 
 If `global.item[3] = 8`, slot 3 contains item id `8` (`Darkburger` in Chapter 4 data), but the descriptive fields still come from running `scr_iteminfo(8)` or reading the arrays filled by `scr_iteminfo_all()`.
 
@@ -57,11 +57,7 @@ function scr_iteminfo_all()
 }
 ```
 
-This tells us several important things:
-
-- the helper caches the current inventory contents, not the whole master item database
-- cache arrays are slot-based, not definition-based
-- only a subset of fields is cached here, so deeper item behavior still depends on calling the definition scripts when needed
+The helper caches current inventory contents, not the full master item table. The cache arrays are slot-based, and effect logic still depends on the definition scripts.
 
 The same broad pattern exists for weapons and armor.
 
@@ -126,7 +122,7 @@ Weapons expose a much larger temporary bundle:
 - `weaponicontemp`
 - `value`
 
-This already shows that DELTARUNE equipment definitions are not only stat records. They also carry:
+Weapon definitions also carry:
 
 - character reaction lines for equip/examine menus
 - graze modifiers
@@ -296,7 +292,7 @@ Chapter 4 explicitly marks `22 (DD-Burger)` as:
 replaceable = 8;
 ```
 
-This means the item runtime supports consumables that downgrade or convert into another item definition after use. A modder documenting only heal amounts would miss that inventory-transform behavior entirely.
+`replaceable` supports consumables that downgrade or convert into another item id after use.
 
 ---
 
@@ -425,7 +421,7 @@ armorelementtemp = 7;
 armorelementamounttemp = 0.5;
 ```
 
-This means the armor system can tell the damage layer:
+The armor definition passes two values into the damage layer:
 
 - which element id it modifies
 - by what amount
@@ -446,7 +442,7 @@ if (global.chapter == 2)
 }
 ```
 
-That means even when the stat block stays the same, the runtime presentation can still be chapter-aware.
+Stat blocks and equip/examine text can branch independently by chapter.
 
 ---
 

@@ -1,6 +1,6 @@
 # Global Variables
 
-DELTARUNE stores almost all long-lived runtime state in `global.*` variables. If you want to understand how the shipped game actually works through UndertaleModTool, this is one of the most important pages in the entire wiki.
+DELTARUNE stores most long-lived runtime state in `global.*` variables.
 
 This page is written from the shipped runtime data, not from editor-side project assumptions.
 
@@ -38,7 +38,7 @@ That includes:
 - item/equipment modifiers
 - cutscene orchestration
 
-This is why you can often understand an entire subsystem by locating:
+A subsystem can usually be traced by locating:
 
 1. where its globals are initialized in `scr_gamestart`
 2. where they are rewritten in object events / helper scripts
@@ -101,7 +101,7 @@ Chapter 4 keeps the Chapter 3-era global layout and adds still more chapter-spec
 
 ### `global.chapter`
 
-This is one of the most important globals in the whole game.
+This is a primary runtime state array.
 
 Set in `scr_gamestart`:
 
@@ -773,7 +773,7 @@ All chapters initialize families like:
 - `global.writerobjx[]`
 - `global.writerobjy[]`
 
-This shows how later chapters let dialogue spawn or coordinate extra writer-linked visual objects such as funnytext effects.
+These arrays support writer-linked visual objects such as funnytext in Chapters 3 and 4.
 
 ---
 
@@ -896,7 +896,7 @@ and keyboard / gamepad helper state.
 
 ## `global.flag[0..9998]`
 
-This is the giant catch-all persistent state array and one of the most important structures in DELTARUNE.
+`global.flag[]` is the main persistent catch-all state array.
 
 Chapter 1 explicitly zeros all 9999 entries:
 
