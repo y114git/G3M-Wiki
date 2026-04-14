@@ -31,7 +31,7 @@ Each download record shows:
 1. **Enqueue** — A download is created with status "Queued". It enters the download queue.
 2. **Download** — The file is downloaded from the source URL. Progress is updated in real time. Status becomes "Downloading".
 3. **Downloaded** — The file is saved to disk in the `downloads/` folder. Status becomes "Downloaded".
-4. **Auto-Use** — If auto-use is enabled (default), G3M automatically extracts and imports the mod into the library. Status moves through "Pending Auto" → "Using" → complete.
+4. **Auto-Use** — If auto-use is enabled (default), G3M automatically extracts and imports the mod into the library. This uses the same detection pipeline as manual import: native G3M mods install directly, DELTAMOD archives are converted automatically, eligible PizzaOven Pizza Tower mods go through PizzaOven conversion, and AFOM/CYOP tower archives use their dedicated import path. Status moves through "Pending Auto" → "Using" → complete.
 5. **Ready** — If auto-use is disabled, the download stays as "Ready" until you manually trigger the install.
 
 ---
@@ -78,7 +78,7 @@ If a downloaded mod has the same ID as an existing mod in the library, the downl
 
 ## Manual Install
 
-Downloads with "Needs Manual Install" status contain files that G3M could not automatically match to a mod structure. You can manually use them by selecting the download and clicking **Use**, which opens the import dialog with the downloaded file pre-selected.
+Downloads with "Needs Manual Install" status contain files that G3M could not automatically map to a supported import structure. This usually means the archive was not a native G3M mod, not a supported DELTAMOD package, not an eligible PizzaOven/AFOM conversion case, and not a raw patch/data layout G3M can assign automatically. You can manually use them by selecting the download and clicking **Use**, which opens the import dialog with the downloaded file pre-selected.
 
 ---
 

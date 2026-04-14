@@ -16,6 +16,8 @@ UI framework: **PyQt6**
 - Manage a local library of installed mods organized by profiles.
 - Apply one or multiple mods at once with automatic file patching and backup/restore.
 - Support multiple patch formats: **g3mpatch**, **xdelta/vcdiff**, **csx** scripts, and raw data files.
+- Auto-convert supported **DELTAMOD** archives into native G3M mods on import.
+- Auto-convert eligible **PizzaOven** Pizza Tower mods and import **AFOM/CYOP** tower archives through their dedicated conversion paths.
 - Launch games directly or via Steam, with optional chapter-based direct launch for DELTARUNE.
 - Create, edit, export, and import mods using the built-in Mod Editor.
 - Manage mod versions, game file versions, and modpacks.

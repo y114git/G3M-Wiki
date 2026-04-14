@@ -73,6 +73,8 @@ G3M recognizes and can import mods from multiple formats:
 | **AFOM/CYOP** | `.zip` with tower folder(s), each containing an `.ini` with `[properties]` | Pizza Tower custom level (tower) mods. G3M deploys the tower folders to `%APPDATA%\PizzaTower_GM2\towers\` on launch and removes them after. |
 | **Archives** | `.zip`, `.7z`, `.rar` | Compressed archives that may contain any of the above formats. G3M extracts and inspects them automatically. |
 
+These conversion paths are not limited to the Library import button. The same archive detection is also used by the Downloads auto-use flow, one-click installs, and mod version archive import where applicable.
+
 ### Supported Archive Formats
 
 G3M can extract archives in these formats:
