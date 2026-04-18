@@ -45,7 +45,7 @@ G3MTool
 ```
 
 ```
-G3MTool - by Y114
+G3MTool (?.?.?) - by Y114
 Type 'help' for available commands or 'exit' to quit
 
 (G3MTool) patch create original.win modified.win
@@ -54,6 +54,13 @@ Type 'help' for available commands or 'exit' to quit
 ```
 
 Interactive mode supports the same commands as non-interactive. Type `help` to list them, `exit` or `quit` to leave, `clear` or `cls` to clear the screen. Arguments with spaces can be quoted (`"path with spaces/file.win"`).
+
+To print only the version without entering interactive mode:
+
+```bash
+G3MTool --version
+G3MTool -V
+```
 
 ---
 
@@ -80,3 +87,4 @@ G3MTool patch validate mod.g3mpatch --log
 | `--verbose` / `-v` | Print timing breakdowns, per-phase progress, and detailed logs to stdout |
 | `--log [path]` / `-l` | Write a log file. If path is omitted, defaults to `logs/{command}_{timestamp}.log` |
 | `--json` | Output structured JSON (supported for `info` and `patch validate`) |
+| `--version` / `-V` | Print only the application version and exit |
