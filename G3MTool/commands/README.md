@@ -1,6 +1,6 @@
 # Commands Overview
 
-G3MTool provides five top-level commands. All commands support the [global options](../getting-started.md#global-options) `--verbose`, `--log`, and `--json`.
+G3MTool provides six top-level commands. All commands support the [global options](../getting-started.md#global-options) `--verbose`, `--log`, `--json`, and `--version`.
 
 | Command | Description |
 | --- | --- |
@@ -9,6 +9,7 @@ G3MTool provides five top-level commands. All commands support the [global optio
 | [`execute`](execute.md) | Run `.csx` C# scripts, passthrough to xdelta, or launch external programs |
 | [`info`](info.md) | Display resource counts and metadata for a data file or `.g3mpatch` |
 | [`diff`](diff.md) | Compare two data files or patches and generate a Markdown diff report |
+| [`version`](version.md) | Print the installed G3MTool version |
 
 All commands that accept a data file accept any GameMaker data file extension: `.win`, `.ios`, `.unx`, `.droid`.
 
