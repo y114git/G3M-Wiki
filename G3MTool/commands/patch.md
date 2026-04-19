@@ -117,7 +117,7 @@ On success, prints:
 
 ```
 Patch is valid.
-  Version: 1.0
+  Tool: G3MTool v1.0.2
   Created: 2025-11-01T14:22:00Z
   Resources: 12 changed, 2 new, 1 deleted
 ```

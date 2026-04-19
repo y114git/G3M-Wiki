@@ -12,7 +12,7 @@ This command prints only the version number, with no extra text or formatting.
 Example output:
 
 ```
-1.0.1
+1.0.2
 ```
 
 Use this when you need to confirm the exact G3MTool build that is installed on a machine.
