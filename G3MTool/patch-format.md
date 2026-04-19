@@ -1,6 +1,6 @@
 # G3M Patch Format
 
-A `.g3mpatch` file is a standard ZIP archive. It contains a JSON manifest (`g3mpatch.json`), exported resource data for every changed or added resource, GML and assembly source for changed code entries, helper data (asset order), and an exact xdelta fallback patch.
+A `.g3mpatch` file is a standard ZIP archive. It contains a JSON manifest (`g3mpatch.json`), exported resource data for every changed or added resource, GML and assembly source for changed code entries, helper data (asset order), and optionally an exact xdelta fallback patch.
 
 ---
 
@@ -26,7 +26,7 @@ patch_{timestamp}.g3mpatch   ← ZIP archive
 │       └── rm_intro.json
 ├── Helpers/
 │   └── assetorder.json       ← Asset list ordering metadata
-└── Exact/
+└── Xdelta/                   ← Optional, only with --xdelta-fallback
     └── <hash>.xdelta         ← Exact binary xdelta fallback
 ```
 
@@ -151,9 +151,9 @@ Keyed by resource type. Every type with at least one change is present. Types wi
 
 ---
 
-## The Exact Fallback (`Exact/`)
+## Optional Xdelta Fallback (`Xdelta/`)
 
-Every `.g3mpatch` created with `patch create` also includes a full xdelta3 binary patch in the `Exact/` folder. This is an exact diff of the original and modified data files, used as a fallback when the semantic (resource-level) patch cannot be applied cleanly. G3M automatically uses this fallback if the semantic apply fails.
+By default, `patch create` does not embed a binary fallback. Passing `--xdelta-fallback` adds a full xdelta3 binary patch in `Xdelta/`. This is an exact diff of the original and modified data files and is used if the semantic resource-level apply fails or if the semantic output hash does not match the expected modified-file hash. Legacy patches with `Exact/` are still accepted by `patch apply`.
 
 ---
 
@@ -165,7 +165,7 @@ Every `.g3mpatch` created with `patch create` also includes a full xdelta3 binar
 4. For changed/new resources (except CodeEntries): export their data from the modified data file to a temporary directory.
 5. For CodeEntries: decompile GML source and serialize bytecode assembly directly to memory (no disk I/O).
 6. Build the `G3MPatchManifest` from the comparison results.
-7. Create the ZIP archive: write `g3mpatch.json`, add exported resource files, write code entries from memory, add asset order helpers, embed the xdelta fallback.
+7. Create the ZIP archive: write `g3mpatch.json`, add exported resource files, write code entries from memory, add asset order helpers, and optionally embed the xdelta fallback.
 8. Clean up all temporary files.
 
 If the `modified` argument is an `.xdelta` file instead of a `.win`, G3MTool applies it to the original first to get the modified data file, then proceeds normally with the result.
