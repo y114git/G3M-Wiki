@@ -152,7 +152,6 @@ When `target` is a `.g3mpatch` file:
 
 ```
 G3M Patch: my_mod.g3mpatch
-Version: 1.0
 Created: 2025-11-01T14:22:00Z
 Tool: G3MTool v1.0.0
 

@@ -38,7 +38,6 @@ Every changed or newly added resource gets its own named subfolder under its res
 
 ```json
 {
-  "version": "1.0",
   "createdAt": "2025-11-01T14:22:00.000Z",
   "tool": {
     "name": "G3MTool",
