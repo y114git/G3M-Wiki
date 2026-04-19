@@ -11,7 +11,7 @@ See [G3M Patch Format](../patch-format.md) for a detailed explanation of the `.g
 Compare an original and a modified `data.win` and produce a `.g3mpatch` file capturing all resource-level differences.
 
 ```
-G3MTool patch create <original> <modified> [output]
+G3MTool patch create <original> <modified> [output] [--xdelta-fallback]
 ```
 
 | Argument | Required | Description |
@@ -19,6 +19,10 @@ G3MTool patch create <original> <modified> [output]
 | `original` | Yes | Path to the original (unmodified) data file |
 | `modified` | Yes | Path to the modified data file **or** an `.xdelta` patch file (auto-applied to original first) |
 | `output` | No | Output `.g3mpatch` path. Default: `patch_{timestamp}.g3mpatch` next to executable |
+
+| Option | Description |
+| --- | --- |
+| `--xdelta-fallback` | Also embed an exact xdelta fallback in `Xdelta/`. Disabled by default. Use only when byte-perfect fallback is required if semantic apply fails. |
 
 **Example — compare two data files:**
 
@@ -32,7 +36,7 @@ G3MTool patch create data.win data_modded.win my_mod.g3mpatch
 G3MTool patch create data.win existing_mod.xdelta my_mod.g3mpatch
 ```
 
-When `modified` is an `.xdelta` file, G3MTool applies it to `original` in a temp file and proceeds with the result. The xdelta source is then embedded in the patch's `Exact/` folder automatically.
+When `modified` is an `.xdelta` file, G3MTool applies it to `original` in a temp file and proceeds with the result. The xdelta source is embedded in `Xdelta/` only when `--xdelta-fallback` is passed.
 
 **What the command outputs:**
 
@@ -53,7 +57,7 @@ Patch created successfully: my_mod.g3mpatch
 4. Export only the changed/new resources from `modified` to a temp directory.
 5. Decompile changed CodeEntries (GML source + bytecode assembly) in memory.
 6. Build the `G3MPatchManifest` (see [patch format](../patch-format.md)).
-7. Create the ZIP: write `g3mpatch.json`, add resource files, write code entry files from memory, add asset order helpers, embed exact xdelta fallback.
+7. Create the ZIP: write `g3mpatch.json`, add resource files, write code entry files from memory, add asset order helpers, and optionally embed an xdelta fallback if `--xdelta-fallback` is set.
 8. Clean up all temp files.
 
 ---
@@ -79,6 +83,8 @@ G3MTool patch apply data.win my_mod.g3mpatch patched.win
 ```
 
 Non-`.g3mpatch` inputs are auto-converted: an `.xdelta` is applied directly; a raw data file is converted to a patch using `data` as the original reference, then applied.
+
+If semantic `.g3mpatch` apply fails, or if the semantic output hash does not match the patch's expected modified-file hash, and the archive contains an xdelta fallback under `Xdelta/` (or legacy `Exact/`), G3MTool attempts that fallback against the original file.
 
 ---
 

@@ -54,5 +54,5 @@ G3MTool xpatch apply data.win my_mod.xdelta patched.win
 
 - xdelta patches are binary and non-mergeable: if two xdelta patches modify different regions of the same file, they cannot be combined. Use [`patch create`](patch.md) to produce merge-friendly `.g3mpatch` files instead.
 - xdelta patches are tied to a specific version of the original file. Applying a patch to a different version of `data.win` will produce corrupt output.
-- `.g3mpatch` files embed an xdelta fallback automatically — you rarely need to create standalone xdelta patches unless distributing to non-G3M users.
+- `.g3mpatch` files are semantic by default. Use `patch create --xdelta-fallback` only when you also need an embedded byte-perfect xdelta fallback.
 - The bundled xdelta binary is platform-specific (`win`, `linux`, `osx`) and extracted from the embedded resources at runtime.

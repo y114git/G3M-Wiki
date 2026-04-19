@@ -18,7 +18,7 @@ G3MTool is a cross-platform command-line tool for working with GameMaker data fi
 
 ## Key Concepts
 
-- **G3M patch (`.g3mpatch`)** — G3MTool's native patch format. A ZIP archive containing a `g3mpatch.json` manifest with per-resource changes (sprites, sounds, code, rooms, etc.) and an embedded xdelta fallback. More precise and merge-friendly than a raw xdelta. See [G3M Patch Format](patch-format.md).
+- **G3M patch (`.g3mpatch`)** — G3MTool's native patch format. A ZIP archive containing a `g3mpatch.json` manifest with per-resource changes (sprites, sounds, code, rooms, etc.). An exact xdelta fallback can be embedded with `patch create --xdelta-fallback`, but it is disabled by default to keep patches semantic and merge-friendly. See [G3M Patch Format](patch-format.md).
 - **xdelta patch** — A standard binary diff format supported by G3MTool for compatibility. Less merge-friendly than `.g3mpatch` but simpler and smaller.
 - **CSX scripts** — C# scripts (Roslyn-compiled at runtime) that receive a `ScriptGlobals` object with access to the loaded `UndertaleData`. Used to programmatically modify game data. See [CSX Scripting](csx-scripting.md).
 - **Interactive mode** — When launched with no arguments, G3MTool enters a `(G3MTool)` REPL prompt where you can type commands interactively.
