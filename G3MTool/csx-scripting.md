@@ -1,8 +1,8 @@
 # CSX Scripting
 
-G3MTool can execute `.csx` C# scripts against a loaded GameMaker data file. Scripts are compiled and run at runtime using the Roslyn scripting engine (`Microsoft.CodeAnalysis.CSharp.Scripting`). They receive a `ScriptGlobals` instance as their global context, which exposes the parsed `UndertaleData` and the G3MTool API surface.
+G3MTool can execute `.csx` C# scripts against a loaded GameMaker data file. Scripts are compiled and run at runtime using the Roslyn scripting engine (`Microsoft.CodeAnalysis.CSharp.Scripting`). They receive a `ScriptGlobals` instance as their global context, which exposes the parsed `UndertaleData` and CLI-compatible helper methods.
 
-Scripts are used by [`execute`](commands/execute.md) and are the internal mechanism behind all built-in Export/Import operations.
+Scripts are used by [`execute`](commands/execute.md). G3MTool also embeds import and export scripts for compatibility with existing UndertaleModTool-style workflows.
 
 ---
 
@@ -17,7 +17,7 @@ G3MTool execute my_import.csx --data data.win --input sprites/ --output patched.
 - `--data` loads the data file into `ScriptGlobals.Data` before the script runs.
 - `--output` sets `ScriptGlobals.OutputDir`.
 - `--input` sets `ScriptGlobals.InputDir`.
-- If `--data` is omitted, `Data` is null — call `EnsureDataLoaded()` at the top of scripts that require it.
+- If `--data` is omitted, `Data` is null. Call `EnsureDataLoaded()` at the top of scripts that require it.
 
 ---
 
@@ -49,14 +49,14 @@ The following properties and methods are available in every `.csx` script as top
 | --- | --- |
 | `ScriptMessage(string message)` | Logs a `[Script]` message to the console (and log file if `--log` is active). |
 | `ScriptError(string message, string? title = null)` | Throws `ScriptException` with the given message, halting execution. |
-| `ScriptQuestion(string message)` | Logs the question and always returns `true` (G3MTool runs headless — no interactive dialogs). |
+| `ScriptQuestion(string message)` | Logs the question and returns `true` because G3MTool has no GUI prompt. |
 | `ScriptInputDialog(string title, string label, string defaultInput, bool allowMultiline, bool showDialog)` | Logs the prompt and returns `defaultInput`. |
 | `SimpleTextInput(string title, string label, string defaultInput, bool allowMultiline)` | Same as `ScriptInputDialog`. |
 | `PromptLoadFile(string filter, string defaultPath)` | Logs the prompt and returns `null`. |
 | `PromptSaveFile(string filter, string defaultName)` | Logs the prompt and returns `null`. |
 | `PromptChooseDirectory()` | Logs the prompt and returns `null`. |
 
-> Dialog and prompt methods always return their default values or null — G3MTool has no GUI. Design scripts to work without user input, or check the return value and handle null.
+> Dialog and prompt methods return defaults or null. Design scripts to work without GUI input, or check the return value and handle null.
 
 ### Progress Tracking
 
@@ -173,4 +173,4 @@ If a script throws any exception (including `ScriptException` from `ScriptError`
 
 ## Built-in Scripts Reference
 
-The built-in scripts are embedded in the G3MTool binary and are the canonical source for how each resource type is exported and imported. The full source is available in the repository under [`G3MToolCLI/Assets/scripts/`](https://github.com/y114git/G3MTool/tree/main/G3MToolCLI/Assets/scripts).
+The built-in scripts are embedded in the G3MTool binary. Their source is available in the repository under [`G3MToolCLI/Assets/scripts/`](https://github.com/y114git/G3MTool/tree/main/G3MToolCLI/Assets/scripts).

@@ -13,7 +13,8 @@ G3M's native patch format, created and applied by the bundled G3MTool.
 A g3mpatch can be distributed as:
 
 - A single `.g3mpatch` file.
-- A `.zip` archive containing `g3mpatch.json` and one or more binary chunk files.
+- A `.zip` archive containing `g3mpatch.json`, JSON instruction files, and resource files referenced by those instructions.
+- Optionally, the archive may also contain `Xdelta/fallback.xdelta` when the creator enabled the xdelta fallback option.
 
 The `g3mpatch.json` manifest describes:
 

@@ -1,176 +1,210 @@
 # G3M Patch Format
 
-A `.g3mpatch` file is a standard ZIP archive. It contains a JSON manifest (`g3mpatch.json`), exported resource data for every changed or added resource, GML and assembly source for changed code entries, helper data (asset order), and optionally an exact xdelta fallback patch.
+`.g3mpatch` is G3MTool's patch format. It stores a manifest, changed resource files, changed code entries, helper metadata, and optional xdelta fallback data.
 
----
+G3MTool is the reference implementation for this format.
 
-## Archive Structure
+## Typical Layout
 
-```
-patch_{timestamp}.g3mpatch   ← ZIP archive
-├── g3mpatch.json            ← Manifest (see below)
+```text
+patch_{timestamp}.g3mpatch
+├── g3mpatch.json
 ├── Sprites/
 │   └── spr_player/
-│       ├── spr_player.json          ← Sprite metadata
-│       └── spr_player_frame0.png    ← Texture frames
+│       ├── spr_player.json
+│       └── spr_player_0.png
 ├── Sounds/
 │   └── snd_music/
 │       └── snd_music.json
 ├── CodeEntries/
 │   └── gml_Object_obj_player_Step_0/
-│       ├── gml_Object_obj_player_Step_0.gml   ← Decompiled GML source
-│       ├── gml_Object_obj_player_Step_0.asm   ← Bytecode assembly
-│       └── child_entry.asm                    ← Child entry assembly (if any)
+│       ├── gml_Object_obj_player_Step_0.gml
+│       └── gml_Object_obj_player_Step_0.asm
 ├── Rooms/
 │   └── rm_intro/
 │       └── rm_intro.json
 ├── Helpers/
-│   └── assetorder.json       ← Asset list ordering metadata
-└── Xdelta/                   ← Optional, only with --xdelta-fallback
-    └── <hash>.xdelta         ← Exact binary xdelta fallback
+│   ├── asset_order.txt
+│   ├── object_events.json
+│   ├── variables_functions.json
+│   ├── texture_page_items.json
+│   └── sprite_frame_map.json
+└── Xdelta/
+    └── <hash>.xdelta
 ```
 
-Every changed or newly added resource gets its own named subfolder under its resource type directory. Deleted resources are listed only in the manifest — no files are included for them.
+`Xdelta/` exists only when the patch was created with `--xdelta-fallback`. Older patches may contain legacy exact-fallback data; current G3MTool still accepts it when applying.
 
----
+Deleted resources are listed in `g3mpatch.json`; they do not need resource payload files.
 
-## Manifest (`g3mpatch.json`)
+## Manifest
+
+`g3mpatch.json` contains:
+
+| Field | Description |
+| --- | --- |
+| `createdAt` | Patch creation timestamp |
+| `tool` | Tool name and version |
+| `original` | Source data-file metadata |
+| `modified` | Modified data-file metadata |
+| `resources` | Changed, new, and deleted resources by type |
+| `statistics` | Resource and file counts |
+| `applyPlan` | Hints used by G3MTool to skip unnecessary apply work |
+
+Example:
 
 ```json
 {
-  "createdAt": "2025-11-01T14:22:00.000Z",
+  "createdAt": "2026-05-29T10:00:00.000Z",
   "tool": {
     "name": "G3MTool",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "original": {
     "filename": "data.win",
     "size": 123456789,
     "md5": "a1b2c3d4...",
     "bytecodeVersion": 17,
-    "gmsVersion": "2.3.7.606",
+    "gmsVersion": "GM 2022.0",
     "generalInfo": {
       "displayName": "DELTARUNE",
       "name": "DELTARUNE",
       "fileName": "DELTARUNE.exe",
       "config": "Default",
-      "gameID": 12345678,
-      "major": 1, "minor": 0, "release": 0, "build": 0,
-      "defaultWindowWidth": 640, "defaultWindowHeight": 480,
-      "steamAppID": 1671210
+      "gameID": 0,
+      "major": 2023,
+      "minor": 6,
+      "release": 0,
+      "build": 0
     }
   },
-  "modified": { ... },
+  "modified": {},
   "resources": {
     "Sprites": {
       "changed": [
-        { "name": "spr_player", "files": { "spr_player.json": "Sprites/spr_player/spr_player.json" } }
-      ],
-      "new": [],
-      "deleted": []
-    },
-    "CodeEntries": {
-      "changed": [
         {
-          "name": "gml_Object_obj_player_Step_0",
+          "name": "spr_player",
           "files": {
-            "gml_Object_obj_player_Step_0.gml": "CodeEntries/gml_Object_obj_player_Step_0/gml_Object_obj_player_Step_0.gml",
-            "gml_Object_obj_player_Step_0.asm": "CodeEntries/gml_Object_obj_player_Step_0/gml_Object_obj_player_Step_0.asm"
+            "spr_player.json": "Sprites/spr_player/spr_player.json"
           }
         }
       ],
       "new": [],
-      "deleted": ["gml_Script_old_function"]
+      "deleted": []
     }
   },
   "statistics": {
-    "totalChanged": 3,
-    "totalNew": 1,
-    "totalDeleted": 1,
-    "totalChangedFiles": 5,
-    "totalNewFiles": 2
+    "totalChanged": 1,
+    "totalNew": 0,
+    "totalDeleted": 0,
+    "totalChangedFiles": 2,
+    "totalNewFiles": 0
   }
 }
 ```
 
-### `original` / `modified` Fields
+## Data File Metadata
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `filename` | string | Base filename of the data file |
-| `size` | integer | File size in bytes |
-| `md5` | string | MD5 hash of the data file |
-| `bytecodeVersion` | integer | GameMaker bytecode version |
-| `gmsVersion` | string | GameMaker Studio version string |
-| `generalInfo` | object | Full GeneralInfo block from the data file |
-
-### `resources` Dictionary
-
-Keyed by resource type. Every type with at least one change is present. Types with no changes are omitted.
-
-| Key | Description |
+| Field | Description |
 | --- | --- |
-| `changed` | List of resources that existed in `original` and differ in `modified`. Each entry has `name` and `files`. |
-| `new` | List of resources present in `modified` but not in `original`. |
-| `deleted` | List of resource names present in `original` but not in `modified`. No files included — deletion is applied by name. |
+| `filename` | Base file name |
+| `size` | File size in bytes |
+| `md5` | MD5 identity used for exact source checks and optional xdelta fallback checks |
+| `bytecodeVersion` | GameMaker bytecode version |
+| `gmsVersion` | Interpreted GameMaker version string |
+| `generalInfo` | Selected GeneralInfo fields from the data file |
 
-### Resource Types
+## Resource Changes
 
-| Type key | Game assets |
+Each resource type may contain:
+
+| Field | Description |
 | --- | --- |
-| `Sprites` | Sprites and their texture frames |
-| `Sounds` | Sound assets (metadata; audio banks are separate files) |
-| `CodeEntries` | GML code entries — both GML source and bytecode `.asm` |
-| `GameObjects` | Object definitions, events, physics |
-| `Rooms` | Room layouts, layers, instances |
-| `Backgrounds` | Background/tileset assets |
-| `Fonts` | Fonts and glyph tables |
-| `Scripts` | Script assets (wrappers referencing CodeEntries) |
-| `Shaders` | GLSL ES vertex + fragment shaders |
-| `Paths` | Path assets |
-| `Timelines` | Timeline assets |
-| `Extensions` | Extension definitions and file references |
+| `changed` | Resources present in both original and modified files with different content |
+| `new` | Resources present only in the modified file |
+| `deleted` | Resource names present only in the original file |
+
+Resource payloads are exported only for changed and new resources. Some resource types may be promoted to a full-type export when order, duplicate names, version-sensitive layout, or merge safety requires it.
+
+## Resource Types
+
+Common keys include:
+
+| Key | Contents |
+| --- | --- |
+| `GeneralInfo` | Game metadata |
+| `Options` | Game options |
+| `Language` | Language data |
+| `Sprites` | Sprite metadata and frame PNGs |
+| `Sounds` | Sound metadata and embedded audio references |
+| `CodeEntries` | GML source and bytecode assembly |
+| `GameObjects` | Object definitions and events |
+| `Rooms` | Room definitions, layers, instances, tiles |
+| `Backgrounds` | Background and tileset resources |
+| `Fonts` | Font metadata and glyph data |
+| `Scripts` | Script wrapper resources |
+| `Shaders` | Shader source |
+| `Paths` | Path resources |
+| `Timelines` | Timeline resources |
+| `Extensions` | Extension metadata |
 | `Variables` | Variable table |
 | `Functions` | Function table |
 | `Strings` | String table |
 | `AudioGroups` | Audio group definitions |
-| `EmbeddedTextures` | Embedded texture atlases |
-| `TexturePageItems` | Texture page item UV mappings |
+| `EmbeddedAudio` | Embedded audio payloads |
+| `EmbeddedTextures` | Texture page payloads |
+| `TexturePageItems` | Texture page item mappings |
 | `TextureGroupInfo` | Texture group metadata |
+| `AnimationCurves` | Animation curve resources |
+| `Sequences` | Sequence resources |
+| `ParticleSystems` | Particle system resources |
+| `ParticleSystemEmitters` | Particle emitter resources |
+| `EffectInfo` | Effect data |
 
-### `statistics` Fields
+## Helpers
 
-| Field | Description |
+G3MTool writes helper files only when they are needed for reliable apply or merge behavior. Helper files can preserve resource ordering, object-event links, code metadata, texture mappings, and sprite frame mappings.
+
+These helpers exist to prevent index drift, broken event links, texture-page mismatches, and code reference errors when a patch targets a data file that is not byte-identical to the original.
+
+## Xdelta Fallback
+
+`patch create --xdelta-fallback` stores an xdelta fallback built from the original and modified data files.
+
+`patch apply` behavior:
+
+| Mode | Behavior |
 | --- | --- |
-| `totalChanged` | Total number of changed resources across all types |
-| `totalNew` | Total number of new resources across all types |
-| `totalDeleted` | Total number of deleted resources across all types |
-| `totalChangedFiles` | Total number of files belonging to changed resources |
-| `totalNewFiles` | Total number of files belonging to new resources |
+| Default | Try normal `.g3mpatch` apply first. If it fails and the patch contains fallback data, try xdelta. |
+| `--xdelta-fallback` | Try xdelta first. If it fails, continue with normal `.g3mpatch` apply. |
 
----
+The fallback is exact but depends on xdelta's source-file requirements. It can increase patch size.
 
-## Optional Xdelta Fallback (`Xdelta/`)
+## `.g3mcache`
 
-By default, `patch create` does not embed a binary fallback. Passing `--xdelta-fallback` adds a full xdelta3 binary patch in `Xdelta/`. This is an exact diff of the original and modified data files and is used if the semantic resource-level apply fails or if the semantic output hash does not match the expected modified-file hash. Legacy patches with `Exact/` are still accepted by `patch apply`.
+`.g3mcache` is separate from `.g3mpatch`. Commands use it only when the user passes `--cache <dir>`.
 
----
+The cache can store data-file metadata, resource hashes, name counts, order-sensitive names, and standard `info` snapshots. G3MTool validates cache entries by file size and stored MD5 when available before use. Cache data helps analysis-heavy commands skip repeated work; it does not replace resource payloads during apply.
 
-## How a Patch Is Created
+## Creation Flow
 
-1. Load original `data.win` into memory → hash all resources by type and name using SHA-based content hashing.
-2. Load modified `data.win` into memory → hash all resources.
-3. Compare hashes per type: identify which resource names are **changed**, **new**, or **deleted**.
-4. For changed/new resources (except CodeEntries): export their data from the modified data file to a temporary directory.
-5. For CodeEntries: decompile GML source and serialize bytecode assembly directly to memory (no disk I/O).
-6. Build the `G3MPatchManifest` from the comparison results.
-7. Create the ZIP archive: write `g3mpatch.json`, add exported resource files, write code entries from memory, add asset order helpers, and optionally embed the xdelta fallback.
-8. Clean up all temporary files.
+1. Load or reuse analysis for the original data file.
+2. Load the modified data file. If the input is `.xdelta`, apply it to the original first.
+3. Hash resources by type and name.
+4. Compare original and modified hashes.
+5. Export changed/new resources from the modified data file.
+6. Store changed code as GML and/or ASM where needed.
+7. Add helper data required by the changed resource types.
+8. Write `g3mpatch.json` and the patch contents.
+9. Remove temporary files.
 
-If the `modified` argument is an `.xdelta` file instead of a `.win`, G3MTool applies it to the original first to get the modified data file, then proceeds normally with the result.
+## Apply Flow
 
----
+1. Read the patch manifest and needed payloads.
+2. Load the target data file.
+3. Choose the required import steps from `applyPlan` and changed resource types.
+4. Apply resources and helper-guided repairs.
+5. Validate critical references.
+6. Write the output data file.
 
-## Version-Sensitive Export Promotion
-
-When the GameMaker version changes between `original` and `modified` (e.g., a game update), the binary layout of some resource types changes. G3MTool automatically promotes `Rooms` and `TextureGroupInfo` to full-export (all resources, not just changed ones) in this case, to prevent applying old binary format data with a new format game.
+G3MTool skips heavy operations only when the patch content and apply plan show that the operation is not needed.

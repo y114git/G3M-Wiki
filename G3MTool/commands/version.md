@@ -2,17 +2,15 @@
 
 Print the installed G3MTool version and exit.
 
-```
+```bash
 G3MTool --version
 G3MTool -V
 ```
 
-This command prints only the version number, with no extra text or formatting.
+Example:
 
-Example output:
-
-```
-1.0.2
+```text
+1.1.0
 ```
 
-Use this when you need to confirm the exact G3MTool build that is installed on a machine.
+Use this when logs, bug reports, or patch metadata need the exact G3MTool version.

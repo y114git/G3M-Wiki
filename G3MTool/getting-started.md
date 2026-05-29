@@ -1,90 +1,69 @@
 # Getting Started
 
-## Installation
+## Install
 
-Download the latest release binary for your platform from the [GitHub Releases](https://github.com/y114git/G3MTool/releases) page. The binary is self-contained — no .NET runtime or dependencies need to be installed separately.
+Download the release for your platform from the project releases page, or build from source.
 
-| Platform | Binary name |
-| --- | --- |
-| Windows | `G3MTool.exe` |
-| Linux | `G3MTool` |
-| macOS | `G3MTool` |
+## Build From Source
 
-### Build from Source
-
-Requires .NET 10 SDK.
+Requires the .NET 10 SDK.
 
 ```bash
-dotnet publish G3MToolCLI -c Release -r <platform>
+dotnet publish G3MToolCLI -c Release -r <runtime>
 ```
 
-Replace `<platform>` with one of: `win-x64`, `linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`.
+Common runtimes:
 
----
+| Runtime | Platform |
+| --- | --- |
+| `win-x64` | Windows 64-bit |
+| `linux-x64` | Linux 64-bit |
+| `linux-arm64` | Linux ARM64 |
+| `osx-x64` | macOS Intel |
+| `osx-arm64` | macOS Apple Silicon |
 
-## Usage Modes
+## Run Commands
 
-### Command-line (non-interactive)
-
-Pass a command and its arguments directly:
-
-```
-G3MTool patch create original.win modified.win
+```bash
+G3MTool patch create original.win modified.win mod.g3mpatch
+G3MTool patch apply original.win mod.g3mpatch patched.win
 G3MTool info data.win
-G3MTool xpatch apply original.win mod.xdelta patched.win
+G3MTool diff original.win modified.win reports
 ```
 
-Exit code `0` on success, `1` on error. Errors are written to stderr.
+G3MTool returns exit code `0` on success and `1` on command failure.
 
-### Interactive mode
+## Interactive Mode
 
-Run G3MTool with no arguments to enter the REPL prompt:
+Run `G3MTool` without arguments to open the prompt.
 
-```
-G3MTool
-```
-
-```
+```text
 G3MTool (?.?.?) - by Y114
 Type 'help' for available commands or 'exit' to quit
 
-(G3MTool) patch create original.win modified.win
+(G3MTool) patch create original.win modified.win mod.g3mpatch
 (G3MTool) info data.win --verbose
 (G3MTool) exit
 ```
 
-Interactive mode supports the same commands as non-interactive. Type `help` to list them, `exit` or `quit` to leave, `clear` or `cls` to clear the screen. Arguments with spaces can be quoted (`"path with spaces/file.win"`).
+Interactive mode accepts the same commands as command-line mode. Use quotes for paths with spaces.
 
-To print only the version without entering interactive mode:
+## Version
 
 ```bash
 G3MTool --version
 G3MTool -V
 ```
 
----
-
-## Output Location
-
-When no output path is specified, G3MTool saves output files **next to the G3MTool executable**. This applies to `patch create`, `xpatch create`, `xpatch apply`, and `patch apply`.
-
-The `diff` command defaults to a `diff/` subdirectory next to the executable.
-
----
-
 ## Global Options
-
-Apply to any command:
-
-```
-G3MTool patch create original.win modified.win --verbose
-G3MTool info data.win --json
-G3MTool patch validate mod.g3mpatch --log
-```
 
 | Option | Description |
 | --- | --- |
-| `--verbose` / `-v` | Print timing breakdowns, per-phase progress, and detailed logs to stdout |
-| `--log [path]` / `-l` | Write a log file. If path is omitted, defaults to `logs/{command}_{timestamp}.log` |
-| `--json` | Output structured JSON (supported for `info` and `patch validate`) |
-| `--version` / `-V` | Print only the application version and exit |
+| `--verbose`, `-v` | Print detailed logs, phase names, and timing breakdowns |
+| `--log [path]`, `-l` | Write a log file. Without a path, writes to `logs/{command}_{timestamp}.log` next to the executable |
+| `--json` | Print JSON for commands that support it |
+| `--version`, `-V` | Print the version and exit |
+
+## Optional Cache
+
+Commands that accept `--cache <dir>` can reuse `.g3mcache` analysis files across runs. The cache helps repeated `info`, `diff`, `patch create`, `patch validate --data`, and `patch merge` scenarios. It does not replace resource payloads during `patch apply`.

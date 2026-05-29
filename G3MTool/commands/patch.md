@@ -1,170 +1,118 @@
 # patch
 
-Create, apply, validate, or merge G3M-native resource patches (`.g3mpatch`). This is the primary command for mod authors and the main engine behind G3M's patch system.
-
-See [G3M Patch Format](../patch-format.md) for a detailed explanation of the `.g3mpatch` file structure and how patches are created.
-
----
+Create, apply, validate, or merge `.g3mpatch` files.
 
 ## patch create
 
-Compare an original and a modified `data.win` and produce a `.g3mpatch` file capturing all resource-level differences.
-
-```
-G3MTool patch create <original> <modified> [output] [--xdelta-fallback]
+```bash
+G3MTool patch create <original> <modified> [output] [--xdelta-fallback] [--cache <dir>]
 ```
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `original` | Yes | Path to the original (unmodified) data file |
-| `modified` | Yes | Path to the modified data file **or** an `.xdelta` patch file (auto-applied to original first) |
-| `output` | No | Output `.g3mpatch` path. Default: `patch_{timestamp}.g3mpatch` next to executable |
+| `original` | Yes | Original data file (`.win`, `.ios`, `.unx`, `.droid`) |
+| `modified` | Yes | Modified data file or `.xdelta` patch |
+| `output` | No | Output `.g3mpatch`. Default: `patch_{timestamp}.g3mpatch` next to the executable |
 
 | Option | Description |
 | --- | --- |
-| `--xdelta-fallback` | Also embed an exact xdelta fallback in `Xdelta/`. Disabled by default. Use only when byte-perfect fallback is required if semantic apply fails. |
+| `--xdelta-fallback` | Store an xdelta fallback built from `original` and the modified data file |
+| `--cache <dir>` | Read/write `.g3mcache` analysis for real data-file inputs |
 
-**Example — compare two data files:**
+If `modified` is `.xdelta`, G3MTool applies it to `original` in a temporary file and then creates the `.g3mpatch` from that result. The xdelta fallback is stored only when `--xdelta-fallback` is passed.
 
-```bash
-G3MTool patch create data.win data_modded.win my_mod.g3mpatch
-```
-
-**Example — create from an existing xdelta:**
+Examples:
 
 ```bash
-G3MTool patch create data.win existing_mod.xdelta my_mod.g3mpatch
+G3MTool patch create data.win data_modded.win mod.g3mpatch
+G3MTool patch create data.win mod.xdelta mod.g3mpatch --cache .g3mcache
+G3MTool patch create data.win data_modded.win mod.g3mpatch --xdelta-fallback
 ```
-
-When `modified` is an `.xdelta` file, G3MTool applies it to `original` in a temp file and proceeds with the result. The xdelta source is embedded in `Xdelta/` only when `--xdelta-fallback` is passed.
-
-**What the command outputs:**
-
-On success, prints the output path and a statistics summary:
-
-```
-Patch created successfully: my_mod.g3mpatch
-  Changed: 12 (18 files)
-  New:     2 (3 files)
-  Deleted: 1
-```
-
-**How it works internally:**
-
-1. Load `original` → hash all resources in memory.
-2. Load `modified` → hash all resources in memory.
-3. Compare hashes per resource type to find changed, new, and deleted resources.
-4. Export only the changed/new resources from `modified` to a temp directory.
-5. Decompile changed CodeEntries (GML source + bytecode assembly) in memory.
-6. Build the `G3MPatchManifest` (see [patch format](../patch-format.md)).
-7. Create the ZIP: write `g3mpatch.json`, add resource files, write code entry files from memory, add asset order helpers, and optionally embed an xdelta fallback if `--xdelta-fallback` is set.
-8. Clean up all temp files.
-
----
 
 ## patch apply
 
-Apply a `.g3mpatch`, `.xdelta`, or raw data file to a `data.win`.
-
-```
-G3MTool patch apply <data> <patch> [output]
+```bash
+G3MTool patch apply <data> <patch> [output] [--xdelta-fallback]
 ```
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `data` | Yes | Path to the original data file |
-| `patch` | Yes | Path to the patch — `.g3mpatch`, `.xdelta`, or another data file (auto-converted) |
-| `output` | No | Output data file path. Default: same filename as `data`, next to executable |
+| `data` | Yes | Data file to patch |
+| `patch` | Yes | `.g3mpatch`, `.xdelta`, or data file |
+| `output` | No | Output data file. Default: same file name as `data`, next to the executable |
 
-**Example:**
+| Option | Description |
+| --- | --- |
+| `--xdelta-fallback` | For `.g3mpatch` input, try stored xdelta fallback first; if it fails, continue with normal apply |
 
-```bash
-G3MTool patch apply data.win my_mod.g3mpatch patched.win
-```
+Input behavior:
 
-Non-`.g3mpatch` inputs are auto-converted: an `.xdelta` is applied directly; a raw data file is converted to a patch using `data` as the original reference, then applied.
+| Input | Behavior |
+| --- | --- |
+| `.g3mpatch` | Apply resource-level changes |
+| `.xdelta` | Apply xdelta directly |
+| data file | Convert it to `.g3mpatch` against `data`, then apply |
 
-If semantic `.g3mpatch` apply fails, or if the semantic output hash does not match the patch's expected modified-file hash, and the archive contains an xdelta fallback under `Xdelta/` (or legacy `Exact/`), G3MTool attempts that fallback against the original file.
+Default `.g3mpatch` apply tries the normal G3MTool flow first. If that fails and the patch contains fallback data, G3MTool tries xdelta as a last resort.
 
----
+`--cache` is not used by `patch apply`. Apply needs the real target data file and real patch payloads to write the output.
 
 ## patch validate
 
-Validate a `.g3mpatch` file and optionally check whether it is compatible with a specific data file.
-
-```
-G3MTool patch validate <patch> [--data <data.win>]
+```bash
+G3MTool patch validate <patch> [--data <data-file>] [--cache <dir>]
 ```
 
 | Argument / Option | Required | Description |
 | --- | --- | --- |
-| `patch` | Yes | Path to the `.g3mpatch` file |
-| `--data` / `-d` | No | Path to a data file to check compatibility against |
+| `patch` | Yes | `.g3mpatch` file |
+| `--data`, `-d` | No | Data file to compare against manifest compatibility metadata |
+| `--cache <dir>` | No | Reuse cached data-file identity when checking `--data` |
 
-**Example — validate only:**
-
-```bash
-G3MTool patch validate my_mod.g3mpatch
-```
-
-**Example — validate and check compatibility:**
+Validation checks that the patch has a readable manifest. With `--data`, G3MTool compares the data file identity against the manifest original metadata and warns when it differs.
 
 ```bash
-G3MTool patch validate my_mod.g3mpatch --data data.win
+G3MTool patch validate mod.g3mpatch
+G3MTool patch validate mod.g3mpatch --data data.win --cache .g3mcache
 ```
-
-On success, prints:
-
-```
-Patch is valid.
-  Tool: G3MTool v1.0.2
-  Created: 2025-11-01T14:22:00Z
-  Resources: 12 changed, 2 new, 1 deleted
-```
-
-With `--json`, outputs the full manifest as JSON. Exit code is `1` if validation fails (corrupt archive, missing `g3mpatch.json`, invalid schema).
-
----
 
 ## patch merge
 
-Merge two or more patches into a single coherent `.g3mpatch`. Requires the original `data.win` as context to resolve conflicts.
-
-```
-G3MTool patch merge <original> <patch1> <patch2> [patch3 ...] [options]
+```bash
+G3MTool patch merge <original> <patch1> <patch2> [patch3 ...] [options] [--cache <dir>]
 ```
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `original` | Yes | Path to the original data file (used as merge base) |
-| `patch1`, `patch2`, ... | Yes (min 2) | Patch files in priority order: **lowest priority first, highest last**. Accepts `.g3mpatch`, `.xdelta`, or raw data files. |
+| `original` | Yes | Data file used as merge context |
+| `patch1`, `patch2`, ... | Yes, at least 2 | Inputs in priority order, lowest first and highest last. Accepts `.g3mpatch`, `.xdelta`, or data files |
 
 | Option | Alias | Description |
 | --- | --- | --- |
-| `--out <path>` | `-o` | Output path for the merged `.g3mpatch`. This is the default mode if no flags are specified. |
-| `--apply <path>` | `-a` | Instead of saving a merged patch, apply the merged result directly and save the resulting data file to this path. |
-| `--code` | | Enable Git-style 3-way merge for GML code entries. Without this flag, the highest-priority patch wins for conflicting code entries. |
-| `--properties` | | Enable deep key-level merge for JSON property files. Without this flag, the highest-priority patch wins for conflicting property files. |
-| `--report <path>` | `-r` | Write a Markdown report of merge conflicts and resolutions to this path. |
+| `--out <path>` | `-o` | Write the merged `.g3mpatch` |
+| `--apply <path>` | `-a` | Also write the merged data file |
+| `--code` | | Enable 3-way merge for GML conflicts |
+| `--properties` | | Enable key-level merge for JSON property files |
+| `--report <path>` | `-r` | Write a Markdown merge report |
+| `--cache <dir>` | | Reuse `.g3mcache` analysis while converting `.xdelta` or data-file inputs |
 
-**Example — merge two mods:**
+If neither `--out` nor `--apply` is set, G3MTool writes a merged `.g3mpatch` to the default output path.
+
+Examples:
 
 ```bash
 G3MTool patch merge data.win mod_a.g3mpatch mod_b.g3mpatch --out merged.g3mpatch
+G3MTool patch merge data.win mod_a.xdelta mod_b.win --out merged.g3mpatch --apply merged.win --cache .g3mcache
 ```
 
-Here `mod_b` has higher priority: if both mods change the same resource, `mod_b`'s version wins (unless `--code` or `--properties` enables deeper merging).
+Merge rules:
 
-**Example — merge and apply immediately:**
+| Case | Behavior |
+| --- | --- |
+| One patch changes a resource | Include that change |
+| Multiple patches change the same resource | Highest-priority input wins unless a deeper merge option applies |
+| `--code` conflict | Try 3-way GML merge against the original |
+| `--properties` conflict | Merge JSON object keys where possible |
+| Delete vs lower-priority edit | Delete wins unless a higher-priority input replaces the resource |
 
-```bash
-G3MTool patch merge data.win mod_a.g3mpatch mod_b.g3mpatch --apply patched.win --code --report merge_report.md
-```
-
-**Priority and conflict resolution:**
-
-- Resources changed by only one patch: always included as-is.
-- Resources changed by multiple patches: the **rightmost** (highest-priority) patch's version is used at the resource level.
-- With `--code`: GML code entries from conflicting patches are 3-way merged against the original GML. Conflicts that cannot be auto-resolved are marked in the report.
-- With `--properties`: JSON property files are merged key-by-key. Conflicting keys use the highest-priority value.
-- Deleted resources: if a resource is deleted in any patch, deletion wins unless a higher-priority patch modifies it.
+For complex GameMaker data, merge may need helper-guided order, object-event, texture, or code repairs. G3MTool runs those steps only when the input patches require them.

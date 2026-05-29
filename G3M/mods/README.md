@@ -26,6 +26,7 @@ The mod configuration file is a JSON file with the following top-level structure
 | --- | --- | --- |
 | `config_version` | string | Schema version (e.g., `"1.0.0"`). |
 | `metadata` | object | Nested object containing all mod metadata fields (see below). |
+| `info_files` | object | Optional ordered map of root documentation file names to `"show"` / `"hide"` for the Info dialog. |
 | `files` | object | Chapter-to-file-data mapping. Each key is a chapter/section ID, and the value is a file data object. |
 
 ### `metadata` Object Fields
@@ -44,6 +45,27 @@ The mod configuration file is a JSON file with the following top-level structure
 | `tags` | array | List of string tags: `"textedit"`, `"customization"`, `"gameplay"`, `"other"`. |
 
 Per-mod playtime, added date, and last-updated timestamps are stored separately in the profile's `mods_data.json`, not in `mod_config.json`.
+
+### `info_files` Object
+
+`info_files` is optional. It customizes the order and visibility of documentation tabs shown in the mod Info dialog.
+
+Example:
+
+```json
+"info_files": {
+  "README.md": "show",
+  "credits.txt": "show",
+  "lang.txt": "hide"
+}
+```
+
+Rules:
+
+- Keys must point to root-level documentation files in the mod folder.
+- Entries are applied in JSON order, so the object order becomes the first tab order.
+- Files missing from `info_files` remain visible and are appended afterward in alphabetical order.
+- Any value other than `"show"` or `"hide"` is treated as `"show"`.
 
 ### File Data Object
 
@@ -78,6 +100,7 @@ These conversion paths are not limited to the Library import button. The same ar
 ### Supported Archive Formats
 
 G3M can extract archives in these formats:
+
 - **ZIP** (`.zip`) — Built-in support.
 - **7-Zip** (`.7z`) — Supported via the py7zr library.
 - **RAR** (`.rar`) — Supported via the rarfile library.

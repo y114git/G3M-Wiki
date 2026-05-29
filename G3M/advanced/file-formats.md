@@ -54,6 +54,7 @@ The core metadata file for every G3M mod. JSON format.
 | --- | --- | --- |
 | `config_version` | string | Schema version (e.g., `"1.0.0"`). |
 | `metadata` | object | Nested object containing all mod metadata (see below). |
+| `info_files` | object | Optional ordered map of root documentation files to `"show"` / `"hide"` for the Info dialog. |
 | `files` | object | Chapter-to-file mapping (see below). |
 
 **`metadata` object fields:**
@@ -82,6 +83,29 @@ Each key is a chapter/section identifier (e.g., `"deltarune_1"`, `"undertale"`, 
 | `description` | string | Chapter-specific description. |
 | `data_file_path` | string | Path to the main data/patch file (relative to mod folder). |
 | `extra_files` | array | List of additional file paths to copy into the game folder. |
+
+---
+
+## Mod Documentation Files
+
+Documentation files are optional files placed in a mod's root folder. They are not patched into the game. G3M keeps them with the mod, includes them when exporting, and shows them through the mod Info/README viewer when available.
+
+| Extension | Description |
+| --- | --- |
+| `.md`, `.markdown` | Markdown readme, install notes, credits, changelog, or other mod documentation. |
+| `.txt` | Plain-text readme, credits, install notes, or other root documentation. In PizzaOven archives, `.txt` files inside `lang/` are language files instead. |
+| `.html`, `.htm` | HTML documentation rendered by the Info/README viewer. |
+| `.pdf` | PDF documentation displayed by the Info/README viewer. |
+
+These files are discovered only at the mod root. Files inside game data folders, language folders, or other content directories are treated according to their install path instead.
+
+If `mod_config.json` includes an `info_files` object, G3M uses that map first to control documentation tab order and visibility:
+
+- Keys are root-level relative file names such as `README.md` or `credits.pdf`.
+- Values are `"show"` or `"hide"`.
+- Entries listed in `info_files` appear first, in the same order they are written in the JSON file.
+- Root documentation files not listed in `info_files` still remain visible and are appended afterward in alphabetical order.
+- Invalid visibility values are treated as `"show"`.
 
 ---
 
@@ -254,7 +278,7 @@ Mod format for Pizza Tower from the PizzaOven mod manager. Always distributed as
 | `.xdelta` / `.vcdiff` | Binary patch applied to `data.win` or sound banks. |
 | `.win` | Full data file replacement. |
 | `.bank` | FMOD audio bank (goes to `sound/Desktop/`). |
-| `.txt` | Language file (goes to `lang/`) or credits file (game root). |
+| `.txt` | Language file when placed in `lang/`; root `.txt` files are copied as mod documentation/credits. |
 | `.ttf` / `.otf` | Font (goes to `lang/fonts/`). |
 | `.def` | Language definition (goes to `lang/`). |
 | `.png` / `.json` | Language graphics (go to `lang/graphics/`). |

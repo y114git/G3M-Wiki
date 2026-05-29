@@ -1,58 +1,48 @@
 # xpatch
 
-Create or apply binary xdelta3 patches. xdelta is a generic binary diff format — it stores the byte-level difference between two files and requires the original file to reconstruct the modified one. The xdelta binary is bundled inside G3MTool; no separate installation is needed.
+Create or apply xdelta patches. xdelta stores byte-level differences and expects the matching original file when applying.
 
----
+G3MTool bundles xdelta for supported platforms.
 
-## Subcommands
+## xpatch create
 
-### xpatch create
-
-Compute the xdelta diff between `original` and `modified` and write the patch to `output`.
-
-```
+```bash
 G3MTool xpatch create <original> <modified> [output]
 ```
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `original` | Yes | Path to the original (unmodified) file |
-| `modified` | Yes | Path to the modified file |
-| `output` | No | Output `.xdelta` path. Default: `<modified_name>.xdelta` next to executable |
+| `original` | Yes | Source file |
+| `modified` | Yes | Modified file |
+| `output` | No | Output `.xdelta`. Default: `<modified_name>.xdelta` next to the executable |
 
-**Example:**
+Example:
 
 ```bash
-G3MTool xpatch create data.win data_modded.win my_mod.xdelta
+G3MTool xpatch create data.win data_modded.win mod.xdelta
 ```
 
----
+## xpatch apply
 
-### xpatch apply
-
-Apply an xdelta patch to `original` and write the result to `output`.
-
-```
+```bash
 G3MTool xpatch apply <original> <patch> [output]
 ```
 
 | Argument | Required | Description |
 | --- | --- | --- |
-| `original` | Yes | Path to the original (unmodified) file |
-| `patch` | Yes | Path to the `.xdelta` patch file |
-| `output` | No | Output file path. Default: `<original_name>_patched.<ext>` next to executable |
+| `original` | Yes | Source file expected by the xdelta patch |
+| `patch` | Yes | `.xdelta` file |
+| `output` | No | Output file. Default: `<original_name>_patched.<ext>` next to the executable |
 
-**Example:**
+Example:
 
 ```bash
-G3MTool xpatch apply data.win my_mod.xdelta patched.win
+G3MTool xpatch apply data.win mod.xdelta patched.win
 ```
-
----
 
 ## Notes
 
-- xdelta patches are binary and non-mergeable: if two xdelta patches modify different regions of the same file, they cannot be combined. Use [`patch create`](patch.md) to produce merge-friendly `.g3mpatch` files instead.
-- xdelta patches are tied to a specific version of the original file. Applying a patch to a different version of `data.win` will produce corrupt output.
-- `.g3mpatch` files are semantic by default. Use `patch create --xdelta-fallback` only when you also need an embedded byte-perfect xdelta fallback.
-- The bundled xdelta binary is platform-specific (`win`, `linux`, `osx`) and extracted from the embedded resources at runtime.
+- xdelta is exact when applied to the expected source file.
+- xdelta does not provide resource-level merge information.
+- For mergeable GameMaker mods, use `patch create` to produce `.g3mpatch`.
+- Use `patch create --xdelta-fallback` only when a `.g3mpatch` should also carry an exact xdelta fallback.

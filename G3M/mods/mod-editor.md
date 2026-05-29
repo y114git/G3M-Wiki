@@ -24,6 +24,7 @@ The Mod Editor is a dialog for creating new mods or editing existing ones. It le
 | **Icon** | Button to select an icon image (`.png`, `.jpg`, etc.). The icon is copied into the mod folder. |
 | **Tags** | Comma-separated or individually added tags. Common tags: "customization", "gameplay", "text edit", "other". |
 | **Homepage** | URL to the mod's website or GameBanana page. |
+| **Info Files** | Root documentation files shown in the mod's Info dialog. You can add files, move them up/down, toggle show/hide, or reset them back to fallback alphabetical behavior. |
 
 ---
 
@@ -49,9 +50,10 @@ When you fill in the fields and click **Create** (or **Save** in create mode):
 1. G3M generates a unique `local_<uuid>` ID.
 2. Creates a new folder in the profile's mods directory.
 3. Copies the icon (if any) into the mod folder.
-4. Copies selected data files into the mod folder, organized by chapter.
-5. Generates a `mod_config.json` with all metadata and file references.
-6. The mod appears in the Library immediately.
+4. Copies selected info/documentation files into the mod root.
+5. Copies selected data files into the mod folder, organized by chapter.
+6. Generates a `mod_config.json` with all metadata, `info_files` preferences, and file references.
+7. The mod appears in the Library immediately.
 
 ---
 
@@ -60,9 +62,10 @@ When you fill in the fields and click **Create** (or **Save** in create mode):
 In edit mode, the editor pre-fills all fields with the mod's current data. You can change any field. When you click **Save**:
 
 1. The `mod_config.json` is updated with the new metadata.
-2. If data files were changed, old files may be replaced.
-3. The icon is updated if a new one was selected.
-4. The Library refreshes to show the updated mod.
+2. If info/documentation files were added from outside the mod folder, they are copied into the mod root.
+3. If data files were changed, old files may be replaced.
+4. The icon is updated if a new one was selected.
+5. The Library refreshes to show the updated mod.
 
 ---
 
@@ -71,3 +74,4 @@ In edit mode, the editor pre-fills all fields with the mod's current data. You c
 - The mod ID cannot be changed after creation.
 - Deleting a chapter's file assignment removes that chapter's data from the mod. If a mod has no data for a chapter, it will not appear in that chapter's tab in the Library.
 - Extra files are stored as relative paths within the mod folder.
+- Root `.txt`, `.md`, `.markdown`, `.html`, `.htm`, and `.pdf` files are treated as Info dialog candidates automatically. The `Info Files` list only overrides their order and visibility.

@@ -19,15 +19,20 @@ The Modding Tools dialog has five tabs:
 Convert between different data/patch formats.
 
 **Inputs:**
+
 - **Source file** — Select a source data file (`.win`, `.ios`, `.unx`, `.droid`) or patch file (`.g3mpatch`, `.xdelta`, `.vcdiff`, `.csx`).
 - **Original data file** — The unmodified game data file (required for patch-to-data conversions).
 - **Target format** — Choose the output format from: `g3mpatch`, `xdelta`, `data.win`, `game.ios`.
 
 **How it works:**
+
 - **Data → g3mpatch**: Creates a g3mpatch by comparing the modified data file against the original.
 - **Data → xdelta**: Creates an xdelta binary diff between the original and modified data files.
 - **g3mpatch → data**: Applies the g3mpatch to the original data file, producing a full modified data file.
 - **xdelta → data**: Applies the xdelta patch to the original, producing a full data file.
+
+When creating a g3mpatch, the optional xdelta fallback checkbox embeds `Xdelta/fallback.xdelta` into the archive. It is off by default because instruction patches are the merge-friendly path; the fallback is only for recovery if instruction apply fails or if a caller explicitly asks G3MTool to try xdelta first.
+
 - **csx → data**: Executes the CSX script against the original data, producing a modified data file.
 
 The output file is saved to a location you choose.
@@ -39,11 +44,13 @@ The output file is saved to a location you choose.
 Apply a patch to a game data file.
 
 **Inputs:**
+
 - **Original data file** — The unmodified game data file.
 - **Patch file** — A `.g3mpatch`, `.xdelta`, `.vcdiff`, or `.csx` file.
 - **Output file** — Where to save the patched result.
 
 G3M detects the patch format automatically and applies it using the appropriate method:
+
 - `.g3mpatch` / `.zip` with `g3mpatch.json` → G3MTool patch application.
 - `.xdelta` / `.vcdiff` → xdelta binary patching.
 - `.csx` → CSX script execution.
@@ -53,6 +60,7 @@ G3M detects the patch format automatically and applies it using the appropriate 
 Merge two data files together.
 
 **Inputs:**
+
 - **Base data file** — The original unmodified data.
 - **File A** — First modified data file (or patch).
 - **File B** — Second modified data file (or patch).
@@ -69,9 +77,11 @@ This is useful for combining two mods that modify different parts of the game da
 Inspect a data file to see its contents.
 
 **Inputs:**
+
 - **Data file** — A `.win`, `.ios`, `.unx`, `.droid` game data file.
 
 **Output:**
+
 - Displays a structured view of the data file's contents (chunks, resources, sprites, sounds, scripts, etc.) as reported by G3MTool.
 
 ### 5. Diff
@@ -79,11 +89,13 @@ Inspect a data file to see its contents.
 Compare two data files and show the differences.
 
 **Inputs:**
+
 - **File A** — First data file.
 - **File B** — Second data file.
 - **Detailed diff** checkbox — Shows detailed per-resource differences instead of just a summary.
 
 **Output:**
+
 - A text report listing which resources were added, removed, or modified between the two files. Useful for understanding what a mod changes.
 
 ---
@@ -97,6 +109,7 @@ All Modding Tools operations use **G3MTool** — a bundled command-line tool tha
 - **Linux**: `G3MTool` (Unix executable)
 
 G3MTool supports:
+
 - Creating and applying g3mpatch patches.
 - Creating and applying xdelta patches.
 - Executing CSX scripts against data files.
@@ -126,6 +139,7 @@ The tool reports progress during long operations (percentage-based), which is di
 ## Output Log
 
 Each tab has a text output area that shows the result of the operation, including:
+
 - Success/failure messages.
 - File sizes before and after.
 - Verification results.

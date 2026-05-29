@@ -1,50 +1,50 @@
 # G3MTool
 
-G3MTool is a cross-platform command-line tool for working with GameMaker data files (`data.win`, `.ios`, `.unx`, `.droid`). It is the backend engine that G3M (the mod manager) calls to create and apply patches, execute scripts, and inspect game data.
+G3MTool is the command-line tool and reference implementation for the `.g3mpatch` format. It works with GameMaker data files (`.win`, `.ios`, `.unx`, `.droid`), creates and applies patches, merges mods, compares files, prints metadata, runs `.csx` scripts, and can use xdelta when needed.
 
----
+Current documented version: `1.1.0`.
 
-## What G3MTool Does
+## Commands
 
 | Command | Purpose |
 | --- | --- |
-| [`patch`](commands/patch.md) | Create, apply, validate, or merge G3M-native resource patches (`.g3mpatch`) |
+| [`patch`](commands/patch.md) | Create, apply, validate, or merge `.g3mpatch` files |
 | [`xpatch`](commands/xpatch.md) | Create or apply binary xdelta patches |
-| [`execute`](commands/execute.md) | Run `.csx` C# scripts against a data file, or passthrough to external programs |
-| [`info`](commands/info.md) | Inspect a data file or `.g3mpatch` — resource counts, GeneralInfo, detailed listings |
-| [`diff`](commands/diff.md) | Compare two data files or patches and produce a Markdown diff report |
+| [`execute`](commands/execute.md) | Run `.csx` scripts, invoke bundled xdelta, or launch an external program |
+| [`info`](commands/info.md) | Inspect a data file or `.g3mpatch` |
+| [`diff`](commands/diff.md) | Compare data files and/or `.g3mpatch` files |
+| [`--version`](commands/version.md) | Print the installed G3MTool version |
 
----
+## Core Terms
 
-## Key Concepts
-
-- **G3M patch (`.g3mpatch`)** — G3MTool's native patch format. A ZIP archive containing a `g3mpatch.json` manifest with per-resource changes (sprites, sounds, code, rooms, etc.). An exact xdelta fallback can be embedded with `patch create --xdelta-fallback`, but it is disabled by default to keep patches semantic and merge-friendly. See [G3M Patch Format](patch-format.md).
-- **xdelta patch** — A standard binary diff format supported by G3MTool for compatibility. Less merge-friendly than `.g3mpatch` but simpler and smaller.
-- **CSX scripts** — C# scripts (Roslyn-compiled at runtime) that receive a `ScriptGlobals` object with access to the loaded `UndertaleData`. Used to programmatically modify game data. See [CSX Scripting](csx-scripting.md).
-- **Interactive mode** — When launched with no arguments, G3MTool enters a `(G3MTool)` REPL prompt where you can type commands interactively.
-
----
-
-## Platform Support
-
-G3MTool is a self-contained single-file binary built on .NET 10. No runtime installation required.
-
-| Platform | Identifier |
+| Term | Meaning |
 | --- | --- |
-| Windows 64-bit | `win-x64` |
-| Linux 64-bit | `linux-x64` |
-| Linux ARM64 | `linux-arm64` |
-| macOS Intel | `osx-x64` |
-| macOS Apple Silicon | `osx-arm64` |
-
----
+| `.g3mpatch` | G3MTool's patch format. It stores resource-level changes, metadata, helper data, and optionally an xdelta fallback. |
+| xdelta | Binary patch format. It can be smaller for exact file replacement, but it depends on the expected original file. |
+| data file | GameMaker data file accepted by G3MTool: `.win`, `.ios`, `.unx`, or `.droid`. |
+| `.g3mcache` | Optional analysis cache used by commands that support `--cache <dir>`. It stores reusable metadata and hashes, not replacement resource payloads. |
 
 ## Global Options
 
-These options apply to all commands:
-
 | Option | Alias | Description |
 | --- | --- | --- |
-| `--verbose` | `-v` | Enable verbose output: timing breakdowns, progress, per-phase logs |
-| `--log [path]` | `-l` | Write log to file. Default path: `logs/{command}_{timestamp}.log` |
-| `--json` | | Output in JSON format (supported by `info` and `patch validate`) |
+| `--verbose` | `-v` | Print detailed logs and timing breakdowns |
+| `--log [path]` | `-l` | Write a log file. If no path is supplied, G3MTool writes to `logs/{command}_{timestamp}.log` next to the executable |
+| `--json` | | JSON output for commands that support it |
+| `--version` | `-V` | Print the version and exit |
+
+## Platform Support
+
+G3MTool targets .NET 10 and can be published as a self-contained binary.
+
+| Runtime | Platform |
+| --- | --- |
+| `win-x64` | Windows 64-bit |
+| `linux-x64` | Linux 64-bit |
+| `linux-arm64` | Linux ARM64 |
+| `osx-x64` | macOS Intel |
+| `osx-arm64` | macOS Apple Silicon |
+
+## Output Defaults
+
+When an output path is optional and omitted, G3MTool writes command output next to the executable unless the command page states another default. `diff` writes reports to a `diff/` directory next to the executable.
