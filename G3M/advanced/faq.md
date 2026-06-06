@@ -6,7 +6,7 @@
 
 ### What is G3M?
 
-G3M (GameMaker Mod Manager) is a desktop application for managing mods for GameMaker-based games. It supports browsing, downloading, installing, creating, and launching mods for games like DELTARUNE, UNDERTALE, Pizza Tower, and more.
+G3M is a desktop launcher and mod manager for supported GameMaker-based games. It handles browsing, importing, organizing, patching, launching, and restoring game files around the current mod set.
 
 ### Is G3M free?
 
@@ -18,7 +18,7 @@ Windows 10 (version 1809+), macOS, and Linux. The primary development platform i
 
 ### What games does G3M support?
 
-Built-in support for DELTARUNE, DELTARUNE DEMO, UNDERTALE, UNDERTALE Yellow, Pizza Tower, and Sugary Spire. You can also add any GameMaker-based game as a custom game.
+Built-in support currently covers DELTARUNE, DELTARUNEdemo, UNDERTALE, UNDERTALE Yellow, Pizza Tower, Sugary Spire, and FRICKBEARS3. You can also add custom single-tab games.
 
 ### Do I need to install Python to use G3M?
 
@@ -89,7 +89,7 @@ Yes. G3M works with any installation of the game, whether from Steam, itch.io, o
 
 ### What are Profiles?
 
-Profiles let you maintain separate mod collections. Each profile has its own set of installed mods and mod selections. Useful for keeping different mod setups (e.g., "Vanilla", "Modded Playthrough", "Testing"). See [Profiles](../features/profiles.md).
+Profiles let you maintain separate installed mod sets and separate per-game selection state. See [Profiles](../features/profiles.md).
 
 ### What is Direct Launch?
 
@@ -97,11 +97,11 @@ For DELTARUNE, Direct Launch lets you skip the title screen and load directly in
 
 ### What is Full Install?
 
-Some free games (DELTARUNE DEMO, UNDERTALE Yellow, Sugary Spire) can be downloaded and installed entirely through G3M. Enable Full Install in Settings → Game, then click Install. See [Full Install](../games/full-install.md).
+Full Install is available for `deltarunedemo`, `undertaleyellow`, `sugaryspire`, and `frickbears3`. Enable the checkbox for the selected supported game, then run the install flow. See [Full Install](../games/full-install.md).
 
 ### How does the Chat work?
 
-G3M has a built-in anonymous chat with language-specific channels. No account needed. See [Chat](../features/chat.md).
+G3M has a built-in chat feature with no account flow in the client. See [Chat](../features/chat.md).
 
 ### Can I create desktop shortcuts?
 

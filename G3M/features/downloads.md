@@ -1,99 +1,76 @@
 # Downloads
 
-The Downloads system manages all file downloads in G3M — from GameBanana mods to one-click protocol installs to local file imports.
+The Downloads page is the place to watch anything G3M fetched for you: browser downloads, one-click installs, direct URLs, and optionally local imports.
 
 ---
 
-## Downloads Panel
+## What You See
 
-The Downloads panel is accessible from Settings → Downloads sub-tab. It shows:
+Each record tells you three things:
 
-- **Active downloads** — Currently downloading files with progress bars.
-- **Completed downloads** — Successfully downloaded and (optionally) installed mods.
-- **Failed / Cancelled downloads** — Downloads that encountered errors or were cancelled by the user.
+- where the file came from
+- whether the file finished downloading
+- whether G3M already turned it into an installed mod or plugin
 
-Each download record shows:
-
-| Field | Description |
-| --- | --- |
-| **Name** | The display name of the download (mod name or file name). |
-| **Source** | Where the download came from: GameBanana, G3M Protocol, External URL, or Local File. |
-| **Target** | What type of artifact: Mod or Plugin. |
-| **Status** | Current download phase: Queued, Downloading, Downloaded, Failed, Cancelled. |
-| **Use Status** | Install phase: Not Started, Pending Auto, Overwrite Pending, Ready, Using, Needs Manual, Failed, Cancelled. |
-| **Progress** | Percentage and bytes received/total during download. |
-| **Date** | When the download was created and last updated. |
+That matters because a download can succeed, but still need your attention before it becomes usable.
 
 ---
 
-## Download Flow
+## Most Common States
 
-1. **Enqueue** — A download is created with status "Queued". It enters the download queue.
-2. **Download** — The file is downloaded from the source URL. Progress is updated in real time. Status becomes "Downloading".
-3. **Downloaded** — The file is saved to disk in the `downloads/` folder. Status becomes "Downloaded".
-4. **Auto-Use** — If auto-use is enabled (default), G3M automatically extracts and imports the mod into the library. This uses the same detection pipeline as manual import: native G3M mods install directly, DELTAMOD archives are converted automatically, eligible PizzaOven Pizza Tower mods go through PizzaOven conversion, and AFOM/CYOP tower archives use their dedicated import path. Status moves through "Pending Auto" → "Using" → complete.
-5. **Ready** — If auto-use is disabled, the download stays as "Ready" until you manually trigger the install.
+Use this quick mental model:
 
----
-
-## Download Settings
-
-| Setting | Default | Description |
-| --- | --- | --- |
-| **No auto-use** | Off | When on, downloaded files are not automatically installed. They stay as "Ready" in the Downloads panel. |
-| **Delete after use** | Off | When on, the downloaded archive file is deleted after the mod is successfully installed. |
-| **Save local imports** | Off | When on, files imported from the local file system are also saved as download records. |
+- `Queued` or `Downloading`: still in progress
+- `Downloaded`: file is on disk
+- `Pending Auto` or `Using`: G3M is trying to install it
+- `Ready`: file is waiting for you because auto-use is off
+- `Overwrite Pending`: G3M found an existing mod with the same ID and needs your decision
+- `Needs Manual Install`: the file was downloaded, but G3M could not confidently map it to a supported import flow
+- `Failed` or `Cancelled`: the flow stopped before completion
 
 ---
 
-## Download Sources
+## Typical Flow
 
-| Source | Description |
-| --- | --- |
-| **GameBanana** | Mods downloaded from the Mods Browser. |
-| **G3M Protocol** | Mods received via `g3m://` or `deltahub://` one-click install links. |
-| **External URL** | Direct URL downloads triggered programmatically. |
-| **Local File** | Files imported from the local file system (only recorded if "Save local imports" is enabled). |
+For a normal mod download, the flow is:
 
----
+1. G3M creates a download record
+2. the file is downloaded into the downloads area
+3. G3M tries to auto-use it unless you disabled that behavior
+4. the file is either installed, left ready for manual use, or flagged for manual attention
 
-## Download Targets
-
-| Target | Description |
-| --- | --- |
-| **Mod** | A game mod. Installed into the current profile's mods folder. |
-| **Plugin** | A G3M plugin. Installed into the plugins folder. |
+Auto-use goes through the same import pipeline as manual mod import, including conversion paths for supported external mod formats.
 
 ---
 
-## Overwrite Handling
+## Settings That Matter
 
-If a downloaded mod has the same ID as an existing mod in the library, the download enters "Overwrite Pending" status. You must decide:
+The three download settings are:
 
-- **Merge** — Update the existing mod with the new files.
-- **Replace** — Delete the old mod and install the new one.
-- **Skip** — Cancel the installation and leave the existing mod untouched.
+- `No auto-use`: keep finished downloads in a ready state instead of importing them immediately
+- `Delete after use`: remove the downloaded archive after a successful install
+- `Save local imports`: create download history records for files you imported manually from disk
 
----
-
-## Manual Install
-
-Downloads with "Needs Manual Install" status contain files that G3M could not automatically map to a supported import structure. This usually means the archive was not a native G3M mod, not a supported DELTAMOD package, not an eligible PizzaOven/AFOM conversion case, and not a raw patch/data layout G3M can assign automatically. You can manually use them by selecting the download and clicking **Use**, which opens the import dialog with the downloaded file pre-selected.
+If you want a cleaner, more manual workflow, turn on `No auto-use`. If you want the smoothest browser-to-library flow, leave it off.
 
 ---
 
-## Badges
+## Where Files Live
 
-The Downloads tab shows a notification badge with the count of downloads that need attention (overwrite pending, needs manual install). The badge disappears when all downloads are resolved.
+Downloads use the user data directory:
+
+- records: `downloads/downloads_history.json`
+- downloaded files: `downloads/`
+
+The records survive restarts. On startup, G3M checks whether the physical file still exists and updates the record accordingly.
 
 ---
 
-## Persistence
+## When You Need to Act
 
-All download records are persisted in `downloads/downloads_history.json`. The actual downloaded files are stored in the `downloads/` folder. Records survive application restarts. On startup, G3M checks which downloaded files still exist on disk and updates the `file_exists` flag accordingly.
+Usually you only need to touch this page when:
 
----
-
-## Cancellation
-
-Active downloads can be cancelled by clicking the **Cancel** button on the download record. The partial file is removed.
+- a mod wants to overwrite an existing install
+- a file needs manual install
+- you want to retry or inspect a failed download
+- you disabled auto-use and want to process the file later

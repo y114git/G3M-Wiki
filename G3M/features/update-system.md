@@ -12,7 +12,7 @@ On every launch (after initialization), G3M fetches global settings from the G3M
 
 ### Manual Check
 
-You can manually trigger an update check from Settings → General → **Check for updates** button.
+You can manually trigger an update check from the settings view with the **Check for updates** button.
 
 ---
 
@@ -24,7 +24,7 @@ G3M compares version strings by splitting them into numeric components (e.g., "3
 
 ## Beta Updates
 
-If **Enable beta updates** is checked in Settings → General, G3M also considers pre-release versions (tagged as beta, alpha, rc, or similar) as valid updates. With this setting off, only stable releases trigger the update notification.
+If **Enable beta updates** is enabled, G3M also considers pre-release versions when checking the remote launcher file list.
 
 ---
 
@@ -32,7 +32,7 @@ If **Enable beta updates** is checked in Settings → General, G3M also consider
 
 When an update is found, a dialog appears with:
 
-- **Current version** — Your installed version (e.g., "3.0.3stable").
+- **Current version** — Your installed version (currently `3.1.2` on this codebase).
 - **New version** — The available version.
 - **Release notes** — The changelog/notes provided by the cloud settings payload.
 - **Install** button — Downloads and installs the update.

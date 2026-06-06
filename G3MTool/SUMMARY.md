@@ -11,6 +11,7 @@
 * [execute](commands/execute.md)
 * [info](commands/info.md)
 * [diff](commands/diff.md)
+* [version](commands/version.md)
 
 ## Reference
 

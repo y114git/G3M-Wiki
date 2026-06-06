@@ -1,67 +1,48 @@
 # Chat
 
-G3M includes a built-in community chat accessible from the title bar.
+G3M has a lightweight in-app chat client. It is meant for short community messages, not for account-based messaging or file sharing.
 
 ---
 
-## Opening Chat
+## What It Does
 
-Click the **Chat** button (speech bubble icon) in the title bar. The Chat dialog opens.
+The client can:
 
----
+- load recent chat messages from the backend
+- send short text messages
+- refresh messages with a small cache to avoid hammering the server
 
-## Channels
-
-The chat has multiple channels, one per supported language:
-
-- **English** (`en`)
-- **Español** (`es`)
-- **Русский** (`ru`)
-- **中文** (`zh`)
-- **International** (`int`)
-
-Select a channel by clicking its button at the top of the chat dialog. Messages are loaded from the selected channel.
+There is no account flow in the client.
 
 ---
 
-## Reading Messages
+## Message Rules
 
-Messages are loaded from the G3M cloud server. Each message shows:
+Current client-side limits are strict:
 
-- **Author name** — The display name of the sender.
-- **Message text** — The content of the message.
-- **Timestamp** — When the message was sent.
+- maximum message length: `100` characters
+- empty messages are rejected
+- messages that look like links or domains are rejected
 
-Messages are cached for 5 seconds to reduce server load. Up to 100 messages are loaded per channel.
-
----
-
-## Sending Messages
-
-Type your message in the input field and press Enter or click Send. Rules:
-
-- **Maximum length**: 100 characters.
-- **No URLs**: Messages containing URLs, links, or domain names are rejected. This includes `http://`, `https://`, `www.`, shortener domains (bit.ly, t.co, etc.), and bare domain patterns.
-- **No empty messages**: Whitespace-only messages are rejected.
-
-If a rule is violated, an error message is shown (e.g., "Message too long", "Links are not allowed in chat", "Empty message").
+That URL filter blocks common link patterns such as `http://`, `https://`, `www.`, shortener domains, and bare domain-like text.
 
 ---
 
-## Requirements
+## Networking
 
-- An active internet connection is required.
-- The G3M cloud backend must be reachable.
-- No account or login is needed — chat is anonymous.
+Chat requires:
+
+- a reachable backend URL in global settings
+- an internet connection
+
+Message lists are cached for `5` seconds. That cache only affects how often the client re-requests the same message list.
 
 ---
 
-## Error States
+## What to Expect
 
-| Error | Meaning |
-| --- | --- |
-| "config_error" | The cloud server URL is not configured. |
-| "empty_message" | The message is blank. |
-| "message_too_long" | Message exceeds 100 characters. |
-| "contains_url" | The message contains a link or domain. |
-| "send_error" | The server rejected the message or the request failed. |
+If chat works normally, you type a short message, send it, and the dialog refreshes the visible message list. If it does not work, the usual reasons are:
+
+- backend configuration is missing
+- the message broke one of the client rules
+- the network request failed

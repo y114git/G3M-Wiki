@@ -1,18 +1,16 @@
 # Getting Started
 
-## Install
+## Requirements
 
-Download the release for your platform from the project releases page, or build from source.
+G3MTool currently targets **.NET 10**.
 
-## Build From Source
-
-Requires the .NET 10 SDK.
+To build from source:
 
 ```bash
 dotnet publish G3MToolCLI -c Release -r <runtime>
 ```
 
-Common runtimes:
+Common publish runtimes used by the project:
 
 | Runtime | Platform |
 | --- | --- |
@@ -22,7 +20,7 @@ Common runtimes:
 | `osx-x64` | macOS Intel |
 | `osx-arm64` | macOS Apple Silicon |
 
-## Run Commands
+## Basic usage
 
 ```bash
 G3MTool patch create original.win modified.win mod.g3mpatch
@@ -31,22 +29,21 @@ G3MTool info data.win
 G3MTool diff original.win modified.win reports
 ```
 
-G3MTool returns exit code `0` on success and `1` on command failure.
+## Interactive mode
 
-## Interactive Mode
-
-Run `G3MTool` without arguments to open the prompt.
+Run `G3MTool` without arguments to open the interactive prompt.
 
 ```text
-G3MTool (?.?.?) - by Y114
+G3MTool (1.1.1) - by Y114
 Type 'help' for available commands or 'exit' to quit
-
-(G3MTool) patch create original.win modified.win mod.g3mpatch
-(G3MTool) info data.win --verbose
-(G3MTool) exit
 ```
 
-Interactive mode accepts the same commands as command-line mode. Use quotes for paths with spaces.
+Inside the prompt:
+
+- `help` is translated to `--help`
+- `exit` and `quit` close the prompt
+- `clear` and `cls` clear the console
+- quoted paths are supported by the built-in argument splitter
 
 ## Version
 
@@ -55,15 +52,16 @@ G3MTool --version
 G3MTool -V
 ```
 
-## Global Options
+## Global options
 
 | Option | Description |
 | --- | --- |
-| `--verbose`, `-v` | Print detailed logs, phase names, and timing breakdowns |
-| `--log [path]`, `-l` | Write a log file. Without a path, writes to `logs/{command}_{timestamp}.log` next to the executable |
+| `--verbose`, `-v` | Enable verbose output |
+| `--log <path>`, `-l <path>` | Enable file logging; use `default` to write into `logs/{command}_{timestamp}.log` next to the executable |
 | `--json` | Print JSON for commands that support it |
+| `--xdelta-path <path>` | Override the bundled xdelta binary |
 | `--version`, `-V` | Print the version and exit |
 
-## Optional Cache
+## Optional cache
 
-Commands that accept `--cache <dir>` can reuse `.g3mcache` analysis files across runs. The cache helps repeated `info`, `diff`, `patch create`, `patch validate --data`, and `patch merge` scenarios. It does not replace resource payloads during `patch apply`.
+Commands that accept `--cache <dir>` can reuse `.g3mcache` analysis files across runs. In the current codebase those cache files are used for repeated data-file analysis and identity checks; they do not replace resource payloads.

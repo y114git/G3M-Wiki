@@ -1,111 +1,65 @@
 # Importing Mods
 
-G3M offers several ways to add mods to your library.
+Importing is how a file becomes a usable Library mod.
 
 ---
 
-## From the Mods Browser (GameBanana)
+## The Usual Ways
 
-1. Open the **Mods Browser** tab.
-2. Find a mod and click its card to open the details overlay.
-3. Click **Download**. If multiple files are available, choose one from the file picker.
-4. The mod is downloaded in the background (visible in the Downloads panel).
-5. After download, G3M automatically extracts the archive and sends it through the same detection pipeline used for local imports (unless "No auto-use" is enabled in Downloads settings). Native G3M mods are imported directly, DELTAMOD archives are converted automatically, eligible PizzaOven Pizza Tower mods are converted through the PizzaOven path, and AFOM/CYOP tower archives use their dedicated import path.
-6. If the mod already exists in your library (same ID), a merge/overwrite dialog appears.
+Most imports happen through one of these:
 
----
+- download from the Mods Browser
+- choose a local file from disk
+- drag and drop a file, folder, or URL onto G3M
 
-## From Local Files
-
-### File Picker
-
-1. In the Library tab, click the **Add Mod** button (plus icon).
-2. Choose **Import Mod**.
-3. A file picker opens. Select one or more files. Supported file types:
-   - `.zip`, `.7z`, `.rar` — Archives containing mod files.
-   - `.g3mpatch` — A G3M patch file.
-   - `.xdelta`, `.vcdiff` — Binary diff patches.
-   - `.csx` — C# script patches.
-   - `.win`, `.ios`, `.unx`, `.droid` — Raw data files.
-4. G3M processes each file:
-   - Archives are extracted to a temporary folder.
-   - The contents are inspected for a `mod_config.json` (G3M native), `_deltamodInfo.json` / `meta.json` / `modding.xml` (DELTAMOD format), `mod.json` (PizzaOven format), or raw data files.
-   - If a `mod_config.json` is found, the mod is imported directly.
-   - If DELTAMOD files are found, the mod is converted to G3M format automatically.
-   - If PizzaOven NORMAL format is detected for Pizza Tower, G3M simulates the PizzaOven result against a temporary game copy and rebuilds it as a native G3M mod.
-   - If the archive matches Pizza Tower AFOM/CYOP tower layout, G3M imports it through the dedicated AFOM/CYOP conversion path instead of treating it like a regular patch mod.
-   - If only raw data/patch files are found, G3M generates a minimal `mod_config.json` with the file(s) assigned to the appropriate chapter.
-5. The mod appears in the Library immediately after import.
-
-### Drag and Drop
-
-You can drag files or folders directly onto the G3M window:
-
-- **Archives** (`.zip`, `.7z`, `.rar`) — Extracted and imported as mods.
-- **Patch files** (`.g3mpatch`, `.xdelta`, `.vcdiff`, `.csx`) — Imported as single-file mods.
-- **Data files** (`.win`, `.ios`, `.unx`, `.droid`) — Imported as raw-data mods.
-- **Folders** — If the folder contains a `mod_config.json`, imported directly. Otherwise, scanned for supported files.
-- **URLs** — If a URL is dropped, G3M downloads the file and imports it.
-
-### Import Queue
-
-If multiple files are dropped at once, they are queued and processed one at a time. A status message shows which file is being processed.
+All three paths end up feeding the same general import pipeline.
 
 ---
 
-## One-Click Install
+## What G3M Tries to Recognize
 
-G3M registers custom URL protocol handlers (`g3m://` and `deltahub://`). When you click a one-click install link on a website (such as GameBanana), G3M:
+When a file comes in, G3M tries to answer:
 
-1. Receives the URL.
-2. Parses the download URL from the protocol link.
-3. Shows a confirmation dialog with the download URL and source.
-4. If confirmed, queues the download through the Downloads system.
-5. After download, the file is processed by the same archive detection and conversion flow as a local import.
+- is this already a native G3M mod
+- is this a supported archive with recognizable mod content
+- is this a known external format that can be converted
+- is this at least a raw patch or data file that can become a basic mod
 
-See [One-Click Install](../advanced/one-click-install.md) for full details.
-
----
-
-## DELTAMOD Conversion
-
-If the imported archive contains a `_deltamodInfo.json` (or `meta.json`) and `modding.xml` file (DELTAMOD format from Deltamod Manager), G3M converts it automatically during file import, URL install, and version archive import:
-
-- Reads the DELTAMOD metadata (name, author, description, game, version).
-- Maps the DELTAMOD game identifier (e.g., `toby.deltarune`) to the G3M game ID.
-- Extracts patch files and data files.
-- Creates a `mod_config.json` with the correct structure.
-- Assigns files to the appropriate chapters based on file naming patterns.
-
-Supported DELTAMOD game mappings:
-
-| DELTAMOD ID | G3M Game |
-| --- | --- |
-| `toby.deltarune` | deltarune |
-| `toby.deltarune.demo` | deltarunedemo |
-| `toby.undertale` | undertale |
-| `fans.utyellow` | undertaleyellow |
-| `other.pizzatower` | pizzatower |
+If one of those answers is yes, G3M tries to build a usable mod entry for you.
 
 ---
 
-## PizzaOven & AFOM/CYOP Conversion
+## Best Case
 
-For Pizza Tower, G3M auto-detects and routes two PizzaOven-originated mod types through different handlers:
+The smoothest imports are:
 
-- **NORMAL mods** — A folder (or `.zip`) with `mod.json` and mod content files (xdelta patches, audio banks, language files, fonts, etc.). G3M copies the game to a temp directory, simulates applying the mod as PizzaOven would, diffs the result against the original, and produces a native G3M mod from the changes. Requires the Pizza Tower game path to be configured.
-- **AFOM/CYOP mods** — Custom level archives where each root entry is a tower folder with a valid `.ini` containing `[properties]`, `name`, and `mainlevel`. G3M stores the tower folders in the mod directory and deploys them to `%APPDATA%\PizzaTower_GM2\towers\` on launch.
+- native G3M mod folders or archives
+- `.g3mpatch`
+- supported archives with clear mod structure
 
-**GMLoader** mods (with GML folders like `audio/`, `code/`, `lib/`) are not supported and cannot be converted.
-
-See [PizzaOven & AFOM/CYOP Conversion](po-conversion.md) for full details.
+Supported conversion paths also exist for some external ecosystems, including DELTAMOD and supported Pizza Tower-related flows.
 
 ---
 
-## Merge / Overwrite
+## When Import Is Not Automatic
 
-When importing a mod whose ID matches an existing mod in the library:
+Sometimes G3M can download or open a file but still cannot turn it into a clean installed mod on its own.
 
-- A dialog appears asking whether to **merge** (update the existing mod's files) or **replace** (delete the old mod and import fresh).
-- Merging preserves existing version snapshots and other data in the mod folder.
-- Replacing removes the old folder entirely and creates a new one.
+That usually means:
+
+- the format is unsupported
+- the archive layout is too ambiguous
+- the file needs a more manual conversion workflow
+
+When that happens, the right next step is usually to inspect the file structure or try the relevant modding/conversion tools instead of assuming the file is broken.
+
+---
+
+## Merge vs Replace
+
+If the incoming mod matches an existing mod ID, G3M asks whether you want to merge or replace.
+
+- **merge** is better when you want to preserve the current mod folder and update it
+- **replace** is better when you want a clean reimport
+
+If you do not specifically need to preserve local folder state, replace is often the simpler option.

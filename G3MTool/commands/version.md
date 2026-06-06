@@ -7,10 +7,6 @@ G3MTool --version
 G3MTool -V
 ```
 
-Example:
+Current code version: `1.1.1`
 
-```text
-1.1.0
-```
-
-Use this when logs, bug reports, or patch metadata need the exact G3MTool version.
+Use this when a bug report, patch manifest, or support request needs the exact tool version.

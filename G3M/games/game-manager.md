@@ -1,55 +1,50 @@
 # Game Manager
 
-The Game Manager is a dialog that lets you control which games appear in G3M and in what order.
+The Game Manager controls the launcher's game list: what appears, in what order, and which extra custom games exist.
 
 ---
 
-## Opening the Game Manager
+## What It Is For
 
-Settings → Game section → click the **Game Manager** button.
+Use the Game Manager when you want to:
 
----
+- hide games you never use
+- put your main game at the top
+- add a custom GameMaker game
+- remove a custom game you no longer want in the launcher
 
-## Game List
-
-The dialog shows all games — both built-in and custom — in their current display order. Each row shows:
-
-- **Game icon / name** — The display name of the game.
-- **Visibility toggle** — A checkbox or eye icon to show/hide the game across the app. Hidden games do not appear in the Library game dropdown, the Mods Browser game selector, or the title bar game switcher.
-- **Reorder controls** — Up/Down arrow buttons to change the game's position in the list. The order determines the display order everywhere in G3M.
+It changes the launcher view, not your actual game files.
 
 ---
 
-## Reordering
+## Built-In vs Custom Games
 
-Click the up or down arrows (or drag, if supported) to move a game higher or lower in the list. The first visible game in the list becomes the default game selected on launch.
+Built-in games are part of G3M itself. You can reorder or hide them, but not delete them.
 
----
+Custom games are user-defined registry entries. You can:
 
-## Visibility
-
-Toggle the visibility checkbox to hide or show a game. A hidden game:
-
-- Is removed from game selector dropdowns.
-- Its mods are still stored on disk and in profiles — they are just not displayed.
-- It can be made visible again at any time.
-
-You cannot hide all games. At least one must remain visible.
+- create them
+- edit them
+- reorder them
+- hide them
+- delete them
 
 ---
 
-## Adding a Custom Game
+## Visibility Rules
 
-At the bottom of the Game Manager dialog, there is an **Add Game** button. Clicking it opens the custom game creation form. See [Custom Games](custom-games.md) for details on the fields.
+Hidden games stop showing up in normal selectors, but their related data is not erased just because you hid them.
 
----
-
-## Deleting a Custom Game
-
-Select a custom game in the list and click **Delete**. Built-in games cannot be deleted. A confirmation dialog prevents accidental deletion.
+One safety rule is enforced: at least one game must stay visible.
 
 ---
 
 ## Persistence
 
-All changes (order, visibility, custom games) are saved immediately to `custom_games.json` in the user data folder. The changes take effect across the entire application.
+The manager stores its state in `settings/custom_games.json`, including:
+
+- order
+- visibility
+- custom game definitions
+
+Changes are meant to take effect across the app, not just inside the dialog.

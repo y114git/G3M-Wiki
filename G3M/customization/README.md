@@ -1,37 +1,39 @@
 # Customization
 
-G3M is highly customizable. You can change almost every visual and audio aspect of the application.
+Customization is where G3M becomes yours. The current app lets you change colors, background media, audio, logo, font, border radius, and animation behavior without editing code.
 
 ---
 
-## What You Can Customize
+## Fast Overview
 
-- [**Theme Colors**](colors.md) — Seven independent color channels for every part of the UI.
-- [**Background**](background.md) — Custom images or videos as the window background.
-- [**Audio**](audio.md) — Startup sounds and looping background music.
-- [**Fonts & Logo**](fonts-and-logo.md) — Replace the application font and title bar logo.
-- [**Theme Packages**](theme-packages.md) — Export and import complete theme configurations.
+If you only want the short version:
+
+- use [Theme Colors](colors.md) for the overall palette
+- use [Background](background.md) for image or video backdrops
+- use [Audio](audio.md) for startup sound and looping background music
+- use [Fonts & Logo](fonts-and-logo.md) to change the app's personality
+- use [Theme Packages](theme-packages.md) to move the whole look between installs
 
 ---
 
-## Quick Summary
+## What Is Stored
 
-| Customization | Location | Stored As |
-| --- | --- | --- |
-| Background color | Settings → Appearance | `custom_background_color` in settings |
-| Elements color | Settings → Appearance | `custom_elements_color` |
-| Border color | Settings → Appearance | `custom_border_color` |
-| Hover color | Settings → Appearance | `custom_hover_color` |
-| Select color | Settings → Appearance | `custom_select_color` |
-| Main text color | Settings → Appearance | `custom_main_text_color` |
-| Secondary text color | Settings → Appearance | `custom_secondary_text_color` |
-| Background image/video | Settings → Appearance | `custom_background.<ext>` in data folder |
-| Disable background | Settings → Appearance | `background_disabled` flag |
-| Custom logo | Settings → Appearance | `custom_logo.<ext>` in data folder |
-| Custom font | Settings → Appearance | `custom_font.<ext>` in data folder |
-| Border radius | Settings → Appearance | `custom_border_radius` (0–20 px) |
-| Startup sound | Settings → Appearance | `custom_startup_sound.<ext>` in data folder |
-| Disable startup sound | Settings → Appearance | `disable_startup_sound` flag |
-| Background music | Settings → Appearance | `custom_background_music.<ext>` in data folder |
-| Pause when unfocused | Settings → Appearance | `pause_background_music_unfocused` flag |
-| Disable animations | Settings → Appearance | `disable_animations` flag |
+Most customization lives in the user data folder:
+
+- color values live in settings
+- background, logo, font, and audio files are copied into the data folder under stable names
+- imported theme packages reapply those settings and files together
+
+That means your look is tied to the G3M data folder, not just to the executable.
+
+---
+
+## Best Starting Point
+
+For most people, the pleasant order is:
+
+1. set your seven theme colors
+2. pick a background
+3. adjust border radius and animation settings
+4. add audio only if you actually want it
+5. export a theme package once you like the result

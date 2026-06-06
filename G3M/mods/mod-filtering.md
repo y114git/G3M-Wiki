@@ -61,7 +61,7 @@ Mods matching any blocklist rule (by ID, name, or category) for the current game
 
 ### Installation Status Filter
 
-In the Library, only installed mods (mods with folders in the profile's `mods/` directory) are shown. The Mods Browser shows all mods from GameBanana regardless of installation status.
+In the Library, only installed mods from the active profile directory are shown. The Mods Browser shows remote GameBanana results regardless of installation status.
 
 ---
 

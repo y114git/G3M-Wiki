@@ -2,12 +2,12 @@
 
 Create or apply xdelta patches. xdelta stores byte-level differences and expects the matching original file when applying.
 
-G3MTool bundles xdelta for supported platforms.
+G3MTool bundles xdelta for supported platforms, and xpatch also honors the global `--xdelta-path <path>` override.
 
 ## xpatch create
 
 ```bash
-G3MTool xpatch create <original> <modified> [output]
+G3MTool xpatch create <original> <modified> [output] [--xdelta-path <path>]
 ```
 
 | Argument | Required | Description |
@@ -16,16 +16,10 @@ G3MTool xpatch create <original> <modified> [output]
 | `modified` | Yes | Modified file |
 | `output` | No | Output `.xdelta`. Default: `<modified_name>.xdelta` next to the executable |
 
-Example:
-
-```bash
-G3MTool xpatch create data.win data_modded.win mod.xdelta
-```
-
 ## xpatch apply
 
 ```bash
-G3MTool xpatch apply <original> <patch> [output]
+G3MTool xpatch apply <original> <patch> [output] [--xdelta-path <path>]
 ```
 
 | Argument | Required | Description |
@@ -34,15 +28,8 @@ G3MTool xpatch apply <original> <patch> [output]
 | `patch` | Yes | `.xdelta` file |
 | `output` | No | Output file. Default: `<original_name>_patched.<ext>` next to the executable |
 
-Example:
-
-```bash
-G3MTool xpatch apply data.win mod.xdelta patched.win
-```
-
 ## Notes
 
-- xdelta is exact when applied to the expected source file.
-- xdelta does not provide resource-level merge information.
-- For mergeable GameMaker mods, use `patch create` to produce `.g3mpatch`.
-- Use `patch create --xdelta-fallback` only when a `.g3mpatch` should also carry an exact xdelta fallback.
+- xdelta is exact only when applied to the expected source file.
+- xdelta does not carry resource-level metadata for merge-aware workflows.
+- Use `patch create` when you need inspectable or mergeable `.g3mpatch` output.

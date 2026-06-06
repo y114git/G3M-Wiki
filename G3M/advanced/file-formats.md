@@ -1,328 +1,39 @@
-# File Formats Reference
+# File Formats
 
-This page catalogs every file format that G3M reads, writes, or processes.
+This page is a quick map of the file types G3M actually cares about.
 
----
+## Main game data files
 
-## Game Data Files
+- `.win`
+- `.ios`
+- `.unx`
+- `.droid`
 
-These are the main data files for GameMaker-based games. G3M patches these files when applying mods.
+## Main patch formats
 
-| Extension | Platform | Description |
-| --- | --- | --- |
-| `.win` | Windows | The primary GameMaker data file on Windows (commonly `data.win`). |
-| `.ios` | iOS | GameMaker data file for iOS builds (commonly `game.ios`). |
-| `.unx` | Linux | GameMaker data file for Linux/Unix builds. |
-| `.droid` | Android | GameMaker data file for Android builds. |
+- `.g3mpatch`
+- `.xdelta`
+- `.vcdiff`
+- `.csx`
 
----
+Archive-style G3M patches may also be plain `.zip` files that contain `g3mpatch.json`.
 
-## Patch Formats
+## Core metadata files
 
-Patches modify game data files without replacing them entirely. G3M supports multiple patch formats.
+- `mod_config.json` for G3M mods
+- `plugin_config.json` for plugins
+- `theme_config.json` for theme packages
+- legacy `theme.json` is still recognized during theme import
 
-### g3mpatch
+## Settings and state files
 
-- **Extension**: `.g3mpatch` or `.zip` containing `g3mpatch.json`
-- **Created by**: G3MTool (bundled with G3M)
-- **Description**: G3M's native patch format. Contains a JSON manifest (`g3mpatch.json`) describing which chunks of the data file to modify, along with the modified chunk data. Can be stored as a single `.g3mpatch` file or as a `.zip` archive containing the manifest and data files.
-- **Advantages**: Compact (only changed data is stored), supports verification, created automatically by Modding Tools.
+- `settings/settings.json`
+- `settings/blocklist.json`
+- `settings/custom_games.json`
+- `downloads/downloads_history.json`
+- `game_versions/game_versions_data.json`
+- `plugins/plugins_data.json`
 
-### xdelta / vcdiff
+## Plugin API note
 
-- **Extensions**: `.xdelta`, `.vcdiff`
-- **Description**: Standard binary diff/patch formats. Stores the minimal set of instructions to transform the original file into the modified version. Requires the original unmodified data file to apply.
-- **Usage**: Common in the modding community. G3M can both create and apply xdelta patches via G3MTool.
-
-### CSX Scripts
-
-- **Extension**: `.csx`
-- **Description**: C# script files executed by G3MTool against a game data file. Allows programmatic modifications (adding sprites, changing code, modifying resources). More flexible than binary patches but requires G3MTool to execute.
-- **Usage**: Advanced mod creation. Scripts can perform complex transformations that binary patches cannot express.
-
----
-
-## Mod Configuration
-
-### mod_config.json
-
-The core metadata file for every G3M mod. JSON format.
-
-**Top-level fields:**
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `config_version` | string | Schema version (e.g., `"1.0.0"`). |
-| `metadata` | object | Nested object containing all mod metadata (see below). |
-| `info_files` | object | Optional ordered map of root documentation files to `"show"` / `"hide"` for the Info dialog. |
-| `files` | object | Chapter-to-file mapping (see below). |
-
-**`metadata` object fields:**
-
-| Field | Type | Example |
-| --- | --- | --- |
-| `id` | string | `"local_abc123"` or `"gb_mod_45678"` |
-| `name` | string | `"My Awesome Mod"` |
-| `version` | string | `"1.2.0"` |
-| `author` | string | `"ModAuthor"` |
-| `description` | string | `"A cool mod that changes the intro."` |
-| `homepage` | string | `"https://gamebanana.com/mods/12345"` |
-| `icon` | string | `"icon.png"` |
-| `game` | string | `"deltarune"` |
-| `game_version` | string | `"1.10"` |
-| `tags` | array | `["customization", "gameplay"]` |
-
-Per-mod playtime, added date, and last-updated timestamps are stored in the profile's `mods_data.json`, not in `mod_config.json`.
-
-**files object:**
-
-Each key is a chapter/section identifier (e.g., `"deltarune_1"`, `"undertale"`, `"pizzatower"`). The value is:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `description` | string | Chapter-specific description. |
-| `data_file_path` | string | Path to the main data/patch file (relative to mod folder). |
-| `extra_files` | array | List of additional file paths to copy into the game folder. |
-
----
-
-## Mod Documentation Files
-
-Documentation files are optional files placed in a mod's root folder. They are not patched into the game. G3M keeps them with the mod, includes them when exporting, and shows them through the mod Info/README viewer when available.
-
-| Extension | Description |
-| --- | --- |
-| `.md`, `.markdown` | Markdown readme, install notes, credits, changelog, or other mod documentation. |
-| `.txt` | Plain-text readme, credits, install notes, or other root documentation. In PizzaOven archives, `.txt` files inside `lang/` are language files instead. |
-| `.html`, `.htm` | HTML documentation rendered by the Info/README viewer. |
-| `.pdf` | PDF documentation displayed by the Info/README viewer. |
-
-These files are discovered only at the mod root. Files inside game data folders, language folders, or other content directories are treated according to their install path instead.
-
-If `mod_config.json` includes an `info_files` object, G3M uses that map first to control documentation tab order and visibility:
-
-- Keys are root-level relative file names such as `README.md` or `credits.pdf`.
-- Values are `"show"` or `"hide"`.
-- Entries listed in `info_files` appear first, in the same order they are written in the JSON file.
-- Root documentation files not listed in `info_files` still remain visible and are appended afterward in alphabetical order.
-- Invalid visibility values are treated as `"show"`.
-
----
-
-## Plugin Configuration
-
-### plugin_config.json
-
-The manifest file for G3M plugins. JSON format.
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `config_version` | int | Yes | Schema version (currently 1). |
-| `id` | string | Yes | Unique plugin identifier. |
-| `name` | string | Yes | Display name. |
-| `description` | string | Yes | Brief description. |
-| `author` | string | Yes | Author name. |
-| `version` | string | Yes | Plugin version. |
-| `entry` | string | Yes | Main Python file name (e.g., "main.py"). |
-| `api_version` | string | Yes | Target Plugin API version (e.g., `"1.0.0"`). Must match the app's `PLUGIN_API_VERSION`. |
-| `icon` | string | No | Icon file path. |
-| `homepage` | string | No | URL to project page. |
-| `tags` | array | No | Category tags. |
-| `relations` | object | No | Dependencies/conflicts (`{plugin_id: "require"/"conflict"}`). |
-| `hooks` | array | No | List of hook names. |
-| `settings_schema` | object | No | Plugin settings definition. |
-
----
-
-## Settings Files
-
-### settings.json
-
-Main application settings. Stored in `{user_data_root}/settings/settings.json`.
-
-Key sections:
-
-| Key | Type | Description |
-| --- | --- | --- |
-| `game_path` | string | DELTARUNE installation folder path. |
-| `demo_game_path` | string | DELTARUNE DEMO folder path. |
-| `undertale_game_path` | string | UNDERTALE folder path. |
-| `undertaleyellow_game_path` | string | UNDERTALE Yellow folder path. |
-| `pizzatower_game_path` | string | Pizza Tower folder path. |
-| `sugaryspire_game_path` | string | Sugary Spire folder path. |
-| `custom_game_path_<id>` | string | Custom game folder paths. |
-| `launch_via_steam` | boolean | Launch games through Steam. |
-| `use_portproton` | boolean | Use PortProton on Linux. |
-| `portproton_path` | string | Path to PortProton installation. |
-| `use_custom_executable` | boolean | Use custom game executable. |
-| `custom_executable_path` | string | DELTARUNE custom executable path. |
-| `custom_background_path` | string | Path to custom background file. |
-| `background_disabled` | boolean | Disable background image. |
-| `disable_startup_sound` | boolean | Mute startup sound. |
-| `disable_animations` | boolean | Turn off UI animations. |
-| `pause_background_music_unfocused` | boolean | Pause music when unfocused. |
-| `custom_background_color` | string | Hex color for background. |
-| `custom_elements_color` | string | Hex color for elements. |
-| `custom_border_color` | string | Hex color for borders. |
-| `custom_hover_color` | string | Hex color for hover state. |
-| `custom_select_color` | string | Hex color for selection. |
-| `custom_main_text_color` | string | Hex color for main text. |
-| `custom_secondary_text_color` | string | Hex color for secondary text. |
-| `custom_border_radius` | integer | Window corner radius (0–20). |
-| `beta_updates_enabled` | boolean | Include beta versions in update checks. |
-| `skip_patching_warnings` | boolean | Skip confirmation before patching. |
-| `merge_properties` | boolean | Merge game object properties during patching. |
-| `merge_code` | boolean | Merge code blocks during patching. |
-| `hide_mods_browser_tab` | boolean | Hide the Mods Browser tab. |
-| `hide_library_tab` | boolean | Hide the Library tab. |
-| `hide_library_filters` | boolean | Hide filters in the Library. |
-| `show_reset_buttons` | boolean | Show reset buttons in Appearance. |
-| `analytics_opt_in_enabled` | boolean | Enable anonymous analytics. |
-| `downloads_no_auto_use` | boolean | Don't auto-install downloads. |
-| `downloads_delete_after_use` | boolean | Delete archives after install. |
-| `downloads_save_local_imports` | boolean | Record local imports as downloads. |
-| `demo_mode_enabled` | boolean | Legacy demo mode flag. |
-| `active_profile` | string | Name of the active profile. |
-| `last_selected` | object | Last selected game/chapter per context. |
-| `cache_format_version` | string | App version that last wrote settings. |
-| `announce_identity` | string | Anonymous UUID for poll voting. |
-| `announce_poll_votes` | object | Record of submitted poll votes. |
-
-### blocklist.json
-
-Mod blocklist rules. Stored in `{user_data_root}/settings/blocklist.json`.
-
-Structure: Object with game IDs (or "global") as keys, each mapping to an array of rule objects with `prefix_type` and `value`.
-
-### custom_games.json
-
-Custom game registry. Stored in `{user_data_root}/settings/custom_games.json`.
-
-| Field | Description |
-| --- | --- |
-| `schema_version` | Schema version (currently 1). |
-| `order` | Array of game IDs in display order. |
-| `visibility` | Object mapping game IDs to boolean visibility. |
-| `custom_games` | Array of custom game records. |
-
-### `<ProfileName>.json`
-
-Per-profile state. Stored in `{user_data_root}/profiles/<name>/<name>.json` (e.g., `profiles/Default/Default.json`).
-
-Contains profile-specific flat keys: `selected_game_type`, `used_mods_<chapter_id>` (arrays of mod IDs), `chapter_mode_enabled`, `full_install_enabled`, and similar.
-
-### plugins_data.json
-
-Plugin enabled/disabled state and per-plugin settings. Stored in `{user_data_root}/plugins/plugins_data.json`.
-
-Structure: `{"enabled": {"plugin_id": bool, ...}, "settings": {"plugin_id": {...}, ...}}`.
-
-### downloads_history.json
-
-Download history. Stored in `{user_data_root}/downloads/downloads_history.json`.
-
-Array of download record objects with fields described in [Downloads](../features/downloads.md).
-
-### game_versions_data.json
-
-Game version records. Stored in `{user_data_root}/game_versions/game_versions_data.json`.
-
----
-
-## Archive Formats
-
-G3M can extract files from these archive formats:
-
-| Format | Extension | Library Used |
-| --- | --- | --- |
-| ZIP | `.zip` | Built-in `zipfile` module |
-| 7-Zip | `.7z` | `py7zr` library |
-| RAR | `.rar` | `rarfile` library |
-| TAR (all variants) | `.tar.gz`, `.tar.bz2`, `.tar.xz`, `.tar`, `.tgz` | Built-in `tarfile` module |
-| LZMA | `.lzma` | Built-in `lzma` module |
-
----
-
-## Theme Package
-
-### Theme package (.zip)
-
-A standard `.zip` archive containing a `theme_config.json` manifest and optional media asset files. See [Theme Packages](../customization/theme-packages.md) for details.
-
-Recognized manifest file names: `theme_config.json` (current), `theme.json` (legacy).
-
----
-
-## DELTAMOD Format
-
-Legacy mod format from Deltamod Manager.
-
-| File | Description |
-| --- | --- |
-| `_deltamodInfo.json` or `meta.json` | JSON metadata (name, author, game, etc.) |
-| `modding.xml` | XML descriptor with mod metadata and file references. |
-
-G3M auto-converts DELTAMOD mods on import. See [Importing Mods](../mods/importing.md#deltamod-conversion).
-
----
-
-## PizzaOven Format
-
-Mod format for Pizza Tower from the PizzaOven mod manager. Always distributed as a `.zip` archive.
-
-### NORMAL Mods
-
-| File | Description |
-| --- | --- |
-| `mod.json` | Metadata (`title`, `submitter`, `description`, `homepage`, `preview`, `cat`). |
-| `.xdelta` / `.vcdiff` | Binary patch applied to `data.win` or sound banks. |
-| `.win` | Full data file replacement. |
-| `.bank` | FMOD audio bank (goes to `sound/Desktop/`). |
-| `.txt` | Language file when placed in `lang/`; root `.txt` files are copied as mod documentation/credits. |
-| `.ttf` / `.otf` | Font (goes to `lang/fonts/`). |
-| `.def` | Language definition (goes to `lang/`). |
-| `.png` / `.json` | Language graphics (go to `lang/graphics/`). |
-| `.dll` / `.mp4` | Plugin DLL or video (game root). |
-| `.disable_gb1click` | Opt-out marker — disables G3M auto-conversion. |
-
-### AFOM/CYOP Mods
-
-| File | Description |
-| --- | --- |
-| `<TowerName>/` | One or more tower folders at archive root. |
-| `<TowerName>/<name>.ini` | INI with `[properties]` section, `name` and `mainlevel` keys. |
-| `<TowerName>/levels/` | Level data files. |
-
-G3M auto-converts eligible PizzaOven and AFOM/CYOP mods. See [PizzaOven & AFOM/CYOP Conversion](../mods/po-conversion.md) for details.
-
----
-
-## Supported Audio Formats
-
-For custom startup sounds and background music:
-
-`.mp3`, `.wav`, `.ogg`, `.flac`, `.m4a`, `.aac`
-
----
-
-## Supported Image Formats
-
-For custom backgrounds, logos, and mod icons:
-
-`.png`, `.jpg`, `.jpeg`, `.gif`, `.bmp`, `.ico`, `.webp`
-
----
-
-## Supported Video Formats
-
-For custom backgrounds:
-
-`.mp4`, `.webm`, `.avi`, `.mkv`, `.mov`, `.m4v`, `.3gp`, `.mpg`, `.mpeg`, `.flv`, `.wmv`
-
----
-
-## Supported Font Formats
-
-For custom application fonts:
-
-`.ttf` (TrueType), `.otf` (OpenType)
+The current plugin API version is `1.1.0`.

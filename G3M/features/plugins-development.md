@@ -31,7 +31,7 @@ my_plugin/
   "author": "YourName",
   "version": "1.0.0",
   "entry": "main.py",
-  "api_version": "1.0.0"
+  "api_version": "1.1.0"
 }
 ```
 
@@ -63,7 +63,7 @@ def on_load(context):
 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
-| `api_version` | string | `"1.0.0"` | Target Plugin API version. |
+| `api_version` | string | `"1.1.0"` | Target Plugin API version. |
 | `icon` | string | `null` | Relative path to icon image. |
 | `homepage` | string | `null` | URL to plugin homepage/repository. |
 | `tags` | array | `[]` | Category tags: `interface`, `game_experience`, `tool`, `other`. |
@@ -89,6 +89,11 @@ Hooks let your plugin execute code at specific lifecycle points.
 | `after_game_started` | After game process is launched. | `PluginTaskRuntime` |
 | `before_restore_after_exit` | After game exits, before restore. | `PluginTaskRuntime` |
 | `after_restore_after_exit` | After file restoration completes. | `PluginTaskRuntime` |
+| `shortcut_dialog` | When the shortcut dialog flow runs. | `PluginUiContext` |
+| `before_mod_apply_shortcut` | Before shortcut patching starts. | `PluginTaskRuntime` |
+| `after_mod_apply_before_launch_shortcut` | After shortcut patching, before launch. | `PluginTaskRuntime` |
+| `before_restore_after_exit_shortcut` | Before shortcut restore starts. | `PluginTaskRuntime` |
+| `after_restore_after_exit_shortcut` | After shortcut restore completes. | `PluginTaskRuntime` |
 | `language_changed` | When the UI language changes. | `PluginTaskRuntime` |
 | `theme_changed` | When the theme changes. | `PluginTaskRuntime` |
 | `profile_changed` | When the active profile changes. | `PluginTaskRuntime` |
@@ -362,9 +367,9 @@ Always wrap potentially failing operations in try/except blocks and log errors w
 
 ## API Version Compatibility
 
-The current Plugin API version is **1.0.0**. Your plugin's `api_version` must match the host's version:
+The current Plugin API version is **1.1.0**. Your plugin's `api_version` must match the host's version:
 
-- `api_version: "1.0.0"` — Compatible with G3M Plugin API v1.0.0.
-- If the API version changes in a future G3M release, plugins targeting the old version may not load.
+- `api_version: "1.1.0"` — Compatible with the current G3M Plugin API.
+- If the API version changes, plugins targeting a different version may not load.
 
 Always test your plugin with the latest G3M version before distributing.

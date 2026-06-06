@@ -1,8 +1,15 @@
 # G3MTool
 
-G3MTool is the command-line tool and reference implementation for the `.g3mpatch` format. It works with GameMaker data files (`.win`, `.ios`, `.unx`, `.droid`), creates and applies patches, merges mods, compares files, prints metadata, runs `.csx` scripts, and can use xdelta when needed.
+G3MTool is the command-line tool and reference implementation for the `.g3mpatch` format. It works with GameMaker data files, creates and applies `.g3mpatch` patches, merges patches, compares files, prints metadata, runs `.csx` scripts, and exposes direct xdelta helpers.
 
-Current documented version: `1.1.0`.
+Current code version: **1.1.1**
+
+## Supported data-file extensions
+
+- `.win`
+- `.ios`
+- `.droid`
+- `.unx`
 
 ## Commands
 
@@ -10,41 +17,28 @@ Current documented version: `1.1.0`.
 | --- | --- |
 | [`patch`](commands/patch.md) | Create, apply, validate, or merge `.g3mpatch` files |
 | [`xpatch`](commands/xpatch.md) | Create or apply binary xdelta patches |
-| [`execute`](commands/execute.md) | Run `.csx` scripts, invoke bundled xdelta, or launch an external program |
-| [`info`](commands/info.md) | Inspect a data file or `.g3mpatch` |
-| [`diff`](commands/diff.md) | Compare data files and/or `.g3mpatch` files |
-| [`--version`](commands/version.md) | Print the installed G3MTool version |
+| [`execute`](commands/execute.md) | Run a `.csx` script, `xdelta`, or an external program |
+| [`info`](commands/info.md) | Show metadata for a data file or `.g3mpatch` |
+| [`diff`](commands/diff.md) | Compare data files or `.g3mpatch` files and write a Markdown report |
+| [`--version`](commands/version.md) | Print the tool version |
 
-## Core Terms
+## Global options
 
-| Term | Meaning |
+| Option | Meaning |
 | --- | --- |
-| `.g3mpatch` | G3MTool's patch format. It stores resource-level changes, metadata, helper data, and optionally an xdelta fallback. |
-| xdelta | Binary patch format. It can be smaller for exact file replacement, but it depends on the expected original file. |
-| data file | GameMaker data file accepted by G3MTool: `.win`, `.ios`, `.unx`, or `.droid`. |
-| `.g3mcache` | Optional analysis cache used by commands that support `--cache <dir>`. It stores reusable metadata and hashes, not replacement resource payloads. |
+| `-v`, `--verbose` | Enable verbose output |
+| `-l`, `--log <path>` | Enable file logging; use `--log default` to write `logs/{command}_{timestamp}.log` next to the executable |
+| `--json` | Output machine-readable JSON for supported commands |
+| `--xdelta-path <path>` | Use a specific xdelta executable instead of the bundled binary |
+| `--version`, `-V` | Print the version and exit |
 
-## Global Options
+## Runtime behavior
 
-| Option | Alias | Description |
-| --- | --- | --- |
-| `--verbose` | `-v` | Print detailed logs and timing breakdowns |
-| `--log [path]` | `-l` | Write a log file. If no path is supplied, G3MTool writes to `logs/{command}_{timestamp}.log` next to the executable |
-| `--json` | | JSON output for commands that support it |
-| `--version` | `-V` | Print the version and exit |
+- Running `G3MTool` with no arguments starts the interactive prompt.
+- The executable name is `G3MTool`.
+- The project targets **.NET 10** and is configured for self-contained single-file publish output.
+- Platform-specific bundled xdelta binaries are embedded for Windows, Linux, and macOS publish targets.
 
-## Platform Support
+## Output defaults
 
-G3MTool targets .NET 10 and can be published as a self-contained binary.
-
-| Runtime | Platform |
-| --- | --- |
-| `win-x64` | Windows 64-bit |
-| `linux-x64` | Linux 64-bit |
-| `linux-arm64` | Linux ARM64 |
-| `osx-x64` | macOS Intel |
-| `osx-arm64` | macOS Apple Silicon |
-
-## Output Defaults
-
-When an output path is optional and omitted, G3MTool writes command output next to the executable unless the command page states another default. `diff` writes reports to a `diff/` directory next to the executable.
+When an output path is optional and omitted, commands generally write next to the executable unless a command page states a different default. `diff` writes into `<executable>/diff/` by default.

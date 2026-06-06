@@ -14,10 +14,10 @@ G3MTool execute <target> [args...] [--data <data-file>] [--output <output>] [--i
 | Option | Alias | Description |
 | --- | --- | --- |
 | `--data <path>` | `-d` | Data file to load before running a `.csx` script |
-| `--output <path>` | `-o` | Output file or directory path. If `--data` is set and `--output` is omitted, G3MTool writes next to the executable |
-| `--input <dir>` | `-i` | Input directory passed to the script as its first script argument |
+| `--output <path>` | `-o` | Output file path; required in practice for write-producing script workflows |
+| `--input <dir>` | `-i` | Input directory passed to the script as the first script argument |
 
-## `.csx` Scripts
+## `.csx` scripts
 
 ```bash
 G3MTool execute script.csx --data data.win --output patched.win
@@ -25,26 +25,31 @@ G3MTool execute import_sprites.csx --data data.win --input sprites --output patc
 G3MTool execute report.csx
 ```
 
-When `--data` is set, G3MTool loads the data file into `ScriptGlobals.Data`. When `--input` is set, G3MTool prepends the directory path to the script arguments.
+Current behavior:
 
-## xdelta Passthrough
+- If `--data` is set, G3MTool loads the file into the script globals.
+- If `--input` is set, the directory path is prepended to script arguments.
+- If `--data` is set and `--output` is omitted, the command falls back to a file path next to the executable using the same file name as the input data file.
+- If `--data` is omitted, the script can still run, but data-dependent helpers must handle the missing loaded file.
+
+## xdelta passthrough
 
 ```bash
 G3MTool execute xdelta -d -s original.win patch.xdelta output.win
 ```
 
-Use this for raw xdelta3 arguments. For common xdelta create/apply operations, [`xpatch`](xpatch.md) is simpler.
+Use this for raw xdelta arguments. For the common create/apply workflow, [`xpatch`](xpatch.md) is simpler.
 
-## External Programs
+## External programs
 
 ```bash
 G3MTool execute some_tool.exe --arg value
 ```
 
-G3MTool starts the program, forwards stdout/stderr, and exits with the program exit code.
+G3MTool starts the program, forwards stdout and stderr, and returns the child process exit code.
 
-## Built-In Scripts
+## Built-in scripts
 
-G3MTool embeds import/export scripts used by its patch pipeline. They cover major GameMaker resource types, including sprites, sounds, code entries, game objects, rooms, backgrounds, fonts, shaders, paths, timelines, extensions, GeneralInfo, audio groups, embedded textures, texture page items, texture group info, tilesets, and asset order.
+G3MTool embeds import and export scripts under `G3MToolCLI/Assets/scripts/`. They cover the resource families currently represented by those embedded script files, including sprites, sounds, code entries, game objects, rooms, backgrounds, fonts, shaders, paths, timelines, extensions, GeneralInfo, audio groups, embedded textures, texture page items, texture group info, asset order, and tilesets.
 
-See [CSX Scripting](../csx-scripting.md) for script globals and compatibility notes.
+See [CSX Scripting](../csx-scripting.md) for script globals and compatibility details.

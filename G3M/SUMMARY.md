@@ -54,7 +54,6 @@
 * [Announcements & Polls](features/announcements.md)
 * [Update System](features/update-system.md)
 * [Online Presence](features/online-presence.md)
-* [Full Install Walkthrough](features/full-install-walkthrough.md)
 * [Plugin Development Guide](features/plugins-development.md)
 
 ## Customization

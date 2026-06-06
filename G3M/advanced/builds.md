@@ -1,87 +1,57 @@
 # Building & Packaging
 
-This page describes how G3M is compiled and distributed.
+The current project metadata comes from `pyproject.toml`, `builds/G3MExecutable.spec`, `builds/G3MWindowsInstaller.iss`, and the GitHub workflows in `.github/workflows/`.
 
 ---
 
-## Build System
+## Runtime Build Base
 
-G3M is packaged as a single executable using **PyInstaller**. The build configuration is defined in `G3MExecutable.spec`.
+Current top-level build facts:
 
-### Build Dependencies
+- Python requirement: `>=3.14`
+- application version: `3.1.2`
+- UI stack: `PyQt6==6.7.1`
+- package entry point: `src/main.py`
 
-- Python 3.14+
-- PyInstaller 6.19.0
-- All runtime dependencies listed in `pyproject.toml`
-
-### Build Command
-
-The build is triggered by the GitHub Actions workflow `build-g3m.yml`. It runs on a Windows runner and produces a single `.exe` file.
+The executable build is driven by `builds/G3MExecutable.spec`.
 
 ---
 
 ## Windows Installer
 
-The Windows installer is built with **Inno Setup** using the script `G3MWindowsInstaller.iss`.
+The installer is defined by `builds/G3MWindowsInstaller.iss`.
 
-### Installer Details
+Current values:
 
 | Property | Value |
 | --- | --- |
-| App Name | G3M |
-| App Version | 3.0.3stable |
-| Executable Name | G3M.exe |
-| Default Install Path | `{autopf}\G3M` (Program Files) |
-| Compression | LZMA (solid) |
-| Architecture | x64 only |
-| Minimum Windows | 10.0.17763 (version 1809) |
-| Installer Languages | English, Spanish, Russian |
-| Output File | `G3M_setup_v3.0.3stable.exe` |
+| App name | `G3M` |
+| App version | `3.1.2` |
+| Executable name | `G3M.exe` |
+| Default install dir | `{autopf}\G3M` |
+| Minimum Windows build | `17763` |
+| Installer languages | English, Spanish, Russian |
+| Output file name | `G3M_setup_3.1.2` |
 
-### Installer Features
-
-- Modern wizard style with custom images (SmallIcon.bmp, WizardImage.bmp).
-- Optional desktop shortcut creation.
-- Start Menu entry.
-- Post-install launch option.
-- Windows version check — blocks installation on unsupported versions with a clear error message.
+The installer also creates optional shortcuts and supports post-install launch.
 
 ---
 
 ## Build Assets
 
-The `builds/` folder contains:
+The `builds/` directory currently contains:
 
-| File / Folder | Description |
-| --- | --- |
-| `G3MExecutable.spec` | PyInstaller spec file for creating the executable. |
-| `G3MWindowsInstaller.iss` | Inno Setup script for the Windows installer. |
-| `assets/icons/icon.ico` | Application icon used in the installer and executable. |
-| `assets/SmallIcon.bmp` | Small icon used in the installer wizard header. |
-| `assets/WizardImage.bmp` | Large image displayed on the left side of the installer wizard. |
-| `assets/bin/` | Bundled binary tools (G3MTool executables for each platform). |
+- `G3MExecutable.spec`
+- `G3MWindowsInstaller.iss`
+- installer bitmap assets
+
+The project also bundles platform-specific helper binaries under `src/assets/bin/`, including G3MTool and xdelta assets used by launcher features.
 
 ---
 
-## CI/CD
+## CI
 
-Two GitHub Actions workflows automate the build and test process:
+The repository currently includes these workflows:
 
-| Workflow | File | Purpose |
-| --- | --- | --- |
-| Build | `build-g3m.yml` | Compiles the executable and creates the installer on push/release. |
-| Test | `test-g3m.yml` | Runs the test suite (pytest) on every push and pull request. |
-
----
-
-## Bundled Binaries
-
-G3M bundles platform-specific G3MTool executables:
-
-| Platform | Path |
-| --- | --- |
-| Windows | `assets/bin/g3mtool_windows/G3MTool.exe` |
-| macOS | `assets/bin/g3mtool_macos/G3MTool` |
-| Linux | `assets/bin/g3mtool_linux/G3MTool` |
-
-On non-Windows platforms, G3M automatically sets the executable permission (chmod 700) on first use.
+- `build-g3m.yml`
+- `test-g3m.yml`

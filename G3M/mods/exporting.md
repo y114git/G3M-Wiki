@@ -1,38 +1,13 @@
 # Exporting Mods
 
-G3M can export any installed mod as a `.zip` archive for sharing with other users.
+You can export an installed mod as a `.zip` and share it with another G3M user.
 
----
+## What export does
 
-## How to Export
+Export packs the current mod folder into a zip archive so it can be imported elsewhere.
 
-1. In the Library, find the mod you want to export.
-2. Click the **Export** button on the mod card.
-3. A file save dialog opens. Choose a destination folder and file name.
-4. G3M packages the entire mod folder (including `mod_config.json`, data files, icon, extra files) into a `.zip` archive.
-5. The exported `.zip` can be shared and imported into another G3M installation.
+## Good to know
 
----
-
-## What Is Included
-
-The exported archive contains:
-
-- `mod_config.json` — Full mod metadata and file references.
-- All data files (patches, raw data, scripts) for every chapter the mod covers.
-- Icon file (if present).
-- Extra files (DLLs, audio banks, textures, etc.).
-- Any documentation files in the mod root (e.g., `.txt`, `.md`, `.pdf`, `.html` readme files).
-
-The `mod_versions/` subfolder is **not** included in the export — only the current state of the mod is exported.
-
----
-
-## Importing an Exported Mod
-
-Recipients import the `.zip` using the standard import process:
-
-1. Library → Add Mod → Import Mod → select the `.zip` file.
-2. Or drag and drop the `.zip` onto the G3M window.
-
-G3M detects the `mod_config.json` inside and imports it as a native G3M mod.
+- It is meant for the mod's current state.
+- The exported archive can be brought back through the normal import flow.
+- Version snapshots in `mod_versions/` are treated separately from the main shared mod package.

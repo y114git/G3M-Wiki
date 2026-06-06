@@ -1,59 +1,47 @@
-# G3M — GameMaker Mod Manager
+# G3M
 
-G3M is a desktop mod manager for GameMaker-based games. It supports **DELTARUNE**, **DELTARUNE DEMO**, **UNDERTALE**, **UNDERTALE Yellow**, **Pizza Tower**, **Sugary Spire**, and any custom GameMaker game you add yourself.
+G3M is a desktop mod manager for GameMaker games. In the current codebase it ships as a Python 3.14+ desktop application built with PyQt6 and focuses on mod browsing, library management, patching workflows, profiles, plugins, customization, and launch automation.
 
-Current version: **3.0.3stable**\
-License: **GPL-3.0**\
-Platforms: **Windows 10 1809+**, **macOS**, **Linux**\
-Python: **3.14+**\
-UI framework: **PyQt6**
+Current code version: **3.1.2**  
+License: **GPL-3.0**  
+UI framework: **PyQt6 6.7.1**
 
----
+## Supported built-in games
 
-## What G3M Does
+- **DELTARUNE**
+- **DELTARUNEdemo**
+- **UNDERTALE**
+- **UNDERTALE Yellow**
+- **Pizza Tower**
+- **Sugary Spire**
+- **FRICKBEARS3**
 
-- Browse, download, and install mods from GameBanana directly inside the app.
-- Manage a local library of installed mods organized by profiles.
-- Apply one or multiple mods at once with automatic file patching and backup/restore.
-- Support multiple patch formats: **g3mpatch**, **xdelta/vcdiff**, **csx** scripts, and raw data files.
-- Auto-convert supported **DELTAMOD** archives into native G3M mods on import.
-- Auto-convert eligible **PizzaOven** Pizza Tower mods and import **AFOM/CYOP** tower archives through their dedicated conversion paths.
-- Launch games directly or via Steam, with optional chapter-based direct launch for DELTARUNE.
-- Create, edit, export, and import mods using the built-in Mod Editor.
-- Manage mod versions, game file versions, and modpacks.
-- Full theme and UI customization: colors, backgrounds, fonts, logos, background music, startup sounds.
-- Plugin system with hooks into every stage of the mod lifecycle.
-- Built-in chat with multiple language channels.
-- One-click install via `g3m://` and `deltahub://` protocol links.
-- Desktop shortcuts that patch and launch a game with a specific mod without opening the full UI.
-- Blocklist manager to hide unwanted mods by ID, name, or category.
-- Modding Tools dialog for creating, applying, merging, comparing, and converting patches.
-- PizzaOven mod conversion for Pizza Tower mods.
-- Automatic game path detection on first launch.
-- Data migration from the legacy DELTAHUB data folder.
-- Anonymous opt-in analytics.
-- Auto-update system with beta channel support.
-- Announcements and polls from the developer.
-- Full localization system with bundled English, Russian, Spanish, Chinese Simplified, and Chinese Traditional.
+G3M also supports custom single-tab games added through the in-app Game Manager.
 
----
+## What G3M does
 
-## Quick Links
+- Browses supported GameBanana sections and installs from GameBanana, URLs, local archives, raw folders, and one-click protocol links.
+- Manages installed mods, profiles, mod versions, game versions, blocklist rules, downloads, and plugin state in the local data directory.
+- Applies mods with built-in support for `.g3mpatch`, `.xdelta` / `.vcdiff`, `.csx`, raw data files, and extra-file overrides.
+- Provides built-in tools for patch create/apply/merge/info/diff workflows through the Modding Tools dialog.
+- Loads bundled and local plugins, validates API compatibility, and exposes plugin hooks, settings views, and main views.
+- Supports theme import/export, external language files, startup sound and background customization, and bundled theme packages.
+- Launches games directly, through Steam where configured, or through desktop shortcuts with captured launch state.
+
+## Quick links
 
 | Resource | URL |
 | --- | --- |
 | Discord | [discord.gg/2MFdvFfD9a](https://discord.gg/2MFdvFfD9a) |
-| Telegram | [t.me/y\_maintg](https://t.me/y_maintg) |
+| Telegram | [t.me/y_maintg](https://t.me/y_maintg) |
 | GitHub | [github.com/y114git/G3M](https://github.com/y114git/G3M) |
 
----
+## Wiki structure
 
-## Wiki Structure
-
-- [**Getting Started**](getting-started.md) — Installation, first launch, game setup.
-- [**Interface**](interface/) — Every tab, button, and panel explained.
-- [**Games**](games/) — Supported games, custom games, Game Manager.
-- [**Mods**](mods/) — Formats, importing, creating, editing, versioning, modpacks.
-- [**Features**](features/) — Profiles, downloads, shortcuts, chat, plugins, blocklist, modding tools, announcements.
-- [**Customization**](customization/) — Themes, colors, background, audio, fonts, logo.
-- [**Advanced**](advanced/) — One-click install, localization, analytics, migration, builds.
+- [**Getting Started**](getting-started.md) - install, first launch, data folder, and initial game setup.
+- [**Interface**](interface/README.md) - tabs, panels, dialogs, and window behavior.
+- [**Games**](games/README.md) - built-in games, custom games, detection, launch, Steam, and full install.
+- [**Mods**](mods/README.md) - formats, importing, creating, editing, versions, and conversion flows.
+- [**Features**](features/README.md) - profiles, downloads, shortcuts, plugins, updates, chat, and other app features.
+- [**Customization**](customization/README.md) - themes, colors, audio, fonts, logo, background, and animations.
+- [**Advanced**](advanced/README.md) - architecture, data layout, localization, networking, patching, and troubleshooting.

@@ -13,3 +13,4 @@ G3M includes a wide set of features beyond basic mod management. This section co
 - [**Announcements & Polls**](announcements.md) — In-app news and community polls.
 - [**Update System**](update-system.md) — Automatic and manual update checking.
 - [**Online Presence**](online-presence.md) — Player counter in the title bar.
+- [**Plugin Development Guide**](plugins-development.md) — Build plugins against the current plugin API.

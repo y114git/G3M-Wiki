@@ -1,6 +1,6 @@
 # diff
 
-Compare data files and/or `.g3mpatch` files and write a Markdown report.
+Compare data files or `.g3mpatch` files and write a Markdown report.
 
 ```bash
 G3MTool diff <file1> <file2> [output-dir] [--full] [--cache <dir>]
@@ -14,7 +14,7 @@ G3MTool diff <file1> <file2> [output-dir] [--full] [--cache <dir>]
 
 | Option | Description |
 | --- | --- |
-| `--full` | Include full text/code/JSON diffs, including binary-heavy exported resource folders |
+| `--full` | Generate full text/code/JSON diffs plus deeper TPI, reference, and asset-order details |
 | `--cache <dir>` | Reuse `.g3mcache` analysis for repeated data-file comparisons |
 
 The report file is named `diff_{timestamp}.md`.
@@ -23,24 +23,7 @@ The report file is named `diff_{timestamp}.md`.
 
 | Mode | Behavior |
 | --- | --- |
-| Standard | Reports resource-level changed/new/deleted entries and avoids expensive full text diffs for binary-heavy folders |
-| `--full` | Exports more resource data and includes detailed text/code/JSON diffs |
+| Standard | Reports resource-level differences, changed text-file counts, resource counts, asset-order/index differences, sprite frame differences, and selected reference checks |
+| `--full` | Includes detailed text/code/JSON diffs and deeper exported-resource detail |
 
-Standard mode is the default because it is faster and produces smaller reports. Use `--full` when you need detailed property or code differences.
-
-## Supported Inputs
-
-| Input Pair | Behavior |
-| --- | --- |
-| data vs data | Compare resource hashes and report changed/new/deleted resources |
-| data vs `.g3mpatch` | Compare patch contents against the data file |
-| `.g3mpatch` vs `.g3mpatch` | Compare patch manifests and resource lists |
-
-## Example
-
-```bash
-G3MTool diff data_v1.win data_v2.win reports --cache .g3mcache
-G3MTool diff data_v1.win data_v2.win reports --full
-```
-
-`diff` is read-only. It does not modify data files or patches.
+With global `--json`, `diff` writes a single JSON object to stdout and still writes the Markdown report to disk.

@@ -1,70 +1,56 @@
 # Custom Games
 
-G3M supports adding any GameMaker-based game as a **custom game**. Custom games appear alongside built-in games in all dropdowns, the Library, and (if they have a GameBanana ID) the Mods Browser.
+Custom games let you teach G3M about another GameMaker-based game without changing G3M's source code.
 
 ---
 
-## Adding a Custom Game
+## When a Custom Game Makes Sense
 
-Open the **Game Manager** (Settings → Game → Game Manager button), then click **Add Game**. Fill in the fields:
+Use a custom game when:
 
-| Field | Required | Description |
-| --- | --- | --- |
-| **Display Name** | Yes | The name shown in the UI (e.g., "My Custom Game"). Must be unique and non-empty. |
-| **Primary Executable** | Yes | The filename of the game's main executable (e.g., `MyGame.exe`). G3M uses this to locate and launch the game. |
-| **Data File Name** | Yes | The name of the game's main data file (e.g., `data.win`). This is the file that mods patch. |
-| **Steam App ID** | No | If the game is on Steam, enter its App ID to enable "Launch via Steam" support. |
-| **GameBanana Game ID** | No | If the game has a GameBanana page, enter its numeric game ID to enable Mods Browser integration. |
+- the game is not one of G3M's built-in entries
+- you still know its main executable name
+- you know which data file should be patched
+- you want it to behave like a normal single-tab launcher target
 
-### ID Generation
-
-When you create a custom game, G3M generates a unique internal ID based on the display name. The ID is a lowercase slug with special characters removed (e.g., "My Custom Game" becomes `my_custom_game`). This ID is permanent — it cannot be changed after creation.
-
-### Validation
-
-G3M validates the input:
-
-- Display name must not be empty.
-- Display name must not duplicate an existing game.
-- Primary executable must not be empty.
-- Data file name must not be empty.
-
-If validation fails, an error message dialog appears.
+This is the fastest path for getting an unsupported GameMaker game into the launcher.
 
 ---
 
-## Custom Game Behavior
+## What You Need to Provide
 
-A custom game:
+The creation form asks for:
 
-- Has a single content tab (no chapter splitting).
-- Does **not** support Direct Launch (always launches normally).
-- Does **not** support Full Install.
-- Supports all mod operations: import, create, export, patch, launch.
-- Appears in the Game Manager for reordering and visibility control.
-- Stores its game path in a setting keyed as `custom_game_path_<id>` and its custom executable as `custom_game_exec_<id>`.
-- Tracks used mods under `used_mods_<id>`.
+- display name
+- executable file name
+- data file name
+- optional Steam App ID
+- optional GameBanana ID
 
----
-
-## Editing a Custom Game
-
-Currently, custom games cannot be edited after creation. If you need to change a custom game's settings, delete it and create a new one.
+The executable and data file fields are file names, not arbitrary folder paths.
 
 ---
 
-## Deleting a Custom Game
+## What You Get
 
-In the Game Manager, select the custom game and click **Delete**. A confirmation dialog appears. After deletion:
+A custom game becomes a normal launcher target with:
 
-- The game is removed from all dropdowns, the Library, and the Mods Browser.
-- Mods installed for that game remain on disk in the profile's mods folder but are no longer displayed.
-- The game's settings (path, used mods) are cleaned up.
-
-Built-in games cannot be deleted.
+- its own game path setting
+- its own custom executable override
+- its own used-mod state
+- optional Steam launch support
+- optional Mods Browser presence if you gave it a GameBanana ID
 
 ---
 
-## Persistence
+## Limits
 
-Custom game definitions are stored in `custom_games.json` in the user data folder. The file also stores the full game order (built-in + custom) and visibility states.
+Custom games are intentionally simpler than some built-in ones.
+
+Current limits:
+
+- single-tab only
+- no full install
+- no built-in chapter splitting
+
+So custom games fit best when the target game behaves like one main data file plus one main executable.

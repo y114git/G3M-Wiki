@@ -1,179 +1,76 @@
 # Launch Modes
 
-G3M supports several ways to launch a game, each suited to different scenarios.
+`Launch` in G3M can mean a few different things depending on your current game, selected mods, and launch settings.
 
 ---
 
-## Normal Launch (No Mods)
+## The Simple Mental Model
 
-If no mods are selected ("used") for any chapter, clicking **Launch** starts the game without modifications.
+There are four launch situations most users care about:
 
-1. G3M resolves the game executable path.
-2. The game is started directly or through Steam.
-3. The game monitor thread begins watching for the game process.
-4. When the game exits, the monitor signals completion.
-5. No patching or restoration is needed.
+- launch the game with no mods
+- launch with selected mods
+- launch DELTARUNE in chapter mode
+- launch through Steam or another platform helper
 
----
-
-## Modded Launch
-
-If one or more mods are selected, clicking **Launch** triggers the full patching pipeline:
-
-1. **Backup** original game files.
-2. **Patch** each chapter's data with its selected mod(s).
-3. **Copy** extra files from mods into the game directory.
-4. **Launch** the game.
-5. **Monitor** the game process.
-6. **Restore** original files after the game exits.
-
-See [Patching Process](../advanced/patching-process.md) for the detailed step-by-step breakdown.
+Everything else is a variation of those.
 
 ---
 
-## Chapter Mode Launch (DELTARUNE)
+## Vanilla vs Modded Launch
 
-For DELTARUNE, **Chapter Mode** allows each chapter to have its own independent mod selection. When launching in Chapter Mode:
+If nothing is selected, G3M mostly just resolves the executable and starts the game.
 
-1. G3M iterates through each chapter tab (Main Menu, Chapter 1, Chapter 2, etc.).
-2. For each chapter that has a mod selected, it patches that chapter's specific data directory.
-3. Chapters without mods are left unmodified.
-4. The game is launched.
-5. The player can access any chapter — modded chapters use the patched data, unmodded chapters use vanilla data.
-6. On exit, all patched chapters are restored.
+If mods are selected, G3M does more work:
 
-### Normal Mode (Single Selection)
+1. prepares backups
+2. applies patch or replacement data
+3. copies any extra files a mod needs
+4. launches the game
+5. restores the original state after exit
 
-In Normal Mode (the default), one mod selection applies to the game's primary data file. All chapters share the same modded data. This is simpler but doesn't allow mixing different mods across chapters.
+So the important rule is simple: selected mods turn launch into a patch-and-restore session.
 
-### Switching Between Modes
+---
 
-Toggle Chapter Mode in Settings → Library → "Chapter Mode" checkbox. The change takes effect immediately:
+## Chapter Mode
 
-- **Normal → Chapter Mode**: The current single mod selection is assigned to all chapters. You can then customize each chapter independently.
-- **Chapter Mode → Normal**: The first chapter's mod selection becomes the single selection. Other chapters' selections are preserved in memory but not applied.
+Chapter mode matters mainly for DELTARUNE.
+
+With chapter mode on:
+
+- chapter selections can differ from each other
+- chapter tabs become the place where you decide what is active
+- launch uses those per-chapter choices instead of one shared selection
+
+If chapter mode is off, the setup is simpler and behaves more like one shared mod stack.
 
 ---
 
 ## Direct Launch
 
-Direct Launch skips the game's title screen and loads directly into a specific chapter. Available only for DELTARUNE.
+Direct launch is the shortcut-style DELTARUNE flow that tries to jump straight into a chosen chapter instead of starting at the normal title flow.
 
-### Enabling Direct Launch
+For most users, the only thing to remember is:
 
-1. In the Library, switch to the DELTARUNE game.
-2. Double-click a chapter tab (e.g., "Chapter 1").
-3. The chapter tab is highlighted to indicate Direct Launch is active for that chapter.
-4. When you click **Launch**, the game opens directly into that chapter.
-
-### How It Works
-
-G3M modifies the game's launch configuration or startup parameters to bypass the main menu. The exact method depends on the game version:
-
-- For DELTARUNE, G3M may modify certain startup variables or pass command-line arguments that cause the game to jump directly into the specified chapter.
-
-### Disabling Direct Launch
-
-Double-click the same chapter tab again to deactivate Direct Launch. The game will launch normally into the title screen.
-
-### Per-Chapter Direct Launch
-
-Only one chapter can have Direct Launch active at a time. Activating it for one chapter deactivates it for others.
+- it is DELTARUNE-specific
+- it is tied to chapter choice
+- if you do not need it, you can ignore it completely
 
 ---
 
-## Launch via Steam
+## Steam and Platform Helpers
 
-When "Launch via Steam" is enabled in Settings → Game and the game has a Steam App ID:
+If a game has a Steam App ID and you enabled Steam launch, G3M can patch first and then ask Steam to start the game.
 
-1. G3M patches the game files normally.
-2. Instead of running the executable directly, G3M opens the URL `steam://rungameid/<app_id>`.
-3. Steam handles the actual process launch.
-4. Steam overlay, cloud saves, and achievements function normally.
-5. G3M still monitors the game process by name.
+On Linux, PortProton can also be part of the launch path when you configured it.
 
-### Steam App IDs
-
-| Game | Steam App ID |
-| --- | --- |
-| DELTARUNE | 1671210 |
-| DELTARUNE DEMO | 1690940 |
-| UNDERTALE | 391540 |
-| Pizza Tower | 2231450 |
-
-Games without a Steam App ID (UNDERTALE Yellow, Sugary Spire, custom games without an ID) cannot use Steam launch.
-
-### Steam Blocking (DELTARUNE)
-
-DELTARUNE has a special behavior: when launching directly (not through Steam), Steam may attempt to start alongside the game. G3M can block this by preventing the Steam process from auto-launching, ensuring a clean non-Steam execution.
+Those options change how the executable is started, but they do not change the basic idea that selected mods are applied before the game begins.
 
 ---
 
-## PortProton Launch (Linux)
+## Mod Order Still Matters
 
-On Linux, PortProton provides a Wine-based compatibility layer for running Windows games.
+When you selected multiple mods for the same target, G3M applies them in sequence. That means later mods can override changes from earlier ones.
 
-### Configuration
-
-1. In Settings → Game, enable "Use PortProton".
-2. Set the PortProton path to your PortProton installation directory.
-3. When launching a game, G3M uses PortProton to run the `.exe` instead of native execution.
-
-### How It Works
-
-1. G3M patches the game files.
-2. Instead of running the executable directly, it passes the executable path to PortProton's launcher script.
-3. PortProton handles Wine prefix management and execution.
-4. G3M monitors the game process.
-
----
-
-## Shortcut Launch (Headless)
-
-Desktop shortcuts run G3M's headless runner, which patches and launches without the GUI. See [Desktop Shortcuts](../features/shortcuts.md) for details.
-
-### Key Differences from GUI Launch
-
-- No window is shown.
-- Progress is logged to `shortcut.log` instead of displayed in a status bar.
-- No cancel button — close the shortcut script process to abort.
-- Used mods are specified in the shortcut config, not from the current Library selection.
-- The active profile is specified in the shortcut config.
-
----
-
-## Launch Button States
-
-The main action button in the status bar reflects the current launch context:
-
-| State | Button Text | Color | Behavior |
-| --- | --- | --- | --- |
-| Ready, no mods | Launch | Default | Launches vanilla game. |
-| Ready, mods selected | Launch | Highlighted | Patches mods, then launches. |
-| Full Install mode | Install | Default | Downloads game files. |
-| Updates available | Update | Yellow | Updates selected mods before launch. |
-| Game is running | Close | Red | Terminates the running game. |
-| Operation in progress | Cancel | Red | Cancels current operation. |
-| Initializing | Please wait... | Gray (disabled) | Nothing — waiting for init. |
-| No game path | Set game path | Warning | Redirects to Settings → Game. |
-
----
-
-## Multiple Mods Per Chapter
-
-When multiple mods are selected for a single chapter, they are applied **sequentially** in the order they appear in the used mods list:
-
-1. Mod 1 is patched onto the original data file.
-2. Mod 2 is patched onto the result from step 1.
-3. Mod 3 is patched onto the result from step 2.
-4. And so on.
-
-Later mods' changes take priority over earlier mods' changes when they modify the same resources. This is important for compatibility:
-
-- Two mods that modify different resources will coexist fine.
-- Two mods that modify the same resource will conflict — the last one wins.
-- Using the "Merge Properties" and "Merge Code" settings can help reduce conflicts.
-
-### Reordering Mods
-
-In the Library, you can reorder the used mods for a chapter to control which mod is applied first. The order matters when mods overlap.
+If two mods touch the same thing and the result looks wrong, order is one of the first things to check.
