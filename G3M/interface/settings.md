@@ -39,9 +39,19 @@ Per-game settings are driven by the selected runtime game entry and include:
 - custom executable override
 - optional Steam launch
 - PortProton options on Linux
+- optional custom Wine path on Linux
+- optional custom PortProton path on Linux
 - visibility of the Full Install checkbox when the game supports it
 
 The game manager dialog is also launched from this area.
+
+For Windows executables on Linux, G3M now resolves launchers in this order:
+
+1. custom Wine path
+2. `wine`
+3. `wine64`
+
+If G3M cannot find a usable launcher, it now reports a more specific error instead of only surfacing a raw `errno 2`.
 
 ---
 

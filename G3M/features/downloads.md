@@ -74,3 +74,21 @@ Usually you only need to touch this page when:
 - a file needs manual install
 - you want to retry or inspect a failed download
 - you disabled auto-use and want to process the file later
+
+---
+
+## Error Messages
+
+Recent G3M builds try to show a more specific reason when a download or local copy fails.
+
+Examples of precise cases:
+
+- network timeout
+- SSL or certificate failure
+- server refused connection
+- DNS or name resolution failure
+- HTTP `403`, `404`, `429`, or `5xx`
+- local file missing
+- permission denied while copying a local file
+
+When G3M can identify the cause reliably, the Downloads record shows the friendly reason. Raw details still remain available in logs for debugging.

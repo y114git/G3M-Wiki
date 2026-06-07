@@ -84,6 +84,16 @@ Update checks require an internet connection and access to the G3M cloud backend
 
 The request timeout is 5 seconds (`NETWORK_TIMEOUT_SHORT`). If the cloud server is slow to respond, the check may be skipped.
 
+Recent G3M builds also try to classify update download failures more clearly where possible, for example:
+
+- request timeout
+- SSL or certificate failure
+- DNS failure
+- connection refused
+- HTTP `403`, `404`, `429`, or `5xx`
+- permission denied while replacing files
+- missing or unreadable update archive
+
 ---
 
 ## Signals
