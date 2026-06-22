@@ -222,7 +222,7 @@ context.plugin_settings.set("last_run", "2024-03-20")
 all_settings = context.plugin_settings.all()
 ```
 
-Settings are persisted in `plugins/plugins_data.json` under the `settings` key for your plugin's ID.
+Settings are persisted on Windows in `%LOCALAPPDATA%\G3M\plugins\plugins_data.json` under the `settings` key for your plugin's ID.
 
 ---
 
@@ -319,7 +319,7 @@ def settings_view(ui_context):
 
 ### Manual Installation
 
-1. Copy your plugin folder into `{user_data_root}/plugins/`.
+1. Copy your plugin folder into `%LOCALAPPDATA%\G3M\plugins\` on Windows, `~/.local/share/G3M/plugins/` on Linux, or `~/Library/Application Support/G3M/plugins/` on macOS.
 2. Restart G3M.
 3. Go to Settings → Plugins.
 4. Your plugin appears in the "Installed" section.
@@ -331,7 +331,7 @@ To list your plugin in G3M's online plugin catalog, contact the G3M developer. T
 
 ### Distribution as ZIP
 
-Package your plugin folder as a `.zip`. Users can download and extract it into their `plugins/` directory. In the future, G3M may support direct plugin ZIP installation from the UI.
+Package your plugin folder as a `.zip`. Current G3M builds can install plugin archives through the plugin install flow, and users can still extract them manually into `%LOCALAPPDATA%\G3M\plugins\` on Windows, `~/.local/share/G3M/plugins/` on Linux, or `~/Library/Application Support/G3M/plugins/` on macOS.
 
 ---
 

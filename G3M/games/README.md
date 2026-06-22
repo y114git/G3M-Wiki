@@ -8,7 +8,7 @@ G3M currently ships with seven built-in games and also supports runtime-defined 
 
 | Game | ID | Steam App ID | GameBanana ID | Tabs | Full Install | Direct Launch |
 | --- | --- | --- | --- | --- | --- | --- |
-| DELTARUNE | `deltarune` | `1671210` | `6755` | Main menu, Chapters 1-4 | No | Yes |
+| DELTARUNE | `deltarune` | `1671210` | `6755` | Main menu, Chapters 1-5 | No | Yes |
 | DELTARUNEdemo | `deltarunedemo` | `1690940` | — | Demo | Yes | No |
 | UNDERTALE | `undertale` | `391540` | `5506` | Single tab | No | Yes |
 | UNDERTALE Yellow | `undertaleyellow` | — | `19606` | Single tab | Yes | Yes |
@@ -22,7 +22,7 @@ Only games with a nonzero GameBanana ID are included in search and browser-backe
 
 ## Custom Games
 
-Custom games are stored in `settings/custom_games.json` and published through the same runtime registry as built-in games.
+Custom games are stored on Windows in `%LOCALAPPDATA%\G3M\settings\custom_games.json` and published through the same runtime registry as built-in games.
 
 Each custom game defines:
 

@@ -27,12 +27,12 @@ Archive-style G3M patches may also be plain `.zip` files that contain `g3mpatch.
 
 ## Settings and state files
 
-- `settings/settings.json`
-- `settings/blocklist.json`
-- `settings/custom_games.json`
-- `downloads/downloads_history.json`
-- `game_versions/game_versions_data.json`
-- `plugins/plugins_data.json`
+- `%LOCALAPPDATA%\G3M\settings\settings.json`
+- `%LOCALAPPDATA%\G3M\settings\blocklist.json`
+- `%LOCALAPPDATA%\G3M\settings\custom_games.json`
+- `%LOCALAPPDATA%\G3M\downloads\downloads_history.json`
+- `%LOCALAPPDATA%\G3M\game_versions\game_versions_data.json`
+- `%LOCALAPPDATA%\G3M\plugins\plugins_data.json`
 
 ## Plugin API note
 

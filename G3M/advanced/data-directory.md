@@ -12,37 +12,37 @@ G3M stores its user data outside the game folders. This is where your settings, 
 
 ## Main folders
 
-| Folder | Purpose |
+| Windows path | Purpose |
 | --- | --- |
-| `settings/` | App settings, blocklist, custom games, crash/session state |
-| `profiles/` | Per-profile mod libraries and profile-specific state |
-| `downloads/` | Download history and downloaded archives |
-| `game_versions/` | Saved game version archives and their index |
-| `plugins/` | Installed plugins and `plugins_data.json` |
-| `lang/` | External language files copied from bundled resources |
-| `logs/` | Current and archived logs |
+| `%LOCALAPPDATA%\G3M\settings\` | App settings, blocklist, custom games, crash/session state |
+| `%LOCALAPPDATA%\G3M\profiles\` | Per-profile mod libraries and profile-specific state |
+| `%LOCALAPPDATA%\G3M\downloads\` | Download history and downloaded archives |
+| `%LOCALAPPDATA%\G3M\game_versions\` | Saved game version archives and their index |
+| `%LOCALAPPDATA%\G3M\plugins\` | Installed plugins and `plugins_data.json` |
+| `%LOCALAPPDATA%\G3M\lang\` | External language files copied from bundled resources |
+| `%LOCALAPPDATA%\G3M\logs\` | Current and archived logs |
 
 ## Important files
 
-| File | Purpose |
+| Windows path | Purpose |
 | --- | --- |
-| `settings/settings.json` | Main app settings |
-| `settings/blocklist.json` | Hidden-mod rules |
-| `settings/custom_games.json` | Custom games plus order and visibility |
-| `settings/session.lock` | Session recovery data after launch-time patching |
-| `downloads/downloads_history.json` | Download history |
-| `game_versions/game_versions_data.json` | Saved game version records |
-| `plugins/plugins_data.json` | Plugin enabled state and plugin settings |
+| `%LOCALAPPDATA%\G3M\settings\settings.json` | Main app settings |
+| `%LOCALAPPDATA%\G3M\settings\blocklist.json` | Hidden-mod rules |
+| `%LOCALAPPDATA%\G3M\settings\custom_games.json` | Custom games plus order and visibility |
+| `%LOCALAPPDATA%\G3M\settings\session.lock` | Session recovery data after launch-time patching |
+| `%LOCALAPPDATA%\G3M\downloads\downloads_history.json` | Download history |
+| `%LOCALAPPDATA%\G3M\game_versions\game_versions_data.json` | Saved game version records |
+| `%LOCALAPPDATA%\G3M\plugins\plugins_data.json` | Plugin enabled state and plugin settings |
 
 ## Profiles
 
-Each profile is a folder inside `profiles/`. Mod folders live directly inside the profile folder, alongside the profile JSON file and `mods_data.json`.
+Each profile is a folder inside `%LOCALAPPDATA%\G3M\profiles\` on Windows. Mod folders live directly inside the profile folder, alongside the profile JSON file and `mods_data.json`.
 
 That means the current layout is:
 
-- `profiles/<ProfileName>/<ProfileName>.json`
-- `profiles/<ProfileName>/mods_data.json`
-- `profiles/<ProfileName>/<ModFolder>/...`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\<ProfileName>.json`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\mods_data.json`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\<ModFolder>\...`
 
 There is no separate active `mods/` subfolder inside a profile.
 
@@ -50,16 +50,16 @@ There is no separate active `mods/` subfolder inside a profile.
 
 Custom assets are stored at the data root with fixed base names:
 
-- `custom_background.*`
-- `custom_logo.*`
-- `custom_font.*`
-- `custom_startup_sound.*`
-- `custom_background_music.*`
+- `%LOCALAPPDATA%\G3M\custom_background.*`
+- `%LOCALAPPDATA%\G3M\custom_logo.*`
+- `%LOCALAPPDATA%\G3M\custom_font.*`
+- `%LOCALAPPDATA%\G3M\custom_startup_sound.*`
+- `%LOCALAPPDATA%\G3M\custom_background_music.*`
 
 The exact extension depends on the file you selected.
 
 ## Temporary and recovery files
 
-- Launch-time patch backups use `patching_backups/`.
-- Crash recovery uses `settings/session.lock`.
+- Launch-time patch backups use `%LOCALAPPDATA%\G3M\patching_backups\`.
+- Crash recovery uses `%LOCALAPPDATA%\G3M\settings\session.lock`.
 - Download and import operations may also create temporary files while they run.

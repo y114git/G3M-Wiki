@@ -36,9 +36,11 @@ The **Merge Properties** and **Merge Code** settings also affect how some overla
 
 - Backups are stored before patching starts.
 - If patching fails, G3M attempts to restore the original files immediately.
-- If the app crashes during a session, recovery data in `settings/session.lock` is used on the next start.
-- Backup work also uses `patching_backups/` under the G3M data directory.
+- If the app crashes during a session, recovery data in `%LOCALAPPDATA%\G3M\settings\session.lock` is used on the next start.
+- Backup work also uses `%LOCALAPPDATA%\G3M\patching_backups\`.
 
 ## G3MTool
 
 Patch creation, patch apply, diff-style operations, and script execution are delegated to the bundled `G3MTool` binaries through the G3M adapter layer.
+
+The bundled G3MTool also supports batch CLI workflows for advanced users. `patch batch apply` and `patch batch create` run repeated jobs against one original file, while `patch batch merge` accepts multiple quoted merge sets such as `"mod_a.g3mpatch,mod_b.xdelta"`. Batch jobs hash their inputs first and skip repeated identical work by copying the first generated result to later duplicate output names.

@@ -43,9 +43,9 @@ These are worth ruling out before assuming a deeper patching bug.
 
 The main logs to check are:
 
-- `logs/g3m.log`
-- `logs/shortcut.log`
-- archived logs under `logs/g3m/`
+- `%LOCALAPPDATA%\G3M\logs\g3m.log`
+- `%LOCALAPPDATA%\G3M\logs\shortcut.log`
+- archived logs under `%LOCALAPPDATA%\G3M\logs\g3m\`
 
 If you need to report a real bug, include the relevant log section. It is usually the fastest way to move from "it failed" to "this exact step failed".
 

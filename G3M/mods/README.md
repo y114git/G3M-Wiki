@@ -8,10 +8,10 @@ G3M works with profile-local mod folders and a shared `mod_config.json` schema. 
 
 Installed mods live directly in the active profile directory:
 
-- `profiles/<ProfileName>/<mod id>/mod_config.json`
-- `profiles/<ProfileName>/<mod id>/...patch files, docs, icons, extras`
-- `profiles/<ProfileName>/<mod id>/mod_versions/`
-- `profiles/<ProfileName>/mods_data.json`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\<mod id>\mod_config.json`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\<mod id>\...patch files, docs, icons, extras`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\<mod id>\mod_versions\`
+- `%LOCALAPPDATA%\G3M\profiles\<ProfileName>\mods_data.json`
 
 `mods_data.json` stores library metadata such as playtime and timestamps separately from `mod_config.json`.
 

@@ -4,7 +4,7 @@
 
 G3M's source project currently targets:
 
-- **Python:** `>=3.14`
+- **Python:** `>=3.14.6`
 - **UI:** `PyQt6==6.7.1`
 - **Other pinned runtime dependencies:** `defusedxml`, `playsound3`, `psutil`, `py7zr`, `python-dotenv`, `rarfile`, `requests`, `urllib3`
 
@@ -44,7 +44,7 @@ The built-in runtime registry currently includes:
 - `sugaryspire`
 - `frickbears3`
 
-Only visible games appear in the main UI. Additional custom games can be created in the Game Manager and stored in `settings/custom_games.json`.
+Only visible games appear in the main UI. Additional custom games can be created in the Game Manager and stored on Windows in `%LOCALAPPDATA%\G3M\settings\custom_games.json`.
 
 ## Data directory
 
@@ -58,20 +58,19 @@ User data lives under the platform-specific G3M root:
 
 Important subpaths in the current code:
 
-| Path | Purpose |
+| Windows path | Purpose |
 | --- | --- |
-| `settings/settings.json` | Main app settings |
-| `settings/blocklist.json` | Blocklist rules |
-| `settings/custom_games.json` | Custom game registry |
-| `settings/analytics_pending.json` | Pending analytics batch data |
-| `profiles/` | Profile folders |
-| `mods/` | Shared mod storage root |
-| `downloads/downloads_history.json` | Download history and queue persistence |
-| `game_versions/game_versions_data.json` | Saved game version index |
-| `plugins/plugins_data.json` | Plugin state and settings |
-| `lang/` | External language files |
-| `themes/` | User theme archives |
-| `cache/G3MTool/` | G3MTool cache files used by patching workflows |
+| `%LOCALAPPDATA%\G3M\settings\settings.json` | Main app settings |
+| `%LOCALAPPDATA%\G3M\settings\blocklist.json` | Blocklist rules |
+| `%LOCALAPPDATA%\G3M\settings\custom_games.json` | Custom game registry |
+| `%LOCALAPPDATA%\G3M\settings\analytics_pending.json` | Pending analytics batch data |
+| `%LOCALAPPDATA%\G3M\profiles\` | Profile folders |
+| `%LOCALAPPDATA%\G3M\downloads\downloads_history.json` | Download history and queue persistence |
+| `%LOCALAPPDATA%\G3M\game_versions\game_versions_data.json` | Saved game version index |
+| `%LOCALAPPDATA%\G3M\plugins\plugins_data.json` | Plugin state and settings |
+| `%LOCALAPPDATA%\G3M\lang\` | External language files |
+| `%LOCALAPPDATA%\G3M\themes\` | User theme archives |
+| `%LOCALAPPDATA%\G3M\cache\G3MTool\` | G3MTool cache files used by patching workflows |
 
 ## Configure a game
 

@@ -32,7 +32,7 @@ If **Enable beta updates** is enabled, G3M also considers pre-release versions w
 
 When an update is found, a dialog appears with:
 
-- **Current version** — Your installed version (currently `3.1.2` on this codebase).
+- **Current version** — Your installed version (currently `3.2.0` on this codebase).
 - **New version** — The available version.
 - **Release notes** — The changelog/notes provided by the cloud settings payload.
 - **Install** button — Downloads and installs the update.

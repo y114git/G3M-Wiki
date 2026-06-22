@@ -59,8 +59,8 @@ If you want a cleaner, more manual workflow, turn on `No auto-use`. If you want 
 
 Downloads use the user data directory:
 
-- records: `downloads/downloads_history.json`
-- downloaded files: `downloads/`
+- records: `%LOCALAPPDATA%\G3M\downloads\downloads_history.json`
+- downloaded files: `%LOCALAPPDATA%\G3M\downloads\`
 
 The records survive restarts. On startup, G3M checks whether the physical file still exists and updates the record accordingly.
 

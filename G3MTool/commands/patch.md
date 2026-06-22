@@ -1,6 +1,6 @@
 # patch
 
-Create, apply, validate, or merge `.g3mpatch` files.
+Create, apply, batch-process, validate, or merge `.g3mpatch` files.
 
 ## patch create
 
@@ -81,11 +81,82 @@ Accepted merge inputs:
 
 | Option | Alias | Description |
 | --- | --- | --- |
-| `--out <path>` | `-o` | Write the merged `.g3mpatch` |
-| `--apply <path>` | `-a` | Also write the merged data file |
+| `--apply <path>` | `-a` | Write the merged data file |
+| `--out <path>` | `-o` | Also keep the merged `.g3mpatch` |
 | `--code` | | Enable Git-style 3-way merge for GML code files |
 | `--properties` | | Enable deep merge for JSON property files |
 | `--report <path>` | `-r` | Write a Markdown merge report |
 | `--cache <dir>` | | Reuse `.g3mcache` analysis while converting `.xdelta` or data-file inputs |
 
-If neither `--out` nor `--apply` is set, G3MTool still writes a merged `.g3mpatch` to its default output path.
+If `--apply` is omitted, G3MTool writes the merged data file to the current directory as `<original>_merged<ext>`. Add `--out` when you also want to keep the intermediate merged `.g3mpatch`.
+
+## patch batch
+
+Batch commands run multiple independent jobs against the same original data file. They are still plain CLI commands; there is no interactive selection layer.
+
+Common batch options:
+
+| Option | Description |
+| --- | --- |
+| `--out-dir <dir>` | Required for batch apply/create |
+| `--cache <dir>` | Reuse `.g3mcache` analysis across jobs |
+| `--continue-on-error` | Keep running later jobs after a failure |
+
+Before processing, batch mode hashes the original and all inputs. If two jobs have the same effective inputs and flags, G3MTool runs the expensive job once and copies the first output to the later output name.
+
+### patch batch apply
+
+```bash
+G3MTool patch batch apply <original> <patches...> --out-dir <dir> [--cache <dir>] [--continue-on-error] [--xdelta-fallback]
+```
+
+Each patch is applied independently to the same original data file. This does not merge patches.
+
+Example:
+
+```bash
+G3MTool patch batch apply game.win mod1.g3mpatch mod2.xdelta mod3.win --out-dir patched
+```
+
+Outputs are named from the original and patch file names, for example `game_mod1.win`, `game_mod2.win`, and `game_mod3.win`. The data-file extension matches the original extension.
+
+### patch batch create
+
+```bash
+G3MTool patch batch create <original> <modified...> --out-dir <dir> [--cache <dir>] [--continue-on-error] [--xdelta-fallback]
+```
+
+Creates one `.g3mpatch` for each modified input. Inputs can be modified data files or `.xdelta` patches.
+
+Example:
+
+```bash
+G3MTool patch batch create original.win modified_a.win modified_b.win mod_c.xdelta --out-dir patches
+```
+
+### patch batch merge
+
+```bash
+G3MTool patch batch merge <original> <sets...> [--apply <data-dir>] [--out <patch-dir>] [--cache <dir>] [--continue-on-error] [--code] [--properties] [--report]
+```
+
+Each set is one quoted, comma-separated list of patches. Patch order inside a set is low to high priority, matching `patch merge`.
+
+Example:
+
+```bash
+G3MTool patch batch merge game.win "base.xdelta,ui.g3mpatch" "combat.win,localization.xdelta,hotfix.g3mpatch" --apply merged --out merged-patches
+```
+
+Rules:
+
+- every set must contain at least two patches
+- use commas as the only separator
+- spaces around commas are ignored
+- paths with spaces are supported because the whole set is quoted
+- paths containing commas are not supported in this mode
+- patched data outputs are written to the current directory by default, or to `--apply <data-dir>` when it is set
+- `--out <patch-dir>` also saves each intermediate merged `.g3mpatch`
+- `--code`, `--properties`, and `--report` apply to every set
+
+Batch merge writes both a merged `.g3mpatch` and a patched data file for each set. If a merge report is created, duplicate jobs also copy the report to the duplicate output name.

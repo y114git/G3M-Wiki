@@ -14,6 +14,7 @@ In practice, the Library is used for four jobs:
 - switch profile
 - choose which installed mods are active
 - manage local mod files
+- run preflight diagnostics on the current mod selection
 
 That makes it the most important tab once you already have mods on disk.
 
@@ -87,3 +88,15 @@ When you press `Add Mod`, you are really choosing one of two paths:
 - create a new mod from scratch
 
 So the Library is both your play space and your starting point for local modding.
+
+## Diagnostics
+
+The Library header also exposes a **Diagnostics** button.
+
+That dialog builds a read-only report for the current game or chapter scope and helps you inspect:
+
+- file conflicts between selected mods
+- target paths for extra-file overrides
+- DATA patch types
+- `.g3mpatch` resource summaries and previews
+- obvious missing-file issues before launch

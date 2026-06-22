@@ -24,8 +24,17 @@ If any rule matches, the mod is filtered out.
 
 Blocklist rules are stored in:
 
-`settings/blocklist.json`
+`%LOCALAPPDATA%\G3M\settings\blocklist.json`
 
 ## Where you manage it
 
-G3M has a dedicated Blocklist dialog, and the search/browser flow can also open it directly.
+G3M has a dedicated Blocklist dialog. Open it from **Settings** or from the Mods Browser/search flow when a blocklist action is available.
+
+Typical actions:
+
+1. Open **Blocklist**.
+2. Add a rule by mod ID, name text, or category.
+3. Choose whether it applies globally or only to one game.
+4. Save or close the dialog.
+
+Blocked mods simply stop appearing in the affected browser/library results. The blocklist does not uninstall mods that are already installed.

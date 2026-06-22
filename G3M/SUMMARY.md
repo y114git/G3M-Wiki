@@ -47,13 +47,11 @@
 * [Downloads](features/downloads.md)
 * [Game Versions](features/game-versions.md)
 * [Desktop Shortcuts](features/shortcuts.md)
-* [Chat](features/chat.md)
 * [Plugins](features/plugins.md)
 * [Blocklist Manager](features/blocklist.md)
 * [Modding Tools](features/modding-tools.md)
 * [Announcements & Polls](features/announcements.md)
 * [Update System](features/update-system.md)
-* [Online Presence](features/online-presence.md)
 * [Plugin Development Guide](features/plugins-development.md)
 
 ## Customization

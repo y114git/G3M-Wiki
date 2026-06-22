@@ -5,8 +5,7 @@ G3M mixes local features with a few online ones. Local library management keeps 
 ## What uses the network
 
 - GameBanana browsing and downloads
-- Chat
-- Online presence
+- Discord Rich Presence handoff through the local Discord IPC pipe when available
 - Announcements and polls
 - Update checks
 - Analytics uploads
@@ -22,8 +21,6 @@ The UI also has an explicit rate-limit message for the documented `250` requests
 
 Several G3M-specific features use cloud endpoints through the shared network helpers:
 
-- chat messages
-- online presence
 - announcements and poll voting
 - analytics upload
 - startup/global settings fetches

@@ -19,6 +19,8 @@ The current editor covers the core mod fields:
 
 It also lets you attach per-slot data files and extra files.
 
+For FRICKBEARS3 mods, the current editor also understands addon-style extra-file layouts and keeps them in the normal mod file structure instead of treating them as unrelated loose files.
+
 ## Supported main file types
 
 For chapter or slot data, the editor can work with:

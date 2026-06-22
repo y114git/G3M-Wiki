@@ -18,7 +18,7 @@ The current manifest model includes these top-level fields:
 | `statistics` | Resource and file counts |
 | `applyPlan` | Apply hints used by G3MTool |
 
-The current example tool version in this repository is `1.1.1`.
+The current example tool version in this repository is `1.2.0`.
 
 ## Data-file metadata
 
@@ -107,3 +107,5 @@ These flags tell G3MTool which expensive import or finalize stages can be skippe
 ## `.g3mcache`
 
 `.g3mcache` is not part of `.g3mpatch`. It is a separate reusable analysis cache used only when the caller passes `--cache <dir>`.
+
+Batch commands add a second, temporary layer of caching for the current process. They hash the original and inputs before processing, deduplicate identical jobs, and copy the first output to later duplicate output names. This batch cache is not stored inside `.g3mpatch`.

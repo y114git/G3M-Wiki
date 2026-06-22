@@ -99,13 +99,13 @@ For DELTARUNE, Direct Launch lets you skip the title screen and load directly in
 
 Full Install is available for `deltarunedemo`, `undertaleyellow`, `sugaryspire`, and `frickbears3`. Enable the checkbox for the selected supported game, then run the install flow. See [Full Install](../games/full-install.md).
 
-### How does the Chat work?
-
-G3M has a built-in chat feature with no account flow in the client. See [Chat](../features/chat.md).
-
 ### Can I create desktop shortcuts?
 
 Yes. G3M can create desktop shortcuts that patch mods and launch a game without opening the full UI. See [Desktop Shortcuts](../features/shortcuts.md).
+
+### What happens if the game is already running?
+
+G3M still opens normally. The main **Launch** button stays disabled while a supported game process is already running, and the status bar names the process that must be closed before launching from G3M.
 
 ### What are Plugins?
 
@@ -161,7 +161,7 @@ G3M itself does not scan mods for malware. GameBanana has its own file scanning 
 
 ### How do I report a bug?
 
-1. Check the log file at `{data_folder}/logs/g3m.log`.
+1. Check the log file at `%LOCALAPPDATA%\G3M\logs\g3m.log` on Windows, `~/.local/share/G3M/logs/g3m.log` on Linux, or `~/Library/Application Support/G3M/logs/g3m.log` on macOS.
 2. Report the issue on [GitHub Issues](https://github.com/y114git/G3M/issues) with a description and the relevant log sections.
 3. Or reach out on the [Discord server](https://discord.gg/2MFdvFfD9a).
 

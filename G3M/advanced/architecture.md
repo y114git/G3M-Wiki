@@ -30,9 +30,12 @@ Important current components are:
 - `ProfileService` for profile switching and migration
 - `GameRegistryService` for built-in and custom game entries
 - `ModService` and related patching services for mod scan and apply flows
+- `ModDiagnosticsService` for read-only preflight analysis of selected mods
 - `SettingsService` for settings persistence
 - `PluginRuntimeService` for plugin loading and hook execution
-- `UpdateCheckService`, `AnalyticsService`, `ChatService`, and `AnnounceService` for network-backed features
+- `DiscordRichPresenceService` for Discord activity publishing
+- `Frickbears3AddonsService` for strict FRICKBEARS3 addon conversion
+- `UpdateCheckService`, `AnalyticsService`, `AnnounceService`, and the presence/session workers for network-backed features
 
 ---
 
@@ -43,7 +46,7 @@ Current key values from `src/config/config.py`:
 | Constant | Value |
 | --- | --- |
 | `APP_DISPLAY_NAME` | `G3M` |
-| `APP_VERSION` | `3.1.2` |
+| `APP_VERSION` | `3.2.0` |
 | `PRIMARY_URL_SCHEME` | `g3m` |
 | `LEGACY_URL_SCHEME` | `deltahub` |
 | `PLUGIN_API_VERSION` | `1.1.0` |

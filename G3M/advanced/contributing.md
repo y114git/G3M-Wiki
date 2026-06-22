@@ -4,7 +4,7 @@ This page is for people working on G3M itself rather than just using it.
 
 ## Current stack
 
-- Python `3.14+`
+- Python `3.14.6+`
 - PyQt6
 - pytest
 - ruff

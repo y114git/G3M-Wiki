@@ -37,7 +37,7 @@ The smoothest imports are:
 - `.g3mpatch`
 - supported archives with clear mod structure
 
-Supported conversion paths also exist for some external ecosystems, including DELTAMOD and supported Pizza Tower-related flows.
+Supported conversion paths also exist for some external ecosystems, including DELTAMOD, supported Pizza Tower-related flows, and strict FRICKBEARS3 addon archives.
 
 ---
 
@@ -50,6 +50,8 @@ That usually means:
 - the format is unsupported
 - the archive layout is too ambiguous
 - the file needs a more manual conversion workflow
+
+If the file is close to usable but not mappable automatically, G3M can hand it off to the Manual Install dialog instead of failing as a blind import. That flow can assign DATA files, extra files, and additional xdelta patches to explicit game targets.
 
 When that happens, the right next step is usually to inspect the file structure or try the relevant modding/conversion tools instead of assuming the file is broken.
 

@@ -2,7 +2,7 @@
 
 G3M is a desktop mod manager for GameMaker games. In the current codebase it ships as a Python 3.14+ desktop application built with PyQt6 and focuses on mod browsing, library management, patching workflows, profiles, plugins, customization, and launch automation.
 
-Current code version: **3.1.2**  
+Current code version: **3.2.0**  
 License: **GPL-3.0**  
 UI framework: **PyQt6 6.7.1**
 
@@ -42,6 +42,6 @@ G3M also supports custom single-tab games added through the in-app Game Manager.
 - [**Interface**](interface/README.md) - tabs, panels, dialogs, and window behavior.
 - [**Games**](games/README.md) - built-in games, custom games, detection, launch, Steam, and full install.
 - [**Mods**](mods/README.md) - formats, importing, creating, editing, versions, and conversion flows.
-- [**Features**](features/README.md) - profiles, downloads, shortcuts, plugins, updates, chat, and other app features.
+- [**Features**](features/README.md) - profiles, downloads, shortcuts, plugins, updates, and other app features.
 - [**Customization**](customization/README.md) - themes, colors, audio, fonts, logo, background, and animations.
 - [**Advanced**](advanced/README.md) - architecture, data layout, localization, networking, patching, and troubleshooting.
