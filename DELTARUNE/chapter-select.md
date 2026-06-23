@@ -30,8 +30,6 @@ The extracted runtime is very small compared with the numbered chapters:
 - no battle controller stack
 - no chapter overworld stack
 
-It should be documented as a launcher/runtime shell, not as a fifth chapter.
-
 ---
 
 ## Important Objects
