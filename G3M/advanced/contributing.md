@@ -27,4 +27,5 @@ The current repo is centered around:
 
 ## Important rule
 
-If you change real behavior, the wiki and other user-facing docs should match the new HEAD instead of describing past behavior.
+If you change real behavior, the wiki and other user-facing docs should match
+the new HEAD instead of describing past behavior.

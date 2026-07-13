@@ -10,4 +10,5 @@ The controlling setting is:
 
 ## What changes when it is off
 
-Turning animations off mainly affects visual polish rather than behavior. It is useful if you prefer a snappier interface or want fewer transitions.
+Turning animations off mainly affects visual polish rather than behavior. It is
+useful if you prefer a snappier interface or want fewer transitions.

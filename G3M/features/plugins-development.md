@@ -10,7 +10,7 @@ This guide explains how to create plugins for G3M.
 
 Create a new folder with a unique name (e.g., `my_plugin/`):
 
-```
+```text
 my_plugin/
 ├── plugin_config.json     # Required: Plugin manifest
 ├── main.py                # Required: Entry point
@@ -49,27 +49,72 @@ def on_load(context):
 
 ### Required Fields
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `config_version` | int | Must be `1`. |
-| `id` | string | Unique plugin ID. Use lowercase, alphanumeric, and underscores. |
-| `name` | string | Human-readable name. |
-| `description` | string | Brief description. |
-| `author` | string | Your name. |
-| `version` | string | Version string (e.g., "1.0.0"). |
-| `entry` | string | Python file name for the entry point. |
+- **Field:** `config_version`
+  - **Type:** int
+  - **Description:** Must be `1`.
+
+- **Field:** `id`
+  - **Type:** string
+  - **Description:** Unique plugin ID. Use lowercase, alphanumeric, and
+    underscores.
+
+- **Field:** `name`
+  - **Type:** string
+  - **Description:** Human-readable name.
+
+- **Field:** `description`
+  - **Type:** string
+  - **Description:** Brief description.
+
+- **Field:** `author`
+  - **Type:** string
+  - **Description:** Your name.
+
+- **Field:** `version`
+  - **Type:** string
+  - **Description:** Version string (e.g., "1.0.0").
+
+- **Field:** `entry`
+  - **Type:** string
+  - **Description:** Python file name for the entry point.
 
 ### Optional Fields
 
-| Field | Type | Default | Description |
-| --- | --- | --- | --- |
-| `api_version` | string | `"1.1.0"` | Target Plugin API version. |
-| `icon` | string | `null` | Relative path to icon image. |
-| `homepage` | string | `null` | URL to plugin homepage/repository. |
-| `tags` | array | `[]` | Category tags: `interface`, `game_experience`, `tool`, `other`. |
-| `relations` | object | `{}` | Dependencies and conflicts. |
-| `hooks` | array | `[]` | Hook names this plugin implements. |
-| `settings_schema` | object | `{}` | Plugin settings definition. |
+- **Field:** `api_version`
+  - **Type:** string
+  - **Default:** `"1.1.0"`
+  - **Description:** Target Plugin API version.
+
+- **Field:** `icon`
+  - **Type:** string
+  - **Default:** `null`
+  - **Description:** Relative path to icon image.
+
+- **Field:** `homepage`
+  - **Type:** string
+  - **Default:** `null`
+  - **Description:** URL to plugin homepage/repository.
+
+- **Field:** `tags`
+  - **Type:** array
+  - **Default:** `[]`
+  - **Description:** Category tags: `interface`, `game_experience`, `tool`,
+    `other`.
+
+- **Field:** `relations`
+  - **Type:** object
+  - **Default:** `{}`
+  - **Description:** Dependencies and conflicts.
+
+- **Field:** `hooks`
+  - **Type:** array
+  - **Default:** `[]`
+  - **Description:** Hook names this plugin implements.
+
+- **Field:** `settings_schema`
+  - **Type:** object
+  - **Default:** `{}`
+  - **Description:** Plugin settings definition.
 
 ---
 
@@ -79,29 +124,89 @@ Hooks let your plugin execute code at specific lifecycle points.
 
 ### Available Hooks
 
-| Hook | When | Parameters |
-| --- | --- | --- |
-| `app_ready` | After app initialization completes. | `PluginTaskRuntime` |
-| `app_shutdown` | When the app is shutting down. | `PluginTaskRuntime` |
-| `before_mod_apply` | Before mods are patched/launched. | `PluginTaskRuntime` |
-| `after_mod_apply_before_launch` | After patching, before game start. | `PluginTaskRuntime` |
-| `mod_apply_cancelled` | When patching/launch is cancelled. | `PluginTaskRuntime` |
-| `after_game_started` | After game process is launched. | `PluginTaskRuntime` |
-| `before_restore_after_exit` | After game exits, before restore. | `PluginTaskRuntime` |
-| `after_restore_after_exit` | After file restoration completes. | `PluginTaskRuntime` |
-| `shortcut_dialog` | When the shortcut dialog flow runs. | `PluginUiContext` |
-| `before_mod_apply_shortcut` | Before shortcut patching starts. | `PluginTaskRuntime` |
-| `after_mod_apply_before_launch_shortcut` | After shortcut patching, before launch. | `PluginTaskRuntime` |
-| `before_restore_after_exit_shortcut` | Before shortcut restore starts. | `PluginTaskRuntime` |
-| `after_restore_after_exit_shortcut` | After shortcut restore completes. | `PluginTaskRuntime` |
-| `language_changed` | When the UI language changes. | `PluginTaskRuntime` |
-| `theme_changed` | When the theme changes. | `PluginTaskRuntime` |
-| `profile_changed` | When the active profile changes. | `PluginTaskRuntime` |
-| `settings_view` | When Settings tab is shown. | `PluginUiContext` |
-| `main_view` | When the main view is shown. | `PluginUiContext` |
-| `navigation_actions` | When the nav bar is built. | `PluginUiContext` |
-| `game_registry` | When game registry is initialized. | `PluginTaskRuntime` |
-| `background_task` | For background tasks. | `PluginTaskRuntime` |
+- **Hook:** `app_ready`
+  - **When:** After app initialization completes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `app_shutdown`
+  - **When:** When the app is shutting down.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `before_mod_apply`
+  - **When:** Before mods are patched/launched.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `after_mod_apply_before_launch`
+  - **When:** After patching, before game start.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `mod_apply_cancelled`
+  - **When:** When patching/launch is cancelled.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `after_game_started`
+  - **When:** After game process is launched.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `before_restore_after_exit`
+  - **When:** After game exits, before restore.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `after_restore_after_exit`
+  - **When:** After file restoration completes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `shortcut_dialog`
+  - **When:** When the shortcut dialog flow runs.
+  - **Parameters:** `PluginUiContext`
+
+- **Hook:** `before_mod_apply_shortcut`
+  - **When:** Before shortcut patching starts.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `after_mod_apply_before_launch_shortcut`
+  - **When:** After shortcut patching, before launch.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `before_restore_after_exit_shortcut`
+  - **When:** Before shortcut restore starts.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `after_restore_after_exit_shortcut`
+  - **When:** After shortcut restore completes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `language_changed`
+  - **When:** When the UI language changes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `theme_changed`
+  - **When:** When the theme changes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `profile_changed`
+  - **When:** When the active profile changes.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `settings_view`
+  - **When:** When Settings tab is shown.
+  - **Parameters:** `PluginUiContext`
+
+- **Hook:** `main_view`
+  - **When:** When the main view is shown.
+  - **Parameters:** `PluginUiContext`
+
+- **Hook:** `navigation_actions`
+  - **When:** When the nav bar is built.
+  - **Parameters:** `PluginUiContext`
+
+- **Hook:** `game_registry`
+  - **When:** When game registry is initialized.
+  - **Parameters:** `PluginTaskRuntime`
+
+- **Hook:** `background_task`
+  - **When:** For background tasks.
+  - **Parameters:** `PluginTaskRuntime`
 
 ### Declaring Hooks
 
@@ -135,12 +240,17 @@ def after_restore_after_exit(runtime):
 
 The `runtime` parameter provides:
 
-| Method | Description |
-| --- | --- |
-| `report_progress(percent)` | Report progress (0–100). |
-| `report_status(message)` | Display a status message. |
-| `is_cancelled()` | Check if the user cancelled the operation. |
-| `get_backup_manager()` | Access the host's backup manager for file backup/restore. |
+- **Method:** `report_progress(percent)`
+  - **Description:** Report progress (0–100).
+
+- **Method:** `report_status(message)`
+  - **Description:** Display a status message.
+
+- **Method:** `is_cancelled()`
+  - **Description:** Check if the user cancelled the operation.
+
+- **Method:** `get_backup_manager()`
+  - **Description:** Access the host's backup manager for file backup/restore.
 
 ---
 
@@ -152,30 +262,54 @@ When your plugin is loaded, `on_load()` receives a `PluginContext`:
 def on_load(context):
     # Access application state
     game_mode = context.app_state.game_mode
-    
+
     # Read a setting
     game_path = context.settings_service.get("game_path")
-    
+
     # Access plugin-specific settings
     my_setting = context.plugin_settings.get("my_key", "default_value")
-    
+
     # Show a status message
     context.feedback_service.show_status("My Plugin loaded!", "info")
 ```
 
 ### Available Services
 
-| Service | Access | Description |
-| --- | --- | --- |
-| `app_state` | `context.app_state` | Application state (game mode, paths, flags). |
-| `feedback_service` | `context.feedback_service` | Show status messages and notifications. |
-| `settings_service` | `context.settings_service` | Read/write application settings. |
-| `profile_service` | `context.profile_service` | Access profile data. |
-| `game_registry_service` | `context.game_registry_service` | Query game definitions. |
-| `customization_service` | `context.customization_service` | Theme and customization data. |
-| `downloads_manager` | `context.downloads_manager` | Enqueue downloads. |
-| `localization_service` | `context.localization_service` | Access translations. |
-| `plugin_settings` | `context.plugin_settings` | Plugin-specific settings storage. |
+- **Service:** `app_state`
+  - **Access:** `context.app_state`
+  - **Description:** Application state (game mode, paths, flags).
+
+- **Service:** `feedback_service`
+  - **Access:** `context.feedback_service`
+  - **Description:** Show status messages and notifications.
+
+- **Service:** `settings_service`
+  - **Access:** `context.settings_service`
+  - **Description:** Read/write application settings.
+
+- **Service:** `profile_service`
+  - **Access:** `context.profile_service`
+  - **Description:** Access profile data.
+
+- **Service:** `game_registry_service`
+  - **Access:** `context.game_registry_service`
+  - **Description:** Query game definitions.
+
+- **Service:** `customization_service`
+  - **Access:** `context.customization_service`
+  - **Description:** Theme and customization data.
+
+- **Service:** `downloads_manager`
+  - **Access:** `context.downloads_manager`
+  - **Description:** Enqueue downloads.
+
+- **Service:** `localization_service`
+  - **Access:** `context.localization_service`
+  - **Description:** Access translations.
+
+- **Service:** `plugin_settings`
+  - **Access:** `context.plugin_settings`
+  - **Description:** Plugin-specific settings storage.
 
 ---
 
@@ -222,7 +356,9 @@ context.plugin_settings.set("last_run", "2024-03-20")
 all_settings = context.plugin_settings.all()
 ```
 
-Settings are persisted on Windows in `%LOCALAPPDATA%\G3M\plugins\plugins_data.json` under the `settings` key for your plugin's ID.
+Settings are persisted on Windows in
+`%LOCALAPPDATA%\G3M\plugins\plugins_data.json` under the `settings` key for your
+plugin's ID.
 
 ---
 
@@ -270,7 +406,8 @@ Declare that your plugin requires another plugin:
 }
 ```
 
-G3M checks relations when enabling. If the required plugin is missing, a warning is shown.
+G3M checks relations when enabling. If the required plugin is missing, a warning
+is shown.
 
 ### Conflicts
 
@@ -299,17 +436,17 @@ def settings_view(ui_context):
     """Add a custom settings panel."""
     widget = QWidget()
     layout = QVBoxLayout(widget)
-    
+
     label = QLabel("My Plugin Settings")
     layout.addWidget(label)
-    
+
     checkbox = QCheckBox("Enable feature")
     checkbox.setChecked(ui_context.plugin_settings.get("feature_enabled", False))
     checkbox.stateChanged.connect(
         lambda state: ui_context.plugin_settings.set("feature_enabled", bool(state))
     )
     layout.addWidget(checkbox)
-    
+
     return widget
 ```
 
@@ -319,7 +456,9 @@ def settings_view(ui_context):
 
 ### Manual Installation
 
-1. Copy your plugin folder into `%LOCALAPPDATA%\G3M\plugins\` on Windows, `~/.local/share/G3M/plugins/` on Linux, or `~/Library/Application Support/G3M/plugins/` on macOS.
+1. Copy your plugin folder into `%LOCALAPPDATA%\G3M\plugins\` on Windows,
+   `~/.local/share/G3M/plugins/` on Linux, or
+   `~/Library/Application Support/G3M/plugins/` on macOS.
 2. Restart G3M.
 3. Go to Settings → Plugins.
 4. Your plugin appears in the "Installed" section.
@@ -327,11 +466,16 @@ def settings_view(ui_context):
 
 ### Distribution via Plugin Catalog
 
-To list your plugin in G3M's online plugin catalog, contact the G3M developer. The catalog is curated to ensure quality and safety.
+To list your plugin in G3M's online plugin catalog, contact the G3M developer.
+The catalog is curated to ensure quality and safety.
 
 ### Distribution as ZIP
 
-Package your plugin folder as a `.zip`. Current G3M builds can install plugin archives through the plugin install flow, and users can still extract them manually into `%LOCALAPPDATA%\G3M\plugins\` on Windows, `~/.local/share/G3M/plugins/` on Linux, or `~/Library/Application Support/G3M/plugins/` on macOS.
+Package your plugin folder as a `.zip`. Current G3M builds can install plugin
+archives through the plugin install flow, and users can still extract them
+manually into `%LOCALAPPDATA%\G3M\plugins\` on Windows,
+`~/.local/share/G3M/plugins/` on Linux, or
+`~/Library/Application Support/G3M/plugins/` on macOS.
 
 ---
 
@@ -361,15 +505,18 @@ If your plugin raises an unhandled exception:
 - Other plugins continue to function.
 - G3M does not crash.
 
-Always wrap potentially failing operations in try/except blocks and log errors with `logger.error(..., exc_info=True)`.
+Always wrap potentially failing operations in try/except blocks and log errors
+with `logger.error(..., exc_info=True)`.
 
 ---
 
 ## API Version Compatibility
 
-The current Plugin API version is **1.1.0**. Your plugin's `api_version` must match the host's version:
+The current Plugin API version is **1.1.0**. Your plugin's `api_version` must
+match the host's version:
 
 - `api_version: "1.1.0"` — Compatible with the current G3M Plugin API.
-- If the API version changes, plugins targeting a different version may not load.
+- If the API version changes, plugins targeting a different version may not
+  load.
 
 Always test your plugin with the latest G3M version before distributing.

@@ -9,7 +9,8 @@ Supported custom font formats:
 - `.ttf`
 - `.otf`
 
-The selected file is stored as `custom_font.*` in the data directory and loaded through the current localization and theme flow.
+The selected file is stored as `custom_font.*` in the data directory and loaded
+through the current localization and theme flow.
 
 ## Logo
 
@@ -23,7 +24,8 @@ Supported custom logo formats:
 - `.ico`
 - `.webp`
 
-The selected logo is stored as `custom_logo.*` and used instead of the bundled launcher logo.
+The selected logo is stored as `custom_logo.*` and used instead of the bundled
+launcher logo.
 
 ## Border radius
 

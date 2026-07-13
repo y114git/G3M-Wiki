@@ -1,6 +1,7 @@
 # Mod Filtering & Sorting
 
-G3M provides extensive filtering and sorting capabilities in both the Mods Browser and the Library.
+G3M provides extensive filtering and sorting capabilities in both the Mods
+Browser and the Library.
 
 ---
 
@@ -18,24 +19,39 @@ A text search that matches against multiple fields simultaneously:
 - Added date (formatted as text)
 - Updated date (formatted as text)
 
-The search is **case-insensitive**. Multiple space-separated terms must all match (AND logic) — each term can match in a different field. For example, "dark chapter 2" matches a mod named "Dark World" with description mentioning "chapter 2".
+The search is **case-insensitive**. Multiple space-separated terms must all
+match (AND logic) — each term can match in a different field. For example, "dark
+chapter 2" matches a mod named "Dark World" with description mentioning "chapter
+2".
 
 ### Tag Filters
 
 Four predefined tag categories can be toggled:
 
-| Tag | Matches Mods With |
-| --- | --- |
-| **Text Edit** | Tags containing "text", "dialogue", "translation", or similar. Also matched via GameBanana categories related to text modifications. |
-| **Customization** | Tags containing "customization", "visual", "audio", "sprite", "texture", "skin", or similar. |
-| **Gameplay** | Tags containing "gameplay", "mechanic", "balance", "difficulty", or similar. |
-| **Other** | Tags that don't fit the above categories, or mods with no tags. |
+- **Tag:** **Text Edit**
+  - **Matches Mods With:** Tags containing "text", "dialogue", "translation", or
+    similar. Also matched via GameBanana categories related to text
+    modifications.
 
-When multiple tags are selected, mods must match **all** selected tags (AND logic between tags).
+- **Tag:** **Customization**
+  - **Matches Mods With:** Tags containing "customization", "visual", "audio",
+    "sprite", "texture", "skin", or similar.
+
+- **Tag:** **Gameplay**
+  - **Matches Mods With:** Tags containing "gameplay", "mechanic", "balance",
+    "difficulty", or similar.
+
+- **Tag:** **Other**
+  - **Matches Mods With:** Tags that don't fit the above categories, or mods
+    with no tags.
+
+When multiple tags are selected, mods must match **all** selected tags (AND
+logic between tags).
 
 ### NSFW Filtering
 
-When "Show NSFW" is unchecked (default), mods are hidden if any of these conditions are true:
+When "Show NSFW" is unchecked (default), mods are hidden if any of these
+conditions are true:
 
 - The mod has an explicit NSFW flag set to `true`.
 - The mod's content rating indicates adult content.
@@ -51,17 +67,23 @@ The check is case-insensitive and looks at the tag/category as a substring.
 
 ### Game Filter
 
-In the Mods Browser, the game selector dropdown restricts results to mods for the selected game (by GameBanana game ID).
+In the Mods Browser, the game selector dropdown restricts results to mods for
+the selected game (by GameBanana game ID).
 
-In the Library, the game selector shows only mods installed for that game in the current profile.
+In the Library, the game selector shows only mods installed for that game in the
+current profile.
 
 ### Blocklist Filter
 
-Mods matching any blocklist rule (by ID, name, or category) for the current game or globally are excluded from results. This happens transparently — blocked mods simply don't appear. See [Blocklist Manager](../features/blocklist.md).
+Mods matching any blocklist rule (by ID, name, or category) for the current game
+or globally are excluded from results. This happens transparently — blocked mods
+simply don't appear. See [Blocklist Manager](../features/blocklist.md).
 
 ### Installation Status Filter
 
-In the Library, only installed mods from the active profile directory are shown. The Mods Browser shows remote GameBanana results regardless of installation status.
+In the Library, only installed mods from the active profile directory are shown.
+The Mods Browser shows remote GameBanana results regardless of installation
+status.
 
 ---
 
@@ -69,11 +91,11 @@ In the Library, only installed mods from the active profile directory are shown.
 
 ### Mods Browser
 
-| Sort | Description |
-| --- | --- |
+| Sort                   | Description                                   |
+| ---------------------- | --------------------------------------------- |
 | **Relevant** (default) | Sorts by total download count, highest first. |
-| **By creation date** | Sorts by the mod's original publication date. |
-| **By update date** | Sorts by the most recent update date. |
+| **By creation date**   | Sorts by the mod's original publication date. |
+| **By update date**     | Sorts by the most recent update date.         |
 
 Each sort has a **direction toggle** (ascending ↑ / descending ↓):
 
@@ -84,12 +106,12 @@ Each sort has a **direction toggle** (ascending ↑ / descending ↓):
 
 The Library sorts mods by:
 
-| Sort | Description |
-| --- | --- |
-| **Name** (default) | Alphabetical by mod name. |
-| **Date added** | By when the mod was imported. |
-| **Date updated** | By the last modification date. |
-| **Author** | Alphabetical by author name. |
+| Sort               | Description                    |
+| ------------------ | ------------------------------ |
+| **Name** (default) | Alphabetical by mod name.      |
+| **Date added**     | By when the mod was imported.  |
+| **Date updated**   | By the last modification date. |
+| **Author**         | Alphabetical by author name.   |
 
 ---
 
@@ -99,11 +121,14 @@ G3M normalizes tags for consistent filtering:
 
 - Tags are lowercased.
 - Leading/trailing whitespace is stripped.
-- Common separators (commas, semicolons) split multi-tag strings into individual tags.
+- Common separators (commas, semicolons) split multi-tag strings into individual
+  tags.
 - Empty tags are removed.
-- GameBanana category names are mapped to G3M tag categories using an internal mapping table.
+- GameBanana category names are mapped to G3M tag categories using an internal
+  mapping table.
 
-This ensures that "Customization", "customization", "CUSTOMIZATION", and "  Customization  " all match the same filter.
+This ensures that "Customization", "customization", "CUSTOMIZATION", and "
+Customization " all match the same filter.
 
 ---
 
@@ -119,19 +144,24 @@ For each mod, G3M builds a "searchable text" blob by concatenating:
 6. Added date (formatted)
 7. Updated date (formatted)
 
-This blob is searched against the user's search terms. The search checks if each term appears as a substring in the blob.
+This blob is searched against the user's search terms. The search checks if each
+term appears as a substring in the blob.
 
 ---
 
 ## Performance
 
-Filtering and sorting are performed in-memory on the full mod list. For large libraries (hundreds of mods), the operations are essentially instant. For the Mods Browser with thousands of mods, pagination limits the visible set to 15 mods per page, so filtering only applies to loaded pages.
+Filtering and sorting are performed in-memory on the full mod list. For large
+libraries (hundreds of mods), the operations are essentially instant. For the
+Mods Browser with thousands of mods, pagination limits the visible set to 15
+mods per page, so filtering only applies to loaded pages.
 
 ---
 
 ## Filter Persistence
 
-Filter selections (search text, active tags, sort order, NSFW toggle) are **not persisted** across sessions. They reset to defaults when G3M starts:
+Filter selections (search text, active tags, sort order, NSFW toggle) are **not
+persisted** across sessions. They reset to defaults when G3M starts:
 
 - Search: empty
 - Tags: none selected (show all)

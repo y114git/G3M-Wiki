@@ -1,6 +1,7 @@
 # Architecture
 
-G3M is a PyQt6 desktop application organized around injected services, Qt controllers, background workers, and a runtime app state model.
+G3M is a PyQt6 desktop application organized around injected services, Qt
+controllers, background workers, and a runtime app state model.
 
 ---
 
@@ -8,7 +9,8 @@ G3M is a PyQt6 desktop application organized around injected services, Qt contro
 
 The current source tree is centered around these directories:
 
-- `src/app` for startup, top-level window wiring, tab setup, protocol handling, and shutdown
+- `src/app` for startup, top-level window wiring, tab setup, protocol handling,
+  and shutdown
 - `src/app_context` for dependency construction
 - `src/bootstrap` for startup orchestration
 - `src/controllers` for UI-facing feature controllers
@@ -35,7 +37,8 @@ Important current components are:
 - `PluginRuntimeService` for plugin loading and hook execution
 - `DiscordRichPresenceService` for Discord activity publishing
 - `Frickbears3AddonsService` for strict FRICKBEARS3 addon conversion
-- `UpdateCheckService`, `AnalyticsService`, `AnnounceService`, and the presence/session workers for network-backed features
+- `UpdateCheckService`, `AnalyticsService`, `AnnounceService`, and the
+  presence/session workers for network-backed features
 
 ---
 
@@ -43,16 +46,16 @@ Important current components are:
 
 Current key values from `src/config/config.py`:
 
-| Constant | Value |
-| --- | --- |
-| `APP_DISPLAY_NAME` | `G3M` |
-| `APP_VERSION` | `3.2.0` |
-| `PRIMARY_URL_SCHEME` | `g3m` |
-| `LEGACY_URL_SCHEME` | `deltahub` |
-| `PLUGIN_API_VERSION` | `1.1.0` |
-| `DEFAULT_PROFILE` | `Default` |
+| Constant              | Value             |
+| --------------------- | ----------------- |
+| `APP_DISPLAY_NAME`    | `G3M`             |
+| `APP_VERSION`         | `3.2.0`           |
+| `PRIMARY_URL_SCHEME`  | `g3m`             |
+| `LEGACY_URL_SCHEME`   | `deltahub`        |
+| `PLUGIN_API_VERSION`  | `1.1.0`           |
+| `DEFAULT_PROFILE`     | `Default`         |
 | `MOD_CONFIG_FILENAME` | `mod_config.json` |
-| `MOD_VERSIONS_DIR` | `mod_versions` |
+| `MOD_VERSIONS_DIR`    | `mod_versions`    |
 
 Current plugin hooks are:
 
@@ -88,4 +91,5 @@ The repository currently contains:
 - `tests/integration`
 - `tests/ui`
 
-This matches the service-heavy architecture: most logic is outside widgets and can be exercised without booting the full application window.
+This matches the service-heavy architecture: most logic is outside widgets and
+can be exercised without booting the full application window.

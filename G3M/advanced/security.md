@@ -1,6 +1,7 @@
 # Security
 
-G3M downloads community content and can run plugin or script-style extensions, so trust still matters.
+G3M downloads community content and can run plugin or script-style extensions,
+so trust still matters.
 
 ## Practical trust model
 
@@ -17,4 +18,5 @@ G3M downloads community content and can run plugin or script-style extensions, s
 
 ## Important limitation
 
-Plugins are not sandboxed. A plugin runs with the same general local permissions as the app process.
+Plugins are not sandboxed. A plugin runs with the same general local permissions
+as the app process.

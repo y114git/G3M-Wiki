@@ -1,18 +1,23 @@
-﻿# Battle System
+# Battle System
 
-The numbered chapters all center battle flow around `obj_battlecontroller`, but the runtime grows in three clear stages:
+The numbered chapters all center battle flow around `obj_battlecontroller`, but
+the runtime grows in four clear stages:
 
 - Chapter 1: compact original controller
 - Chapter 2: major menu / spell / ACT / ambush expansion
-- Chapters 3 and 4: Chapter 2 framework plus more forced-action, sprite-control, and encounter-specific overlays
+- Chapters 3 and 4: Chapter 2 framework plus forced-action and encounter
+  overlays
+- Chapter 5: the same controller contract plus platform/miniboss subsystems
 
-This page documents the runtime objects and scripts as seen through UndertaleModTool.
+This page documents the runtime objects and scripts as seen through
+UndertaleModTool.
 
-For generic GameMaker engine behavior behind object events, alarms, and scope-changing with `with (...)`, see:
+For generic GameMaker engine behavior behind object events, alarms, and
+scope-changing with `with (...)`, see:
 
-- https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Object_Events.htm
-- https://manual.gamemaker.io/lts/en/GameMaker_Language/GML_Overview/Language_Features/with.htm
-- https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables_And_Variable_Scope.htm
+- <https://manual.gamemaker.io/monthly/en/The_Asset_Editors/Object_Properties/Object_Events.htm>
+- <https://manual.gamemaker.io/lts/en/GameMaker_Language/GML_Overview/Language_Features/with.htm>
+- <https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables_And_Variable_Scope.htm>
 
 ---
 
@@ -55,9 +60,11 @@ For generic GameMaker engine behavior behind object events, alarms, and scope-ch
 The usual runtime sequence is:
 
 1. overworld logic decides an encounter should begin
-2. `scr_encountersetup(encounter_id)` fills monster spawn data and hero spawn positions
+2. `scr_encountersetup(encounter_id)` fills monster spawn data and hero spawn
+   positions
 3. `obj_battlecontroller` is created
-4. its Create event resets battle globals, spawns monsters and heroes, and builds menu data
+4. its Create event resets battle globals, spawns monsters and heroes, and
+   builds menu data
 
 ### `scr_encountersetup`
 
@@ -73,15 +80,19 @@ It pre-populates:
 - `global.monstermakey[]`
 - `global.battlemsg[0]`
 
-The default setup always creates a 3-slot battle scaffold first, then overrides per encounter id.
+The default setup always creates a 3-slot battle scaffold first, then overrides
+per encounter id.
 
 Important chapter difference:
 
 - Chapter 2 still uses `__view_get(e__VW.XView, 0)` / `YView`
-- Chapter 3 does the same, but adds Chapter 3-specific runtime state like ranking values and board-era intro strings
-- Chapter 4 switches to `camerax()` / `cameray()` for its encounter positioning baseline
+- Chapter 3 does the same, but adds Chapter 3-specific runtime state like
+  ranking values and board-era intro strings
+- Chapter 4 switches to `camerax()` / `cameray()` for its encounter positioning
+  baseline
 
-Chapter 4 renames the controller to `obj_battlecontroller_ch4` with its own object hierarchy, not a shared parent.
+Chapter 4 renames the controller to `obj_battlecontroller_ch4` with its own
+object hierarchy, not a shared parent.
 
 ---
 
@@ -103,7 +114,8 @@ The Create event always does the same broad jobs:
 
 ### Chapter 1 baseline
 
-The Chapter 1 controller is compact and direct. It explicitly resets many arrays in-place inside Create:
+The Chapter 1 controller is compact and direct. It explicitly resets many arrays
+in-place inside Create:
 
 - `global.monster*`
 - `global.act*`
@@ -119,16 +131,20 @@ The Chapter 1 controller is compact and direct. It explicitly resets many arrays
 It spawns monsters directly with:
 
 ```gml
-global.monsterinstance[i] = instance_create(global.monstermakex[i], global.monstermakey[i], global.monsterinstancetype[i]);
+global.monsterinstance[i] = instance_create(
+    global.monstermakex[i], global.monstermakey[i],
+    global.monsterinstancetype[i]);
 global.monsterinstance[i].myself = i;
 with (global.monsterinstance[i]) { event_user(12); }
 ```
 
-and spawns heroes by checking `global.char[i]` against character ids `1`, `2`, `3`.
+and spawns heroes by checking `global.char[i]` against character ids `1`, `2`,
+`3`.
 
 ### Chapter 2 expansion
 
-Chapter 2 keeps the same skeleton, but moves several responsibilities into helper scripts and adds more per-battle state:
+Chapter 2 keeps the same skeleton, but moves several responsibilities into
+helper scripts and adds more per-battle state:
 
 - `scr_monster_statreset(i)`
 - `scr_monster_makeinstance(i)`
@@ -155,11 +171,14 @@ New state added or made explicit includes:
 - `global.battlespelltarget[][]`
 - `global.battlespellspecial[][]`
 
-This is the point where the battle menu stops being “pick spell from `global.spell`” and becomes a synthesized runtime menu that mixes ACT-like commands and normal spells into one generated table.
+This is the point where the battle menu stops being “pick spell from
+`global.spell`” and becomes a synthesized runtime menu that mixes ACT-like
+commands and normal spells into one listed table.
 
 ### Chapter 3 additions
 
-Chapter 3 largely inherits the Chapter 2 controller, then layers on encounter-specific and presentation-specific switches such as:
+Chapter 3 largely inherits the Chapter 2 controller, then layers on
+encounter-specific and presentation-specific switches such as:
 
 - `disablesusieact`
 - `mercytotal`
@@ -169,47 +188,65 @@ Chapter 3 largely inherits the Chapter 2 controller, then layers on encounter-sp
 - `spadebuttonenabled`
 - `spadebuttoncount`
 
-It also introduces helper scripts outside the controller that can directly manipulate battle state:
+It also introduces helper scripts outside the controller that can directly
+manipulate battle state:
 
 - `scr_battle_force_action`
 - `scr_battle_sprite_set`
 - `scr_battle_sprite_reset`
 - `scr_battle_sprite_actflash`
 
-These are important for scripted battles and show sequences because they let cutscene logic drive the same hero battle objects the player normally controls.
+These are important for scripted battles and show sequences because they let
+cutscene logic drive the same hero battle objects the player normally controls.
 
 ### Chapter 4 additions
 
-Chapter 4 keeps the Chapter 3 model and adds more special-case state inside Create:
+Chapter 4 keeps the Chapter 3 model and adds more special-case state inside
+Create:
 
 - `questionmercy[]`
 - `soundbattle`
 - `hidestar`
 - `disablesusieattack`
-- chapter-4-only encounter branches that rewrite `global.char[]` before the battle fully starts
+- chapter-4-only encounter branches that rewrite `global.char[]` before the
+  battle fully starts
 
 Examples:
 
 - encounter `160` or `176` forces a Susie-only layout
 - encounter `186` forces a Kris + Susie layout
 
-By Chapter 4, party composition can be rewritten inside the controller itself for special battles, not only in overworld prep.
+By Chapter 4, party composition can be rewritten inside the controller itself
+for special battles, not only in overworld prep.
 
 ---
 
 ## Effective Combat Stats
 
-All numbered chapters compute effective combat stats from base stats plus item modifiers:
+All numbered chapters compute effective combat stats from base stats plus item
+modifiers:
 
 ```gml
-global.battleat[i] = global.at[global.char[i]] + global.itemat[global.char[i]][0] + global.itemat[global.char[i]][1] + global.itemat[global.char[i]][2];
-global.battledf[i] = global.df[global.char[i]] + global.itemdf[global.char[i]][0] + global.itemdf[global.char[i]][1] + global.itemdf[global.char[i]][2];
-global.battlemag[i] = global.mag[global.char[i]] + global.itemmag[global.char[i]][0] + global.itemmag[global.char[i]][1] + global.itemmag[global.char[i]][2];
+global.battleat[i] = global.at[global.char[i]]
+    + global.itemat[global.char[i]][0]
+    + global.itemat[global.char[i]][1]
+    + global.itemat[global.char[i]][2];
+global.battledf[i] = global.df[global.char[i]]
+    + global.itemdf[global.char[i]][0]
+    + global.itemdf[global.char[i]][1]
+    + global.itemdf[global.char[i]][2];
+global.battlemag[i] = global.mag[global.char[i]]
+    + global.itemmag[global.char[i]][0]
+    + global.itemmag[global.char[i]][1]
+    + global.itemmag[global.char[i]][2];
 ```
 
-The important runtime detail is that the battle controller does not recalculate from equipment ids directly. It trusts the precomputed `global.itemat/itemdf/itemmag` modifier arrays.
+The important runtime detail is that the battle controller does not recalculate
+from equipment ids directly. It trusts the precomputed
+`global.itemat/itemdf/itemmag` modifier arrays.
 
-if a mod changes equipment behavior, the battle layer usually does not need patching unless the way those arrays are populated also changes.
+if a mod changes equipment behavior, the battle layer usually does not need
+patching unless the way those arrays are populated also changes.
 
 ---
 
@@ -228,7 +265,8 @@ Each spawned hero receives:
 - `char` = character id
 - `depth = 200 - (i * 20)`
 
-That depth staggering is one of the small but important presentation rules to preserve if recreating battle visuals from scratch.
+That depth staggering is one of the small but important presentation rules to
+preserve if recreating battle visuals from scratch.
 
 ---
 
@@ -262,10 +300,11 @@ Important arrays filled here:
 
 Special values:
 
-- negative spell ids are used for generated ACT-like commands
-- normal spell ids are appended after the ACT-generated segment
+- negative spell ids are used for listed ACT-like commands
+- normal spell ids are appended after the ACT-listed segment
 
-`scr_spellmenu_setup()` is the menu-integration layer for later spell, ACT, and party-command variants.
+`scr_spellmenu_setup()` is the menu-integration layer for later spell, ACT, and
+party-command variants.
 
 ---
 
@@ -292,7 +331,8 @@ Chapter 2+ adds finer-grained acting coordination through:
 - `global.actingtarget`
 - `global.actingchoice`
 
-These are used to support more complex ACT choreography and later scripted interactions.
+These are used to support more complex ACT choreography and later scripted
+interactions.
 
 ---
 
@@ -300,9 +340,11 @@ These are used to support more complex ACT choreography and later scripted inter
 
 Chapter 2+ builds the spell/ACT menu in two passes.
 
-### Pass 1: generated ACT-style commands
+### Pass 1: listed ACT-style commands
 
-For each active battle slot `__i = 0 .. 2` and ACT slot `__fj = 0 .. 5`, the script checks character-specific ACT permission arrays and writes synthetic entries into the later battle menu arrays.
+For each active battle slot `__i = 0 .. 2` and ACT slot `__fj = 0 .. 5`, the
+script checks character-specific ACT permission arrays and writes synthetic
+entries into the later battle menu arrays.
 
 Kris path:
 
@@ -323,9 +365,12 @@ if (global.char[__i] == 1)
 
 Susie, Ralsei, and Noelle use:
 
-- `global.canactsus`, `global.actcostsus`, `global.actnamesus`, `global.actdescsus`
-- `global.canactral`, `global.actcostral`, `global.actnameral`, `global.actdescral`
-- `global.canactnoe`, `global.actcostnoe`, `global.actnamenoe`, `global.actdescnoe`
+- `global.canactsus`, `global.actcostsus`, `global.actnamesus`,
+  `global.actdescsus`
+- `global.canactral`, `global.actcostral`, `global.actnameral`,
+  `global.actdescral`
+- `global.canactnoe`, `global.actcostnoe`, `global.actnamenoe`,
+  `global.actdescnoe`
 
 and write:
 
@@ -354,14 +399,15 @@ global.battlespelltarget[__i][__ib] = global.spelltarget[global.char[__i]][__fj]
 
 The menu layout is:
 
-1. generated ACT-like commands first
+1. listed ACT-like commands first
 2. normal learned spells second
 
 ---
 
 ## `obj_battlecontroller` Step Event: Top-Level Gates
 
-Chapter 4 `Step_0.gml` begins with encounter-specific hard gates that can `exit;` before the normal battle state machine runs.
+Chapter 4 `Step_0.gml` begins with encounter-specific hard gates that can
+`exit;` before the normal battle state machine runs.
 
 Examples:
 
@@ -408,11 +454,14 @@ Chapter 4 modifies `global.monstergold[3]` before awarding it:
 
 ```gml
 global.monstergold[3] += floor(global.tension / 10) * global.chapter;
-if (global.charweapon[1] == 8)  global.monstergold[3] += floor(global.monstergold[3] / 20);
-if (global.charweapon[1] == 53) global.monstergold[3] += floor(global.monstergold[3] / 20);
+if (global.charweapon[1] == 8)
+    global.monstergold[3] += floor(global.monstergold[3] / 20);
+if (global.charweapon[1] == 53)
+    global.monstergold[3] += floor(global.monstergold[3] / 20);
 global.monstergold[3] *= 1 + (scr_armorcheck_equipped_party(8) * 0.05);
 global.monstergold[3] *= 1 + (scr_armorcheck_equipped_party(21) * 0.3);
-global.monstergold[3] -= global.monstergold[3] * (scr_armorcheck_equipped_party(54) * 0.1);
+global.monstergold[3] -= global.monstergold[3]
+    * (scr_armorcheck_equipped_party(54) * 0.1);
 global.monstergold[3] = floor(global.monstergold[3]);
 ```
 
@@ -426,7 +475,10 @@ Then:
 The controller builds victory text directly:
 
 ```gml
-global.battlemsg[0] = stringsetsubloc("* You won^1!&* Got ~1 EXP and ~2 D$./%", string(global.monsterexp[3]), string(global.monstergold[3]), ...);
+global.battlemsg[0] = stringsetsubloc(
+    "* You won^1!&* Got ~1 EXP and ~2 D$./%",
+    string(global.monsterexp[3]),
+    string(global.monstergold[3]), ...);
 global.msg[0] = global.battlemsg[0];
 global.typer = global.battletyper;
 lastbattlewriter = scr_battletext();
@@ -448,7 +500,8 @@ if (global.myfight == 0)
 }
 ```
 
-This state uses `global.bmenucoord[0][global.charturn]` as the top-level command cursor.
+This state uses `global.bmenucoord[0][global.charturn]` as the top-level command
+cursor.
 
 ### Horizontal navigation
 
@@ -509,7 +562,8 @@ Cursor motion is hand-authored around the spell-slot table:
 
 ## Battle Writer Recreation In Step
 
-At root menu state, if the current battle writer no longer exists, Step recreates it:
+At root menu state, if the current battle writer no longer exists, Step
+recreates it:
 
 ```gml
 global.msg[0] = global.battlemsg[0];
@@ -580,7 +634,8 @@ By Chapter 3, battle is no longer only player-driven.
 
 ### `scr_battle_force_action`
 
-This helper can target a named party member (`"kris"`, `"susie"`, `"ralsei"`, `"noelle"`) and force states such as:
+This helper can target a named party member (`"kris"`, `"susie"`, `"ralsei"`,
+`"noelle"`) and force states such as:
 
 - `"hurt"`
 - `"defend"`
@@ -603,13 +658,16 @@ This is critical for scripted boss fights and cinematic battle moments.
 
 ### `scr_battle_sprite_set`
 
-This helper forcibly puts a battle hero object into state `8`, changes sprite and speed, and resets face state. It is pure battle presentation control and is heavily useful for staged scenes.
+This helper forcibly puts a battle hero object into state `8`, changes sprite
+and speed, and resets face state. It is pure battle presentation control and is
+heavily useful for staged scenes.
 
 ---
 
 ## Battle Text Layer
 
-Battle UI text still goes through the same text runtime as overworld dialogue, but the battle controller sets:
+Battle UI text still goes through the same text runtime as overworld dialogue,
+but the battle controller sets:
 
 - `global.typer = 4`
 - `global.battletyper = 4`
@@ -637,16 +695,19 @@ Encounter openers can alter battle state before the first visible menu frame.
 
 ## Encounter-Specific Battle State
 
-Chapter 3 and Chapter 4 `obj_battlecontroller/Create_0.gml` contain many encounter-specific branches.
+Chapter 3 and Chapter 4 `obj_battlecontroller/Create_0.gml` contain many
+encounter-specific branches.
 
 Examples include:
 
-- portrait and expression overrides through `global.fc`, `global.fe`, `global.flag[62]`
+- portrait and expression overrides through `global.fc`, `global.fe`,
+  `global.flag[62]`
 - special sound battle flags
 - special mercy modes in Chapter 4
 - battle-specific party rewrites in Chapter 4
 
-Battle runtime behavior is split between the generic controller framework and many encounter-specific Create/Step branches.
+Battle runtime behavior is split between the generic controller framework and
+many encounter-specific Create/Step branches.
 
 ---
 
@@ -686,12 +747,62 @@ Inspect:
 
 ---
 
+## Chapter 5 review And Full Lifecycle
+
+Chapter 5 retains `scr_encountersetup(argument0)`, `scr_monstersetup()`,
+`scr_damage(argument0, argument1, ...)`, `scr_damage_enemy(...)`, and the
+controller/menu globals used earlier. Its package also contains
+`obj_battle_cleanup`, `obj_bulletarea`, and `obj_bulletarea_neo`. A normal
+battle therefore follows this observable lifecycle:
+
+1. Room or overworld code selects an encounter and calls
+   `scr_encountersetup(encounter_id)`.
+2. The controller creates monster and hero instances, derives equipped stats,
+   resets ACT/spell/item cursors, and creates the TP and text UI.
+3. Each living hero commits FIGHT, ACT/MAGIC, ITEM, SPARE, or DEFEND. Target
+   menus write `global.chartarget[]`; `scr_nexthero()` advances the slot.
+4. Actions resolve in controller order. Multi-actor ACTs reserve their helpers;
+   spells spend TP; items mutate inventory only when their action resolves.
+5. Surviving monsters choose an attack. The arena and heart are created, bullet
+   objects run, grazing adds TP, and collision calls party damage.
+6. Mercy, tired, HP, status, and scripted phase gates are reevaluated. The loop
+   returns to menus unless victory or defeat has been asserted.
+7. Victory aggregates slot rewards, applies chapter/equipment modifiers,
+   recruits eligible spared types, restores downed allies to the chapter's
+   post-battle minimum, shows the result writer, and transfers control back.
+8. Cleanup destroys transient writers, faces, arena, bullets, hero/enemy battle
+   instances, and battle-only overlays. Game over diverts before reward work.
+
+Do not call a resource player-facing solely because its name contains `battle`,
+`enemy`, or `bullet`. Chapter 5 includes tester objects and platform miniboss
+machinery; room placement is supporting runtime basis, not proof that a
+particular scripted branch is reachable. See
+[Enemies, Encounters, and Attacks](enemies-encounters-and-attacks.md).
+
+### Runnable encounter hook
+
+The stable dependency order is encounter globals, setup, then controller:
+
+```gml
+global.encounterno = 900;
+scr_encountersetup(global.encounterno); // exactly one encounter-id argument
+instance_create(camerax(), cameray(), obj_battlecontroller);
+```
+
+The new ID must have a matching `scr_encountersetup` branch and every assigned
+monster type must be accepted by `scr_monstersetup()`; otherwise the controller
+has no valid object/stat recipe.
+
 ## Related Pages
 
-- [Damage System](damage-system.md) — full damage pipeline, defense formulas, element reduction, DEFEND mechanics
+- [Damage System](damage-system.md) — full damage pipeline, defense formulas,
+  element reduction, DEFEND mechanics
 - [Tension / TP System](tension-system.md) — TP gain, graze, and cost mechanics
-- [Spells & Abilities](spells-abilities.md) — spell costs, targets, and menu synthesis
-- [Monster Runtime](monster-runtime.md) — complete monster roster, stats, ACT menus
+- [Spells & Abilities](spells-abilities.md) — spell costs, targets, and menu
+  synthesis
+- [Monster Runtime](monster-runtime.md) — source-backed monster runtime and ACT
+  data
 - [Heart / SOUL Mechanics](heart-mechanics.md) — heart color modes and movement
-- [Game Over System](game-over-system.md) — death, game over modes, and cantdie mechanic
+- [Game Over System](game-over-system.md) — death, game over modes, and cantdie
+  mechanic
 - [Recruit System](recruit-system.md) — post-spare recruitment tracking

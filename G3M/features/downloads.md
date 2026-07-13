@@ -1,6 +1,7 @@
 # Downloads
 
-The Downloads page is the place to watch anything G3M fetched for you: browser downloads, one-click installs, direct URLs, and optionally local imports.
+The Downloads page is the place to watch anything G3M fetched for you: browser
+downloads, one-click installs, direct URLs, and optionally local imports.
 
 ---
 
@@ -12,7 +13,8 @@ Each record tells you three things:
 - whether the file finished downloading
 - whether G3M already turned it into an installed mod or plugin
 
-That matters because a download can succeed, but still need your attention before it becomes usable.
+That matters because a download can succeed, but still need your attention
+before it becomes usable.
 
 ---
 
@@ -24,8 +26,10 @@ Use this quick mental model:
 - `Downloaded`: file is on disk
 - `Pending Auto` or `Using`: G3M is trying to install it
 - `Ready`: file is waiting for you because auto-use is off
-- `Overwrite Pending`: G3M found an existing mod with the same ID and needs your decision
-- `Needs Manual Install`: the file was downloaded, but G3M could not confidently map it to a supported import flow
+- `Overwrite Pending`: G3M found an existing mod with the same ID and needs your
+  decision
+- `Needs Manual Install`: the file was downloaded, but G3M could not confidently
+  map it to a supported import flow
 - `Failed` or `Cancelled`: the flow stopped before completion
 
 ---
@@ -37,9 +41,11 @@ For a normal mod download, the flow is:
 1. G3M creates a download record
 2. the file is downloaded into the downloads area
 3. G3M tries to auto-use it unless you disabled that behavior
-4. the file is either installed, left ready for manual use, or flagged for manual attention
+4. the file is either installed, left ready for manual use, or flagged for
+   manual attention
 
-Auto-use goes through the same import pipeline as manual mod import, including conversion paths for supported external mod formats.
+Auto-use goes through the same import pipeline as manual mod import, including
+conversion paths for supported external mod formats.
 
 ---
 
@@ -47,11 +53,14 @@ Auto-use goes through the same import pipeline as manual mod import, including c
 
 The three download settings are:
 
-- `No auto-use`: keep finished downloads in a ready state instead of importing them immediately
+- `No auto-use`: keep finished downloads in a ready state instead of importing
+  them immediately
 - `Delete after use`: remove the downloaded archive after a successful install
-- `Save local imports`: create download history records for files you imported manually from disk
+- `Save local imports`: create download history records for files you imported
+  manually from disk
 
-If you want a cleaner, more manual workflow, turn on `No auto-use`. If you want the smoothest browser-to-library flow, leave it off.
+If you want a cleaner, more manual workflow, turn on `No auto-use`. If you want
+the smoothest browser-to-library flow, leave it off.
 
 ---
 
@@ -62,7 +71,8 @@ Downloads use the user data directory:
 - records: `%LOCALAPPDATA%\G3M\downloads\downloads_history.json`
 - downloaded files: `%LOCALAPPDATA%\G3M\downloads\`
 
-The records survive restarts. On startup, G3M checks whether the physical file still exists and updates the record accordingly.
+The records survive restarts. On startup, G3M checks whether the physical file
+still exists and updates the record accordingly.
 
 ---
 
@@ -79,7 +89,8 @@ Usually you only need to touch this page when:
 
 ## Error Messages
 
-Recent G3M builds try to show a more specific reason when a download or local copy fails.
+Recent G3M builds try to show a more specific reason when a download or local
+copy fails.
 
 Examples of precise cases:
 
@@ -91,4 +102,5 @@ Examples of precise cases:
 - local file missing
 - permission denied while copying a local file
 
-When G3M can identify the cause reliably, the Downloads record shows the friendly reason. Raw details still remain available in logs for debugging.
+When G3M can identify the cause reliably, the Downloads record shows the
+friendly reason. Raw details still remain available in logs for debugging.

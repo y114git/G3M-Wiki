@@ -6,14 +6,18 @@ Show metadata for a data file or `.g3mpatch`.
 G3MTool info <target> [-v] [--json] [--cache <dir>]
 ```
 
-| Argument | Required | Description |
-| --- | --- | --- |
-| `target` | Yes | Data file (`.win`, `.ios`, `.unx`, `.droid`) or `.g3mpatch` |
+- **Argument:** `target`
+  - **Required:** Yes
+  - **Description:** Data file (`.win`, `.ios`, `.unx`, `.droid`) or `.g3mpatch`
 
-| Option | Alias | Description |
-| --- | --- | --- |
-| `--verbose` | `-v` | Print full per-resource listings |
-| `--cache <dir>` | | Store and reuse the standard non-verbose data-file info snapshot |
+- **Option:** `--verbose`
+  - **Alias:** `-v`
+  - **Description:** Print full per-resource listings
+
+- **Option:** `--cache <dir>`
+  - **Alias:** —
+  - **Description:** Store and reuse the standard non-verbose data-file info
+    snapshot
 
 `--json` is a global option and is also supported by `info`.
 
@@ -21,7 +25,8 @@ G3MTool info <target> [-v] [--json] [--cache <dir>]
 
 Without `--verbose`, `info` prints:
 
-- file name, size, game name, bytecode version, and interpreted GameMaker version
+- file name, size, game name, bytecode version, and interpreted GameMaker
+  version
 - resource counts
 - selected GeneralInfo fields
 - variable counts by instance type
@@ -31,7 +36,8 @@ Without `--verbose`, `info` prints:
 - extension names
 - room-order preview
 
-With `--verbose`, G3MTool reads the live data file and prints extended per-resource listings for the resource families implemented in `InfoCommand`.
+With `--verbose`, G3MTool reads the live data file and prints extended
+per-resource listings for the resource families implemented in `InfoCommand`.
 
 ## Patch output
 

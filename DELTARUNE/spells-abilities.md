@@ -1,234 +1,1871 @@
-﻿# Spells & Abilities
-
-The spell system is defined in two core scripts:
-
-- `scr_spellinfo` — spell metadata: name, cost, target mode, description
-- `scr_spell` — spell execution: what happens when a spell is cast
-
-Spell definitions live in the chapter payload. Each chapter extends the spell table.
-
----
-
-## `scr_spellinfo` Output Fields
-
-The script sets these variables in the caller's scope:
-
-| Field | Type | Purpose |
-|---|---|---|
-| `spellname` | string | Full display name |
-| `spellnameb` | string | Short/menu display name |
-| `spelldesc` | string | Long description |
-| `spelldescb` | string | Short description (menu) |
-| `cost` | real | TP cost (out of `global.maxtension`, default 250) |
-| `spelltarget` | int | `0` = no target, `1` = ally, `2` = enemy |
-| `spellusable` | int | Usability flag |
-| `spellanim` | int | Animation id |
-| `spelltext` | string | Battle text override |
-
----
-
-## Complete Spell Table (Chapter 4)
-
-### Core Spells
-
-| ID | Name | Cost | Target | Description |
-|---:|---|---:|---|---|
-| 0 | *(empty)* | -1 | none | Placeholder / no spell |
-| 1 | Rude Sword | 125 | enemy | Moderate Rude-elemental damage. Depends on AT & MAG |
-| 2 | Heal Prayer | 80 | ally | Restores a little HP to one party member. Depends on MAG |
-| 3 | Pacify | 40 | enemy | SPARE a TIRED enemy by putting them to sleep |
-| 4 | Rude Buster | 125 / **100** | enemy | Moderate Rude-elemental damage. Cost reduces to 100 if `global.charweapon[2] == 7` (Devilsknife equipped) |
-| 5 | Red Buster | 0 | enemy | Red-elemental damage |
-| 6 | Dual Heal | 0 | none | Heals all party members 30 HP |
-| 7 | ACT | 0 | none | Execute various behaviors. Not magic |
-| 8 | SleepMist | 80 | none | Spares all TIRED enemies |
-| 9 | IceShock | 40 / **20** | enemy | Magical ICE damage. Cost halved if `global.charweapon[4] == 13` |
-| 10 | SnowGrave | 500 / **250** | none | Fatal damage to all enemies. Cost = `global.maxtension * 2`, halved if `global.charweapon[4] == 13` |
-| 100 | *(SPARE)* | — | — | Internal SPARE runtime code |
-
-### Spell 11 — Progressive Heal
-
-Spell 11 is unique: its name, cost, and description change based on runtime flags.
-
-#### Default mode: `OKHeal`
-
-Cost scales down with usage tracked in `global.flag[1045]`:
-
-| `global.flag[1045]` | Cost |
-|---:|---:|
-| 0 | 212.5 |
-| 1–3 | 210 |
-| 4–6 | 207.5 |
-| 7–9 | 205 |
-| 10–12 | 202.5 |
-| 13+ | 200 |
-
-#### Story-locked mode: `Heal`
-
-When `global.plot >= 110 && global.flag[850] < 6`:
-
-- Name becomes `Heal`
-- Description: "It seems the user doesn't want to use this spell."
-- Cost forced to `255` (cannot be used — exceeds max TP)
-
-#### Upgraded mode: `BetterHeal`
-
-When `global.flag[1569] == 1 || global.flag[852] == 1`:
-
-| `global.flag[1045]` | Cost |
-|---:|---:|
-| 0 | 200 |
-| 1–3 | 197.5 |
-| 4–6 | 195 |
-| 7–9 | 192.5 |
-| 10–12 | 190 |
-| 13+ | 187.5 |
-
-- Name: `BetterHeal`
-- Description: "A healing spell that has grown with practice and confidence."
-
-Target is always `1` (single ally).
-
----
-
-## Spell Ownership by Chapter
-
-### Chapter 1
-
-| Character | Slot 0 | Slot 1 |
-|---|---|---|
-| Kris | ACT (7) | — |
-| Susie | Rude Buster (4) | — |
-| Ralsei | Pacify (3) | Heal Prayer (2) |
-
-### Chapter 2
-
-| Character | Slot 0 | Slot 1 | Slot 2 |
-|---|---|---|---|
-| Kris | ACT (7) | — | — |
-| Susie | Rude Buster (4) | — | — |
-| Ralsei | Pacify (3) | Heal Prayer (2) | — |
-| Noelle | Heal Prayer (2) | SleepMist (8) | IceShock (9) |
-
-### Chapters 3 & 4
-
-| Character | Slot 0 | Slot 1 |
-|---|---|---|
-| Kris | ACT (7) | — |
-| Susie | Rude Buster (4) | Spell 11 (OKHeal / BetterHeal) |
-| Ralsei | Pacify (3) | Heal Prayer (2) |
-
-Noelle structures are still initialized but the opening party centers on Kris / Susie / Ralsei.
-
----
-
-## Item-Use Spell Codes
-
-Battle item use is routed through `scr_spell` as spell cases in the `200+` range:
-
-| Chapter | Highest item-spell case |
-|---|---:|
-| 2 | 233 |
-| 3 | 239 |
-| 4 | 263 |
-
-Each consumable item id maps to a spell case that implements the effect (healing, TP gain, revival, etc.).
-
----
-
-## `scr_spell` Execution
-
-`scr_spell` is the runtime handler. When a spell is cast, the battle controller calls `scr_spell(spell_id)`.
-
-Key responsibilities:
-
-1. Resolve the target from `global.chartarget[]`
-2. Calculate spell-specific effects (heal amount, damage amount)
-3. Apply stat modifiers (MAG-based scaling for heals, AT+MAG for offensive spells)
-4. Spawn visual effects and damage writers
-5. Update battle state (spare enemies for Pacify/SleepMist, etc.)
-6. Handle item-spell consumption for `200+` range cases
-
-### SPARE Runtime (Case 100)
-
-When a target enemy's `global.sparepoint[slot] >= global.mercymax[slot]`, the SPARE succeeds. Otherwise, Pacify requires the enemy to be in TIRED state.
-
----
-
-## Spell Menu Synthesis (Chapter 2+)
-
-The runtime spell menu is built by `scr_spellmenu_setup()`. It merges two sources:
-
-### ACT-style commands (first)
-
-Generated entries with `global.battlespell[slot][index] = -1`. Each party member has character-specific ACT arrays:
-
-| Character | Permission | Cost | Name | Description |
-|---|---|---|---|---|
-| Kris | `global.canact[0][]` | `global.actcost[0][]` | `global.actname[0][]` | `global.actdesc[0][]` |
-| Susie | `global.canactsus[]` | `global.actcostsus[]` | `global.actnamesus[]` | `global.actdescsus[]` |
-| Ralsei | `global.canactral[]` | `global.actcostral[]` | `global.actnameral[]` | `global.actdescral[]` |
-| Noelle | `global.canactnoe[]` | `global.actcostnoe[]` | `global.actnamenoe[]` | `global.actdescnoe[]` |
-
-`global.battlespellspecial` identifies the character: `1` = Kris, `2` = Susie, `3` = Ralsei, `4` = Noelle.
-
-When multiple monster types are present, character ACT names are replaced with generic labels: `S-Action`, `R-Action`, `N-Action`.
-
-### Learned spells (second)
-
-Appended after ACT entries:
-
-```gml
-__ib = global.battleactcount[__i] + __fj;
-global.battlespell[__i][__ib] = global.spell[global.char[__i]][__fj];
-global.battlespellcost[__i][__ib] = global.spellcost[global.char[__i]][__fj];
-```
-
-The final menu layout is: ACT commands, then learned spells.
-
----
-
-## `scr_spellinfo_all`
-
-Bulk-caches spell metadata for all characters:
-
-```gml
-function scr_spellinfo_all()
-{
-    for (i = 0; i < 20; i += 1)
-    {
-        for (j = 0; j < 12; j += 1)
-        {
-            scr_spellinfo(global.spell[i][j]);
-            global.spellcost[i][j] = cost;
-            global.spellnameb[i][j] = spellnameb;
-            global.spelldescb[i][j] = spelldescb;
-            global.spelltarget[i][j] = spelltarget;
-        }
-    }
-}
-```
-
-Up to 20 characters × 12 spell slots.
-
----
-
-## Modding Reference
-
-| Goal | Inspect |
-|---|---|
-| Add a new spell | Add a case to `scr_spellinfo` AND `scr_spell` |
-| Change spell cost | Edit the `cost` assignment in `scr_spellinfo` |
-| Change spell execution | Edit the corresponding case in `scr_spell` |
-| Change starting spells | Edit `scr_gamestart` — `global.spell[char][slot]` |
-| Change ACT menu entries | Edit `scr_monstersetup` (sets ACT arrays per monster type) |
-| Add item-use effects | Add a case in the `200+` range of `scr_spell` |
-| Change spell 11 progression | Edit `global.flag[1045]` and `global.flag[1569]`/`global.flag[852]` branches in `scr_spellinfo` |
-
----
-
-## Relationship To Other Pages
-
-- [Battle System](battle-system.md) explains the controller that invokes spells.
-- [Items & Equipment](items-equipment.md) explains the `200+` item-spell bridge.
-- [Damage System](damage-system.md) explains the defense and element layers that spell damage feeds into.
+# Spells and abilities definition catalog
+
+listed from the shipped `scr_*info` switch cases. Each record preserves the
+exact case-local assignments. Status is deliberately conservative: a definition
+is not called obtainable without a literal acquisition site.
+
+## Chapter 1
+
+### Chapter 1 spell 0
+
+- Chapter: 1
+- Name: (empty)
+- Effect: not assigned
+- Status: empty sentinel
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=-1`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 1
+
+- Chapter: 1
+- Name: Rude Sword
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=125`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 2
+
+- Chapter: 1
+- Name: Heal Prayer
+- Effect: Heavenly light restores a little HP to#one party member. Depends on
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=80`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=1`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 3
+
+- Chapter: 1
+- Name: Pacify
+- Effect: SPARE a tired enemy by putting them to sleep.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 4
+
+- Chapter: 1
+- Name: Rude Buster
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=100`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 5
+
+- Chapter: 1
+- Name: Red Buster
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 6
+
+- Chapter: 1
+- Name: Dual Heal
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 1 spell 7
+
+- Chapter: 1
+- Name: ACT
+- Effect: Do all sorts of things.#It isn't magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+## Chapter 2
+
+### Chapter 2 spell 0
+
+- Chapter: 2
+- Name: (empty)
+- Effect: not assigned
+- Status: empty sentinel
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=-1`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 1
+
+- Chapter: 2
+- Name: Rude Sword
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=125`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 2
+
+- Chapter: 2
+- Name: Heal Prayer
+- Effect: Heavenly light restores a little HP to#one party member. Depends on
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=80`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 3
+
+- Chapter: 2
+- Name: Pacify
+- Effect: SPARE a tired enemy by putting them to sleep.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 4
+
+- Chapter: 2
+- Name: Rude Buster
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=100`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 5
+
+- Chapter: 2
+- Name: Red Buster
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 6
+
+- Chapter: 2
+- Name: Dual Heal
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 7
+
+- Chapter: 2
+- Name: ACT
+- Effect: You can do many things.#Don't confuse it with magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value assignments: none
+- Equip-owner assignments: none
+
+### Chapter 2 spell 8
+
+- Chapter: 2
+- Name: SleepMist
+- Effect: A cold mist sweeps through,#sparing all TIRED enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=80`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 9
+
+- Chapter: 2
+- Name: IceShock
+- Effect: Deals magical ICE damage to#one enemy.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 10
+
+- Chapter: 2
+- Name: SnowGrave
+- Effect: Deals the fatal damage to#all of the enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=3`
+- Equip-owner assignments: none
+
+### Chapter 2 spell 11
+
+- Chapter: 2
+- Name: UltimatHeal
+- Effect: Heals 1 party member to the#best of Susie's ability.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=250`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+## Chapter 3
+
+### Chapter 3 spell 0
+
+- Chapter: 3
+- Name: (empty)
+- Effect: not assigned
+- Status: empty sentinel
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=-1`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 1
+
+- Chapter: 3
+- Name: Rude Sword
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=125`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 2
+
+- Chapter: 3
+- Name: Heal Prayer
+- Effect: Heavenly light restores a little HP to#one party member. Depends on
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=80`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 3
+
+- Chapter: 3
+- Name: Pacify
+- Effect: SPARE a tired enemy by putting them to sleep.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 4
+
+- Chapter: 3
+- Name: Rude Buster
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=100`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 5
+
+- Chapter: 3
+- Name: Red Buster
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 6
+
+- Chapter: 3
+- Name: Dual Heal
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 7
+
+- Chapter: 3
+- Name: ACT
+- Effect: Many different skills.#It has nothing to do with magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value assignments: none
+- Equip-owner assignments: none
+
+### Chapter 3 spell 8
+
+- Chapter: 3
+- Name: SleepMist
+- Effect: A cold mist sweeps through,#sparing all TIRED enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=80`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 9
+
+- Chapter: 3
+- Name: IceShock
+- Effect: Deals magical ICE damage to#one enemy.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 10
+
+- Chapter: 3
+- Name: SnowGrave
+- Effect: Deals the fatal damage to#all of the enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=global.maxtension * 2`
+- Equip-owner assignments: none
+
+### Chapter 3 spell 11
+
+- Chapter: 3
+- Name: UltraHeal
+- Effect: An awesome healing spell.#... right?
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=225 - round(global.flag[1045] * 2.5)`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+## Chapter 4
+
+### Chapter 4 spell 0
+
+- Chapter: 4
+- Name: (empty)
+- Effect: not assigned
+- Status: empty sentinel
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=-1`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 1
+
+- Chapter: 4
+- Name: Rude Sword
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=125`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 2
+
+- Chapter: 4
+- Name: Heal Prayer
+- Effect: Heavenly light restores a little HP to#one party member. Depends on
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=80`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 3
+
+- Chapter: 4
+- Name: Pacify
+- Effect: SPARE a tired enemy by putting them to sleep.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 4
+
+- Chapter: 4
+- Name: Rude Buster
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=100`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 5
+
+- Chapter: 4
+- Name: Red Buster
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 6
+
+- Chapter: 4
+- Name: Dual Heal
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 7
+
+- Chapter: 4
+- Name: ACT
+- Effect: Execute various behaviors.#It can't be considered magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value assignments: none
+- Equip-owner assignments: none
+
+### Chapter 4 spell 8
+
+- Chapter: 4
+- Name: SleepMist
+- Effect: A cold mist sweeps through,#sparing all TIRED enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=80`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 9
+
+- Chapter: 4
+- Name: IceShock
+- Effect: Deals magical ICE damage to#one enemy.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 10
+
+- Chapter: 4
+- Name: SnowGrave
+- Effect: Deals the fatal damage to#all of the enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=global.maxtension * 2`
+- Equip-owner assignments: none
+
+### Chapter 4 spell 11
+
+- Chapter: 4
+- Name: OKHeal
+- Effect: It's not the best healing spell, but#it may have its uses.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `spellusable=0`
+- Stat/value: `cost=212.5`
+- Equip-owner assignments: none
+
+## Chapter 5
+
+### Chapter 5 spell 0
+
+- Chapter: 5
+- Name: (empty)
+- Effect: not assigned
+- Status: empty sentinel
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=-1`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 1
+
+- Chapter: 5
+- Name: Rude Sword
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=125`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 2
+
+- Chapter: 5
+- Name: Heal Prayer
+- Effect: Heavenly light restores a little HP to#one party member. Depends on
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=80`
+- Stat/value: `usable=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 3
+
+- Chapter: 5
+- Name: Pacify
+- Effect: SPARE a tired enemy by putting them to sleep.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 4
+
+- Chapter: 5
+- Name: Rude Buster
+- Effect: Deals moderate Rude-elemental damage to#one foe. Depends on Attack &
+  Magic.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=100`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 5
+
+- Chapter: 5
+- Name: Red Buster
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 6
+
+- Chapter: 5
+- Name: Dual Heal
+- Effect: (empty)
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 7
+
+- Chapter: 5
+- Name: ACT
+- Effect: It's not magic, is it?#No, not something like this.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=0`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 8
+
+- Chapter: 5
+- Name: SleepMist
+- Effect: A cold mist sweeps through,#sparing all TIRED enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=80`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 9
+
+- Chapter: 5
+- Name: IceShock
+- Effect: Deals magical ICE damage to#one enemy.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=2`
+- Stat/value: `cost=40`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 10
+
+- Chapter: 5
+- Name: SnowGrave
+- Effect: Deals the fatal damage to#all of the enemies.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=global.maxtension * 2`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 11
+
+- Chapter: 5
+- Name: OKHeal
+- Effect: It's not the best healing spell, but#it may have its uses.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `spellusable=0`
+- Stat/value: `cost=212.5`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 12
+
+- Chapter: 5
+- Name: ReviveSong
+- Effect: Revives a DOWNed ally and heals them.#Otherwise, heals a lot of HP.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=1`
+- Stat/value: `cost=212`
+- Stat/value: `spellusable=0`
+- Equip-owner assignments: none
+
+### Chapter 5 spell 13
+
+- Chapter: 5
+- Name: Scythemare
+- Effect: Inflicts all enemies with bad dreams.#All TIRED enemies will be
+  SPAREd.
+- Status: defined spell; ownership is recorded by spell-array writes
+- Stat/value: `spelltarget=0`
+- Stat/value: `cost=50`
+- Equip-owner assignments: none
+
+## Acquisition and output chains
+
+### Spell ownership record 0001
+
+- chapter: `1`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 70; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0002
+
+- chapter: `1`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 98; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0003
+
+- chapter: `1`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 99; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0004
+
+- chapter: `1`
+- owner: `3`
+- slot: `0`
+- spell expression: `3`
+- spell ID: `3`
+- join: `matched`
+- condition: `line 100; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0005
+
+- chapter: `1`
+- owner: `3`
+- slot: `1`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 101; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0006
+
+- chapter: `1`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 174; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0007
+
+- chapter: `1`
+- owner: `thischar`
+- slot: `spellcoord + 2`
+- spell expression: `= 0)                 {                     cango = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 267; if (spellcoord >= 10) > if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0008
+
+- chapter: `1`
+- owner: `thischar`
+- slot: `7`
+- spell expression: `= 0)                 {                     cango = 2`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 271; if (global.spell[thischar][spellcoord + 2] == 0) > if`
+  `(spellcoord == 5 && global.spell[thischar][6] != 0 &&`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0009
+
+- chapter: `1`
+- owner: `thischar`
+- slot: `(page * 6) + (i * 2)`
+- spell expression: `= 3)         {             pacify_glow = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 160; if (global.tension < global.spellcost[thischar][(page *`
+  `6) + (i * 2)]) > else if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0010
+
+- chapter: `1`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 31; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0011
+
+- chapter: `1`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 51; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0012
+
+- chapter: `1`
+- owner: `3`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 52; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0013
+
+- chapter: `2`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0014
+
+- chapter: `2`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 166; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0015
+
+- chapter: `2`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= arg1)         {             __haveit = 1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 8; if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0016
+
+- chapter: `2`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= 0)             {                 __openslot = __spellj`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 14; if (__openslot == -1) > if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0017
+
+- chapter: `2`
+- owner: `arg0`
+- slot: `__openslot`
+- spell expression: `arg1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 22; if (__openslot >= 0 && __haveit == 0)`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0018
+
+- chapter: `2`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 109; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0019
+
+- chapter: `2`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 167; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0020
+
+- chapter: `2`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 168; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0021
+
+- chapter: `2`
+- owner: `3`
+- slot: `0`
+- spell expression: `3`
+- spell ID: `3`
+- join: `matched`
+- condition: `line 169; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0022
+
+- chapter: `2`
+- owner: `3`
+- slot: `1`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0023
+
+- chapter: `2`
+- owner: `4`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 171; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0024
+
+- chapter: `2`
+- owner: `4`
+- slot: `1`
+- spell expression: `8`
+- spell ID: `8`
+- join: `matched`
+- condition: `line 172; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0025
+
+- chapter: `2`
+- owner: `4`
+- slot: `2`
+- spell expression: `9`
+- spell ID: `9`
+- join: `matched`
+- condition: `line 173; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0026
+
+- chapter: `2`
+- owner: `thischar`
+- slot: `spellcoord + 2`
+- spell expression: `= 0)                 {                     cango = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 292; if (spellcoord >= 10) > if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0027
+
+- chapter: `2`
+- owner: `thischar`
+- slot: `7`
+- spell expression: `= 0)                 {                     cango = 2`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 296; if (global.spell[thischar][spellcoord + 2] == 0) > if`
+  `(spellcoord == 5 && global.spell[thischar][6] != 0 &&`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0028
+
+- chapter: `2`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 32; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0029
+
+- chapter: `2`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 52; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0030
+
+- chapter: `2`
+- owner: `3`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 53; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0031
+
+- chapter: `2`
+- owner: `4`
+- slot: `3`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 263; if (con == 14 && !d_ex())`
+- status: `production`
+- rooms: `room_dw_city_berdly`
+
+### Spell ownership record 0032
+
+- chapter: `2`
+- owner: `4`
+- slot: `3`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 536; if (con == 20)`
+- status: `production`
+- rooms: `room_dw_city_berdly`
+
+### Spell ownership record 0033
+
+- chapter: `3`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0034
+
+- chapter: `3`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 166; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0035
+
+- chapter: `3`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= arg1)         {             __haveit = 1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 8; if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0036
+
+- chapter: `3`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= 0)             {                 __openslot = __spellj`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 14; if (__openslot == -1) > if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0037
+
+- chapter: `3`
+- owner: `arg0`
+- slot: `__openslot`
+- spell expression: `arg1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 22; if (__openslot >= 0 && __haveit == 0)`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0038
+
+- chapter: `3`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 109; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0039
+
+- chapter: `3`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 196; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0040
+
+- chapter: `3`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 197; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0041
+
+- chapter: `3`
+- owner: `2`
+- slot: `1`
+- spell expression: `11`
+- spell ID: `11`
+- join: `matched`
+- condition: `line 198; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0042
+
+- chapter: `3`
+- owner: `3`
+- slot: `0`
+- spell expression: `3`
+- spell ID: `3`
+- join: `matched`
+- condition: `line 199; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0043
+
+- chapter: `3`
+- owner: `3`
+- slot: `1`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 200; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0044
+
+- chapter: `3`
+- owner: `4`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 201; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0045
+
+- chapter: `3`
+- owner: `4`
+- slot: `1`
+- spell expression: `8`
+- spell ID: `8`
+- join: `matched`
+- condition: `line 202; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0046
+
+- chapter: `3`
+- owner: `4`
+- slot: `2`
+- spell expression: `9`
+- spell ID: `9`
+- join: `matched`
+- condition: `line 203; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0047
+
+- chapter: `3`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0048
+
+- chapter: `3`
+- owner: `1`
+- slot: `0`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 92; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0049
+
+- chapter: `3`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 9; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0050
+
+- chapter: `3`
+- owner: `thischar`
+- slot: `spellcoord + 2`
+- spell expression: `= 0)                 {                     cango = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 597; if (spellcoord >= 10) > if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0051
+
+- chapter: `3`
+- owner: `thischar`
+- slot: `7`
+- spell expression: `= 0)                 {                     cango = 2`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 601; if (global.spell[thischar][spellcoord + 2] == 0) > if`
+  `(spellcoord == 5 && global.spell[thischar][6] != 0 &&`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0052
+
+- chapter: `3`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 32; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0053
+
+- chapter: `3`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 52; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0054
+
+- chapter: `3`
+- owner: `3`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 53; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0055
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0056
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0057
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0058
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 166; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0059
+
+- chapter: `4`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= arg1)         {             __haveit = 1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 8; if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0060
+
+- chapter: `4`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= 0)             {                 __openslot = __spellj`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 14; if (__openslot == -1) > if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0061
+
+- chapter: `4`
+- owner: `arg0`
+- slot: `__openslot`
+- spell expression: `arg1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 22; if (__openslot >= 0 && __haveit == 0)`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0062
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 109; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0063
+
+- chapter: `4`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 237; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0064
+
+- chapter: `4`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 238; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0065
+
+- chapter: `4`
+- owner: `2`
+- slot: `1`
+- spell expression: `11`
+- spell ID: `11`
+- join: `matched`
+- condition: `line 239; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0066
+
+- chapter: `4`
+- owner: `3`
+- slot: `0`
+- spell expression: `3`
+- spell ID: `3`
+- join: `matched`
+- condition: `line 240; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0067
+
+- chapter: `4`
+- owner: `3`
+- slot: `1`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 241; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0068
+
+- chapter: `4`
+- owner: `4`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 242; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0069
+
+- chapter: `4`
+- owner: `4`
+- slot: `1`
+- spell expression: `8`
+- spell ID: `8`
+- join: `matched`
+- condition: `line 243; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0070
+
+- chapter: `4`
+- owner: `4`
+- slot: `2`
+- spell expression: `9`
+- spell ID: `9`
+- join: `matched`
+- condition: `line 244; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0071
+
+- chapter: `4`
+- owner: `thischar`
+- slot: `spellcoord + 2`
+- spell expression: `= 0)                 {                     cango = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 385; if (spellcoord >= 10) > if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0072
+
+- chapter: `4`
+- owner: `thischar`
+- slot: `7`
+- spell expression: `= 0)                 {                     cango = 2`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 389; if (global.spell[thischar][spellcoord + 2] == 0) > if`
+  `(spellcoord == 5 && global.spell[thischar][6] != 0 &&`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0073
+
+- chapter: `4`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 32; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0074
+
+- chapter: `4`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 52; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0075
+
+- chapter: `4`
+- owner: `3`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 53; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0076
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0077
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0078
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0079
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 166; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0080
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `ossafe_file_text_read_real(myfileid)`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 170; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0081
+
+- chapter: `5`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= arg1)         {             __haveit = 1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 8; if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0082
+
+- chapter: `5`
+- owner: `arg0`
+- slot: `__spellj`
+- spell expression: `= 0)             {                 __openslot = __spellj`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 14; if (__openslot == -1) > if (`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0083
+
+- chapter: `5`
+- owner: `arg0`
+- slot: `__openslot`
+- spell expression: `arg1`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 22; if (__openslot >= 0 && __haveit == 0)`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0084
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 109; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0085
+
+- chapter: `5`
+- owner: `1`
+- slot: `0`
+- spell expression: `7`
+- spell ID: `7`
+- join: `matched`
+- condition: `line 235; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0086
+
+- chapter: `5`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 236; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0087
+
+- chapter: `5`
+- owner: `2`
+- slot: `1`
+- spell expression: `11`
+- spell ID: `11`
+- join: `matched`
+- condition: `line 237; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0088
+
+- chapter: `5`
+- owner: `2`
+- slot: `2`
+- spell expression: `13`
+- spell ID: `13`
+- join: `matched`
+- condition: `line 238; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0089
+
+- chapter: `5`
+- owner: `3`
+- slot: `0`
+- spell expression: `3`
+- spell ID: `3`
+- join: `matched`
+- condition: `line 239; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0090
+
+- chapter: `5`
+- owner: `3`
+- slot: `1`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 240; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0091
+
+- chapter: `5`
+- owner: `3`
+- slot: `2`
+- spell expression: `12`
+- spell ID: `12`
+- join: `matched`
+- condition: `line 241; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0092
+
+- chapter: `5`
+- owner: `4`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 242; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0093
+
+- chapter: `5`
+- owner: `4`
+- slot: `1`
+- spell expression: `8`
+- spell ID: `8`
+- join: `matched`
+- condition: `line 243; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0094
+
+- chapter: `5`
+- owner: `4`
+- slot: `2`
+- spell expression: `9`
+- spell ID: `9`
+- join: `matched`
+- condition: `line 244; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0095
+
+- chapter: `5`
+- owner: `2`
+- slot: `2`
+- spell expression: `13`
+- spell ID: `13`
+- join: `matched`
+- condition: `line 72; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0096
+
+- chapter: `5`
+- owner: `3`
+- slot: `2`
+- spell expression: `12`
+- spell ID: `12`
+- join: `matched`
+- condition: `line 77; unconditional in entry`
+- status: `production-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0097
+
+- chapter: `5`
+- owner: `thischar`
+- slot: `spellcoord + 2`
+- spell expression: `= 0)                 {                     cango = 0`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 367; if (spellcoord >= 10) > if (`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0098
+
+- chapter: `5`
+- owner: `thischar`
+- slot: `7`
+- spell expression: `= 0)                 {                     cango = 2`
+- spell ID: `None`
+- join: `dynamic-or-unmatched`
+- condition: `line 371; if (global.spell[thischar][spellcoord + 2] == 0) > if`
+  `(spellcoord == 5 && global.spell[thischar][6] != 0 &&`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0099
+
+- chapter: `5`
+- owner: `i`
+- slot: `j`
+- spell expression: `0`
+- spell ID: `0`
+- join: `matched`
+- condition: `line 32; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0100
+
+- chapter: `5`
+- owner: `2`
+- slot: `0`
+- spell expression: `4`
+- spell ID: `4`
+- join: `matched`
+- condition: `line 52; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`
+
+### Spell ownership record 0101
+
+- chapter: `5`
+- owner: `3`
+- slot: `0`
+- spell expression: `2`
+- spell ID: `2`
+- join: `matched`
+- condition: `line 53; unconditional in entry`
+- status: `unplaced-or-uncertain`
+- rooms: `none joined`

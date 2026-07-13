@@ -1,6 +1,8 @@
 # G3M Patch Format
 
-`.g3mpatch` is G3MTool's patch format. It stores a manifest plus exported resource payloads and helper data needed for apply and merge workflows. Optional xdelta fallback data can also be embedded.
+`.g3mpatch` is G3MTool's patch format. It stores a manifest plus exported
+resource payloads and helper data needed for apply and merge workflows. Optional
+xdelta fallback data can also be embedded.
 
 G3MTool is the reference implementation for this format.
 
@@ -8,15 +10,15 @@ G3MTool is the reference implementation for this format.
 
 The current manifest model includes these top-level fields:
 
-| Field | Description |
-| --- | --- |
-| `createdAt` | Patch creation timestamp |
-| `tool` | Tool name and version |
-| `original` | Source data-file metadata |
-| `modified` | Modified data-file metadata |
-| `resources` | Changed, new, and deleted resources by type |
-| `statistics` | Resource and file counts |
-| `applyPlan` | Apply hints used by G3MTool |
+| Field        | Description                                 |
+| ------------ | ------------------------------------------- |
+| `createdAt`  | Patch creation timestamp                    |
+| `tool`       | Tool name and version                       |
+| `original`   | Source data-file metadata                   |
+| `modified`   | Modified data-file metadata                 |
+| `resources`  | Changed, new, and deleted resources by type |
+| `statistics` | Resource and file counts                    |
+| `applyPlan`  | Apply hints used by G3MTool                 |
 
 The current example tool version in this repository is `1.2.0`.
 
@@ -31,7 +33,8 @@ The `original` and `modified` entries can include:
 - `gmsVersion`
 - `generalInfo`
 
-`generalInfo` maps to the current `GeneralInfoData` model and may include fields such as:
+`generalInfo` maps to the current `GeneralInfoData` model and may include fields
+such as:
 
 - `displayName`
 - `name`
@@ -60,13 +63,18 @@ The `original` and `modified` entries can include:
 
 Each resource type can contain:
 
-| Field | Description |
-| --- | --- |
-| `changed` | Resources present in both original and modified data with different content |
-| `new` | Resources present only in the modified data |
-| `deleted` | Resource names present only in the original data |
+- **Field:** `changed`
+  - **Description:** Resources present in both original and modified data with
+    different content
 
-Each changed or new resource entry stores its resource name plus a `files` map of logical file names to paths inside the archive.
+- **Field:** `new`
+  - **Description:** Resources present only in the modified data
+
+- **Field:** `deleted`
+  - **Description:** Resource names present only in the original data
+
+Each changed or new resource entry stores its resource name plus a `files` map
+of logical file names to paths inside the archive.
 
 ## Statistics
 
@@ -91,21 +99,30 @@ The current apply-plan model contains:
 - `simpleResourceTypes`
 - `heavyResourceTypes`
 
-These flags tell G3MTool which expensive import or finalize stages can be skipped safely.
+These flags tell G3MTool which expensive import or finalize stages can be
+skipped safely.
 
 ## Xdelta fallback
 
-`patch create --xdelta-fallback` stores an embedded xdelta fallback built from the original and modified data files.
+`patch create --xdelta-fallback` stores an embedded xdelta fallback built from
+the original and modified data files.
 
 `patch apply` behavior:
 
-| Mode | Behavior |
-| --- | --- |
-| Default | Try normal `.g3mpatch` apply first, then try embedded xdelta if normal apply fails |
-| `--xdelta-fallback` | Try embedded xdelta first, then continue with normal `.g3mpatch` apply if xdelta fails |
+- **Mode:** Default
+  - **Behavior:** Try normal `.g3mpatch` apply first, then try embedded xdelta
+    if normal apply fails
+
+- **Mode:** `--xdelta-fallback`
+  - **Behavior:** Try embedded xdelta first, then continue with normal
+    `.g3mpatch` apply if xdelta fails
 
 ## `.g3mcache`
 
-`.g3mcache` is not part of `.g3mpatch`. It is a separate reusable analysis cache used only when the caller passes `--cache <dir>`.
+`.g3mcache` is not part of `.g3mpatch`. It is a separate reusable analysis cache
+used only when the caller passes `--cache <dir>`.
 
-Batch commands add a second, temporary layer of caching for the current process. They hash the original and inputs before processing, deduplicate identical jobs, and copy the first output to later duplicate output names. This batch cache is not stored inside `.g3mpatch`.
+Batch commands add a second, temporary layer of caching for the current process.
+They hash the original and inputs before processing, deduplicate identical jobs,
+and copy the first output to later duplicate output names. This batch cache is
+not stored inside `.g3mpatch`.

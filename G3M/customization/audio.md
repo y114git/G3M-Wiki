@@ -18,11 +18,13 @@ The current code looks for these extensions:
 
 ## Startup sound
 
-Startup sound can be muted without deleting the file through the `disable_startup_sound` setting.
+Startup sound can be muted without deleting the file through the
+`disable_startup_sound` setting.
 
 ## Background music
 
-Background music is managed by the customization service and can be paused automatically when the app loses focus through:
+Background music is managed by the customization service and can be paused
+automatically when the app loses focus through:
 
 - `pause_background_music_unfocused`
 

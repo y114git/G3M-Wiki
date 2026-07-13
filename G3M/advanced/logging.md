@@ -1,6 +1,7 @@
 # Logging
 
-G3M writes logs to the user data directory so problems can be inspected after the fact.
+G3M writes logs to the user data directory so problems can be inspected after
+the fact.
 
 ## Main files
 
@@ -25,8 +26,12 @@ Logs are the first place to look for:
 
 ## Which log to open
 
-Open `%LOCALAPPDATA%\G3M\logs\g3m.log` for normal app usage: imports, UI actions, plugin loading, settings, downloads, and regular launches.
+Open `%LOCALAPPDATA%\G3M\logs\g3m.log` for normal app usage: imports, UI
+actions, plugin loading, settings, downloads, and regular launches.
 
-Open `%LOCALAPPDATA%\G3M\logs\shortcut.log` when you launched from a desktop shortcut. Shortcut launches run through a smaller headless runner, so shortcut-specific failures are usually easiest to diagnose there.
+Open `%LOCALAPPDATA%\G3M\logs\shortcut.log` when you launched from a desktop
+shortcut. Shortcut launches run through a smaller headless runner, so
+shortcut-specific failures are usually easiest to diagnose there.
 
-Archived logs under `%LOCALAPPDATA%\G3M\logs\g3m\` are older main-session logs. Use them when the current log has already been overwritten by a restart.
+Archived logs under `%LOCALAPPDATA%\G3M\logs\g3m\` are older main-session logs.
+Use them when the current log has already been overwritten by a restart.

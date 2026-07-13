@@ -2,29 +2,22 @@
 
 DELTARUNE stores most long-lived runtime state in `global.*` variables.
 
-This page documents the `global.` namespace as seen through UndertaleModTool.
+`scr_gamestart` initializes the main global state. `scr_saveprocess` and
+`scr_load` own its principal persistence paths.
 
-The main initialization root is:
-
-- `scripts/scr_gamestart/scr_gamestart.gml`
-
-and the main persistence roots are:
-
-- `scripts/scr_saveprocess/scr_saveprocess.gml`
-- `scripts/scr_load/scr_load.gml`
-
-Chapter 2, Chapter 3, and Chapter 4 heavily expand the global-state surface compared to Chapter 1.
+Chapters 2–5 heavily expand the global-state surface compared to Chapter 1.
 
 For generic GameMaker variable-scope behavior, see:
 
-- https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables_And_Variable_Scope.htm
-- https://manual.gamemaker.io/lts/en/GameMaker_Language/GML_Overview/Arrays.htm
+- <https://manual.gamemaker.io/monthly/en/GameMaker_Language/GML_Overview/Variables_And_Variable_Scope.htm>
+- <https://manual.gamemaker.io/lts/en/GameMaker_Language/GML_Overview/Arrays.htm>
 
 ---
 
 ## Why `global.*` Matters So Much In DELTARUNE
 
-DELTARUNE is not architected around a small amount of encapsulated object state. Instead, many systems communicate through shared global arrays and flags.
+DELTARUNE is not architected around a small amount of encapsulated object state.
+Instead, many systems communicate through shared global arrays and flags.
 
 That includes:
 
@@ -75,13 +68,15 @@ Chapter 2 keeps the same broad shape but adds major new runtime groups:
 - `global.smimage[]`
 - `global.smimagespeed[]`
 - `global.sminstance[]`
+
 - `global.msgno`
 - `global.battletyper`
 - `global.cinstance[]`
 
 ### Chapter 3
 
-Chapter 3 keeps the Chapter 2 base and adds more writer / presentation globals in `scr_gamestart`, including:
+Chapter 3 keeps the Chapter 2 base and adds more writer / presentation globals
+in `scr_gamestart`, including:
 
 - `global.writerobj[]`
 - `global.writerobjsettinga[]`
@@ -93,7 +88,83 @@ It also seeds more Chapter 3-related flags during startup.
 
 ### Chapter 4
 
-Chapter 4 keeps the Chapter 3-era global layout and adds still more chapter-specific flag seeding and runtime-specific values later consumed by church, darkness, battle-special-case, and rhythm-related systems.
+Chapter 4 keeps the Chapter 3-era global layout and adds still more
+chapter-specific flag seeding and runtime-specific values later consumed by
+church, darkness, battle-special-case, and rhythm-related systems.
+
+### Chapter 5
+
+Chapter 5 sets `global.chapter = 5` in `scr_gamestart`, retains the 20-entry
+character-stat layout, initializes `global.pocketitem[0..71]`, and gives Susie
+spell 11. It also retains the later element/equipment, writer, cutscene, battle,
+and flag families.
+
+Chapter 5 save/load ownership remains explicit: `scr_saveprocess` serializes the
+72 pocket slots and appends `global.filechoice_route` to its chapter/slot write
+path. The main `scr_load` path is unsuffixed, so it does not directly reopen a
+route-suffixed file. Separate `scr_load_chapter2`, `scr_load_chapter3`, and
+`scr_load_chapter4` entries support cross-chapter data handoff.
+
+## Ownership and Persistence Matrix
+
+The matrix records established ownership classes, not every individual variable.
+
+| Global family      | Chapter 1   | Chapters 2–4 | Chapter 5   |
+| ------------------ | ----------- | ------------ | ----------- |
+| chapter identity   | startup     | startup      | startup     |
+| names, plot, time  | startup     | startup      | startup     |
+| character stats    | 4 entries   | 20 entries   | 20 entries  |
+| item and key item  | older       | later        | later       |
+| weapon and armor   | smaller     | 48 slots     | 48 slots    |
+| pocket item        | absent      | 72 slots     | 72 slots    |
+| equipment elements | absent      | startup      | startup     |
+| flag               | 9,999 slots | 9,999 slots  | 9,999 slots |
+| temporary flag     | session     | session      | session     |
+| writer objects     | absent      | Chapters 3–4 | retained    |
+| battle caches      | battle root | battle root  | battle root |
+
+- **Global family:** chapter identity
+  - **Persistence:** not serialized; startup-derived
+
+- **Global family:** names, plot, time through equipment elements
+  - **Persistence:** saved
+
+- **Global family:** flag
+  - **Persistence:** saved
+
+- **Global family:** temporary flag
+  - **Persistence:** not saved
+
+- **Global family:** writer objects
+  - **Persistence:** runtime only
+
+- **Global family:** battle caches
+  - **Persistence:** recomputed
+
+“Saved” means the family is represented in the save/load path. `global.chapter`
+is deliberately separate: `scr_gamestart` derives it from the active payload,
+and the ordinary save payload does not serialize it. Runtime caches and session
+flags are initialized or recomputed instead.
+
+## Changed Startup Constants
+
+Named assignments in `scr_gamestart` set `global.chapter`, core party stat
+defaults, and equipped IDs. Compatibility branches determine the last applicable
+assignment. Chapter 5 starts with 240, 290, and 210 maximum HP for Kris, Susie,
+and Ralsei. It also confirms that their base AT defaults are 12, 16, and 10,
+rather than treating progression as necessarily monotonic. Arbitrary numeric
+literals, computed expressions, coordinates, timings, and sentinels do not
+define these startup defaults.
+
+## Reachability Limits
+
+A reference count is not a complete semantic definition.
+
+Before calling a global family or its associated content unused, analysis must
+also resolve dynamic resource lookup, object inheritance, room placement,
+startup and persistent controller roots, and save/load restoration. All numbered
+chapters contain at least one of these indirect paths, so this pass leaves
+unresolved content as **unresolved**, not **unused**.
 
 ---
 
@@ -110,6 +181,7 @@ global.chapter = 1; // Chapter 1 runtime
 global.chapter = 2; // Chapter 2 runtime
 global.chapter = 3; // Chapter 3 runtime
 global.chapter = 4; // Chapter 4 runtime
+global.chapter = 5; // Chapter 5 runtime
 ```
 
 Used by:
@@ -200,11 +272,14 @@ Persistent room-tracking value.
 
 Important chapter difference:
 
-- Chapter 1 initializes it later and often uses `scr_get_id_by_room_index(room)` when entering rooms
+- Chapter 1 initializes it later and often uses `scr_get_id_by_room_index(room)`
+  when entering rooms
 - Chapter 2 and Chapter 3 still rely heavily on room-id conversion helpers
-- Chapter 4 `obj_mainchara` Create sets `global.currentroom = room` at that stage before later resolution logic elsewhere
+- Chapter 4 `obj_mainchara` Create sets `global.currentroom = room` at that
+  stage before later resolution logic elsewhere
 
-Because room ids are chapter-dependent, this variable is central to save/load correctness.
+Because room ids are chapter-dependent, this variable is central to save/load
+correctness.
 
 ### `global.darkzone`
 
@@ -230,7 +305,8 @@ Affects:
 
 ### `global.char[0..2]`
 
-This array does not store arbitrary data. It stores which character id occupies each active party slot.
+This array does not store arbitrary data. It stores which character id occupies
+each active party slot.
 
 Default new-game setup:
 
@@ -240,7 +316,8 @@ global.char[1] = 0;
 global.char[2] = 0;
 ```
 
-The game starts with slot 0 occupied by Kris (`1`) and the other two active slots empty.
+The game starts with slot 0 occupied by Kris (`1`) and the other two active
+slots empty.
 
 Character ids used in battle/party logic:
 
@@ -281,13 +358,15 @@ global.charauto[3] = 0;
 
 Meaning Ralsei is initially auto-controlled in the older Chapter 1 flow.
 
-Later chapter runtimes zero this family more broadly while keeping the array infrastructure.
+Later chapter runtimes zero this family more broadly while keeping the array
+infrastructure.
 
 ### `global.charmove[]`
 
 Per-slot movement permission / battle usability state.
 
-Initialized to `0` in `scr_gamestart`, then set in battle bootstrap depending on whether a party slot is occupied.
+Initialized to `0` in `scr_gamestart`, then set in battle bootstrap depending on
+whether a party slot is occupied.
 
 ### `global.charcantarget[]`
 
@@ -299,7 +378,8 @@ Important note: despite the name, in battle Create an occupied slot gets:
 global.charcantarget[i] = 1;
 ```
 
-This array should be understood from usage context, not from the variable name alone.
+This array should be understood from usage context, not from the variable name
+alone.
 
 ### `global.chardead[]`
 
@@ -360,7 +440,8 @@ Used by battle and condition-sensitive logic.
 
 ### Chapter 1 array size
 
-The original Chapter 1 startup loop initializes character stat arrays for `i < 4`.
+The original Chapter 1 startup loop initializes character stat arrays for
+`i < 4`.
 
 ### Chapter 2+ array size
 
@@ -381,26 +462,28 @@ For each character id:
 
 Chapter-specific starting values:
 
-#### Chapter 1
+#### Chapter 1 starting stats
 
 - `global.hp[1] = 90`, `global.maxhp[1] = 90`, `global.at[1] = 10`
-- `global.hp[2] = 110`, `global.maxhp[2] = 110`, `global.at[2] = 14`, `global.mag[2] = 1`
-- `global.hp[3] = 70`, `global.maxhp[3] = 70`, `global.at[3] = 8`, `global.mag[3] = 7`
+- `global.hp[2] = 110`, `global.maxhp[2] = 110`, `global.at[2] = 14`,
+  `global.mag[2] = 1`
+- `global.hp[3] = 70`, `global.maxhp[3] = 70`, `global.at[3] = 8`,
+  `global.mag[3] = 7`
 
-#### Chapter 2
+#### Chapter 2 starting stats
 
 - Kris: `120 / 120`, `AT 12`
 - Susie: `140 / 140`, `AT 16`, `MAG 1`
 - Ralsei: `100 / 100`, `AT 10`, `MAG 9`
 - Noelle: `90 / 90`, `AT 3`, `DF 1`, `MAG 11`
 
-#### Chapter 3
+#### Chapter 3 starting stats
 
 - Kris: `160 / 160`, `AT 14`
 - Susie: `190 / 190`, `AT 18`, `MAG 2`
 - Ralsei: `140 / 140`, `AT 12`, `MAG 11`
 
-#### Chapter 4
+#### Chapter 4 starting stats
 
 - Kris: `200 / 200`, `AT 17`
 - Susie: `230 / 230`, `AT 22`, `MAG 3`
@@ -420,7 +503,8 @@ Stores the current attack-style label / configuration for the character.
 
 Chapter 1 initializes it to a localized slash-style string.
 
-Chapters 2+ initialize it to `0` during base setup and then repopulate through later item/equipment info passes.
+Chapters 2+ initialize it to `0` during base setup and then repopulate through
+later item/equipment info passes.
 
 ---
 
@@ -448,7 +532,8 @@ Only Chapters 2, 3, and 4 add:
 - `global.itemelement[i][q]`
 - `global.itemelementamount[i][q]`
 
-These are used by later damage reduction logic and make later equipment meaningfully more complex than Chapter 1 equipment.
+These are used by later damage reduction logic and make later equipment
+meaningfully more complex than Chapter 1 equipment.
 
 ---
 
@@ -462,7 +547,7 @@ Every chapter zeroes these first, then assigns initial spells explicitly.
 
 Examples:
 
-#### Chapter 1
+#### Chapter 1 spell setup
 
 ```gml
 global.spell[1][0] = 7; // Kris -> spell 7 (ACT)
@@ -471,7 +556,7 @@ global.spell[3][0] = 3; // Ralsei -> spell 3 (Pacify)
 global.spell[3][1] = 2; // Ralsei -> spell 2 (Heal Prayer)
 ```
 
-#### Chapter 2
+#### Chapter 2 spell setup
 
 Adds Noelle:
 
@@ -559,7 +644,8 @@ Startup:
 global.invc = 1;
 ```
 
-Together they are used by damage scripts to determine post-hit invulnerability duration.
+Together they are used by damage scripts to determine post-hit invulnerability
+duration.
 
 ### Graze / bullet tuning globals
 
@@ -569,14 +655,16 @@ Together they are used by damage scripts to determine post-hit invulnerability d
 - `global.grazetotal = 0`
 - `global.grazeturn = 0`
 
-These begin as global combat tuning values, then get used by battle and equipment systems.
+These begin as global combat tuning values, then get used by battle and
+equipment systems.
 
 ### Tension / TP
 
 - `global.tension = 0`
 - `global.maxtension = 250`
 
-Later chapters continue to use this same baseline even as spell and battle systems become more complex.
+Later chapters continue to use this same baseline even as spell and battle
+systems become more complex.
 
 ---
 
@@ -631,7 +719,8 @@ Chapter 4 changes the placeholder name again to:
 
 - `global.monsterattackname[i] = " "`
 
-This is a useful sign that later battle presentation becomes richer and more named-attack-aware.
+This is a useful sign that later battle presentation becomes richer and more
+named-attack-aware.
 
 ---
 
@@ -666,7 +755,8 @@ Later chapters add separate families for non-Kris characters:
 - `global.actsimulral`
 - `global.actsimulnoe`
 
-These are consumed by `scr_spellmenu_setup()` to build later chapter battle menus.
+These are consumed by `scr_spellmenu_setup()` to build later chapter battle
+menus.
 
 ---
 
@@ -689,7 +779,8 @@ These are consumed by `scr_spellmenu_setup()` to build later chapter battle menu
 - `global.battledf[]`
 - `global.battlemag[]`
 
-These are recomputed from base stats plus item modifier arrays during battle bootstrap.
+These are recomputed from base stats plus item modifier arrays during battle
+bootstrap.
 
 ### Later chapter battle-menu synthesis globals
 
@@ -713,7 +804,8 @@ Later chapters also add:
 - `global.actingtarget[]`
 - `global.actingchoice[]`
 
-These exist because the later ACT/battle-command layer is much more expressive than the Chapter 1 battle menu.
+These exist because the later ACT/battle-command layer is much more expressive
+than the Chapter 1 battle menu.
 
 ---
 
@@ -739,7 +831,8 @@ global.msc = 0;
 global.choice = -1;
 ```
 
-All chapters also initialize the message array broadly, often first with `"%%"` placeholders and then with `" "` reset values.
+All chapters also initialize the message array broadly, often first with `"%%"`
+placeholders and then with `" "` reset values.
 
 ### Writer portrait / mini-face globals
 
@@ -773,7 +866,8 @@ All chapters initialize families like:
 - `global.writerobjx[]`
 - `global.writerobjy[]`
 
-These arrays support writer-linked visual objects such as funnytext in Chapters 3 and 4.
+These arrays support writer-linked visual objects such as funnytext in Chapters
+3 and 4.
 
 ---
 
@@ -968,7 +1062,8 @@ Chapter 4 keeps the above and adds more defaults such as:
 - `global.flag[660] = 1`
 - `global.flag[661] = 1`
 
-This is exactly why a serious DELTARUNE wiki cannot treat `global.flag` as “just a generic story flag array” and move on.
+This is exactly why a serious DELTARUNE wiki cannot treat `global.flag` as “just
+a generic story flag array” and move on.
 
 ---
 
@@ -980,16 +1075,17 @@ Per-session state array. Not persisted in save files. Reset on game restart.
 
 Common uses:
 
-| Index | Purpose |
-|---:|---|
-| 5–7 | King boss phase unlocks (Courage, RedBuster, DualHeal) |
-| 9 | Room-restart entry signal (game-over mode 2) |
-| 89 | Jackenstein death counter (≥3 enables 1.5x TP bonus) |
-| 100 | Jackenstein Unleash phase counter |
+| Index | Purpose                                                |
+| ----: | ------------------------------------------------------ |
+|   5–7 | King boss phase unlocks (Courage, RedBuster, DualHeal) |
+|     9 | Room-restart entry signal (game-over mode 2)           |
+|    89 | Jackenstein death counter (≥3 enables 1.5x TP bonus)   |
+|   100 | Jackenstein Unleash phase counter                      |
 
 ### `global.encounterno`
 
 Current encounter id. Set by `scr_encountersetup`. Used by:
+
 - Monster setup conditional logic (encounter-specific ACT menus)
 - Damage modifiers (encounter 157 = solo Kris 0.7x damage)
 - Battle controller for encounter-specific behavior
@@ -997,18 +1093,21 @@ Current encounter id. Set by `scr_encountersetup`. Used by:
 ### `global.fighting`
 
 Battle state flag:
+
 - `0` = not in battle
 - `1` = in battle
 
 Used by `scr_speaker` to select battle-specific typer ids.
 
-### `global.darkzone`
+### `global.darkzone` runtime summary
 
 World state flag:
+
 - `0` = Light World
 - `1` = Dark World
 
-Used by `scr_speaker` for typer selection, `scr_setparty` for follower alignment offsets, and sprite scale adjustments.
+Used by `scr_speaker` for typer selection, `scr_setparty` for follower alignment
+offsets, and sprite scale adjustments.
 
 ### `global.menuno`
 
@@ -1017,8 +1116,10 @@ Current menu page/state id. Used by the overworld menu system for page tracking.
 ### `global.inv` / `global.invc`
 
 Invulnerability timer and multiplier:
+
 - `global.inv` decrements each frame; damage only processes when `< 0`
-- `global.invc` defaults to `1`, giving `invc * 40` frames of invulnerability after a hit
+- `global.invc` defaults to `1`, giving `invc * 40` frames of invulnerability
+  after a hit
 
 ---
 
@@ -1064,7 +1165,8 @@ global.cinstance[1] = ...
 global.cinstance[2] = ...
 ```
 
-These act as reusable cutscene/runtime instance handles and are part of the cutscene variable stack.
+These act as reusable cutscene/runtime instance handles and are part of the
+cutscene variable stack.
 
 ---
 
@@ -1074,20 +1176,26 @@ Later chapters include:
 
 - `scr_save_global_vars()`
 
-and it is currently empty in the extracted runtime.
+and it is currently empty in the present in the runtime.
 
-This is an extension point: the runtime has a named place for extra global-save handling even if the current build leaves it blank.
+This is an extension point: the runtime has a named place for extra global-save
+handling even if the current build leaves it blank.
 
 ---
 
 ## Practical Reading Strategy
 
-If you are tracing any system in DELTARUNE, first find which global family it uses:
+If you are tracing any system in DELTARUNE, first find which global family it
+uses:
 
 - dialogue -> `global.msg`, `global.typer`, `global.fc`, `global.fe`
-- battle -> `global.myfight`, `global.mnfight`, `global.battle*`, `global.monster*`
-- save/load -> `global.filechoice`, `global.currentroom`, `global.flag`, inventory/stat arrays
-- overworld -> `global.interact`, `global.entrance`, `global.facing`, `global.darkzone`
+- battle -> `global.myfight`, `global.mnfight`, `global.battle*`,
+  `global.monster*`
+- save/load -> `global.filechoice`, `global.currentroom`, `global.flag`,
+  inventory/stat arrays
+- overworld -> `global.interact`, `global.entrance`, `global.facing`,
+  `global.darkzone`
 - localization -> `global.lang`, `global.lang_map`, `global.font_map`
 
-That is usually the fastest way to understand how a script fits into the larger game.
+That is usually the fastest way to understand how a script fits into the larger
+game.

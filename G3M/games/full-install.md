@@ -1,6 +1,7 @@
 # Full Install
 
-Full Install is the launcher flow that downloads a clean game package into a folder you choose and then sets that folder as the active game path.
+Full Install is the launcher flow that downloads a clean game package into a
+folder you choose and then sets that folder as the active game path.
 
 ---
 
@@ -19,7 +20,9 @@ Built-in games without that flag and all custom games do not expose the feature.
 
 ## UI Behavior
 
-When the selected game supports Full Install, G3M shows the `Full Install` checkbox in the main window. If the checkbox is enabled, the primary action becomes install instead of launch.
+When the selected game supports Full Install, G3M shows the `Full Install`
+checkbox in the main window. If the checkbox is enabled, the primary action
+becomes install instead of launch.
 
 The setting is stored in profile state as `full_install_enabled`.
 
@@ -48,6 +51,9 @@ The worker uses different global setting keys depending on the selected game:
 
 ## Platform Notes
 
-On macOS, turning the checkbox on is rejected immediately and the UI turns it back off. The code path does not allow Full Install to proceed there.
+On macOS, turning the checkbox on is rejected immediately and the UI turns it
+back off. The code path does not allow Full Install to proceed there.
 
-On other platforms, behavior depends on whether the configured download URL is available and whether the downloaded package matches the current platform's launch requirements.
+On other platforms, behavior depends on whether the configured download URL is
+available and whether the downloaded package matches the current platform's
+launch requirements.

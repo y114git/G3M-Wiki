@@ -1,6 +1,7 @@
 # Blocklist
 
-The blocklist hides mods you do not want to see in the browser or filtered lists.
+The blocklist hides mods you do not want to see in the browser or filtered
+lists.
 
 ## What can be blocked
 
@@ -28,7 +29,8 @@ Blocklist rules are stored in:
 
 ## Where you manage it
 
-G3M has a dedicated Blocklist dialog. Open it from **Settings** or from the Mods Browser/search flow when a blocklist action is available.
+G3M has a dedicated Blocklist dialog. Open it from **Settings** or from the Mods
+Browser/search flow when a blocklist action is available.
 
 Typical actions:
 
@@ -37,4 +39,5 @@ Typical actions:
 3. Choose whether it applies globally or only to one game.
 4. Save or close the dialog.
 
-Blocked mods simply stop appearing in the affected browser/library results. The blocklist does not uninstall mods that are already installed.
+Blocked mods simply stop appearing in the affected browser/library results. The
+blocklist does not uninstall mods that are already installed.

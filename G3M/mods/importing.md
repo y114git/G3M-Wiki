@@ -37,13 +37,16 @@ The smoothest imports are:
 - `.g3mpatch`
 - supported archives with clear mod structure
 
-Supported conversion paths also exist for some external ecosystems, including DELTAMOD, supported Pizza Tower-related flows, and strict FRICKBEARS3 addon archives.
+Supported conversion paths also exist for some external ecosystems, including
+DELTAMOD, supported Pizza Tower-related flows, and strict FRICKBEARS3 addon
+archives.
 
 ---
 
 ## When Import Is Not Automatic
 
-Sometimes G3M can download or open a file but still cannot turn it into a clean installed mod on its own.
+Sometimes G3M can download or open a file but still cannot turn it into a clean
+installed mod on its own.
 
 That usually means:
 
@@ -51,17 +54,25 @@ That usually means:
 - the archive layout is too ambiguous
 - the file needs a more manual conversion workflow
 
-If the file is close to usable but not mappable automatically, G3M can hand it off to the Manual Install dialog instead of failing as a blind import. That flow can assign DATA files, extra files, and additional xdelta patches to explicit game targets.
+If the file is close to usable but not mappable automatically, G3M can hand it
+off to the Manual Install dialog instead of failing as a blind import. That flow
+can assign DATA files, extra files, and additional xdelta patches to explicit
+game targets.
 
-When that happens, the right next step is usually to inspect the file structure or try the relevant modding/conversion tools instead of assuming the file is broken.
+When that happens, the right next step is usually to inspect the file structure
+or try the relevant modding/conversion tools instead of assuming the file is
+broken.
 
 ---
 
 ## Merge vs Replace
 
-If the incoming mod matches an existing mod ID, G3M asks whether you want to merge or replace.
+If the incoming mod matches an existing mod ID, G3M asks whether you want to
+merge or replace.
 
-- **merge** is better when you want to preserve the current mod folder and update it
+- **merge** is better when you want to preserve the current mod folder and
+  update it
 - **replace** is better when you want a clean reimport
 
-If you do not specifically need to preserve local folder state, replace is often the simpler option.
+If you do not specifically need to preserve local folder state, replace is often
+the simpler option.

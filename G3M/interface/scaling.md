@@ -16,4 +16,6 @@ This scale factor affects many parts of the interface, including:
 
 ## Why it matters
 
-If the default layout feels too small or too large on your display, changing the UI scale is the intended way to rebalance the interface without changing the app's behavior.
+If the default layout feels too small or too large on your display, changing the
+UI scale is the intended way to rebalance the interface without changing the
+app's behavior.

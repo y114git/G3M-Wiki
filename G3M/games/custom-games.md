@@ -1,6 +1,7 @@
 # Custom Games
 
-Custom games let you teach G3M about another GameMaker-based game without changing G3M's source code.
+Custom games let you teach G3M about another GameMaker-based game without
+changing G3M's source code.
 
 ---
 
@@ -13,7 +14,8 @@ Use a custom game when:
 - you know which data file should be patched
 - you want it to behave like a normal single-tab launcher target
 
-This is the fastest path for getting an unsupported GameMaker game into the launcher.
+This is the fastest path for getting an unsupported GameMaker game into the
+launcher.
 
 ---
 
@@ -53,4 +55,5 @@ Current limits:
 - no full install
 - no built-in chapter splitting
 
-So custom games fit best when the target game behaves like one main data file plus one main executable.
+So custom games fit best when the target game behaves like one main data file
+plus one main executable.

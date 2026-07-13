@@ -1,6 +1,7 @@
 # Update System
 
-G3M includes an automatic update checker that notifies you when a new version is available.
+G3M includes an automatic update checker that notifies you when a new version is
+available.
 
 ---
 
@@ -8,23 +9,29 @@ G3M includes an automatic update checker that notifies you when a new version is
 
 ### Automatic Check
 
-On every launch (after initialization), G3M fetches global settings from the G3M cloud backend, which includes update information. The check runs in the background and does not block the UI.
+On every launch (after initialization), G3M fetches global settings from the G3M
+cloud backend, which includes update information. The check runs in the
+background and does not block the UI.
 
 ### Manual Check
 
-You can manually trigger an update check from the settings view with the **Check for updates** button.
+You can manually trigger an update check from the settings view with the **Check
+for updates** button.
 
 ---
 
 ## Version Comparison
 
-G3M compares version strings by splitting them into numeric components (e.g., "3.0.3" → [3, 0, 3]) and comparing from left to right. The current version is defined in `pyproject.toml` and compiled into the application.
+G3M compares version strings by splitting them into numeric components (e.g.,
+"3.0.3" → [3, 0, 3]) and comparing from left to right. The current version is
+defined in `pyproject.toml` and compiled into the application.
 
 ---
 
 ## Beta Updates
 
-If **Enable beta updates** is enabled, G3M also considers pre-release versions when checking the remote launcher file list.
+If **Enable beta updates** is enabled, G3M also considers pre-release versions
+when checking the remote launcher file list.
 
 ---
 
@@ -32,11 +39,14 @@ If **Enable beta updates** is enabled, G3M also considers pre-release versions w
 
 When an update is found, a dialog appears with:
 
-- **Current version** — Your installed version (currently `3.2.0` on this codebase).
+- **Current version** — Your installed version (currently `3.2.0` on this
+  codebase).
 - **New version** — The available version.
-- **Release notes** — The changelog/notes provided by the cloud settings payload.
+- **Release notes** — The changelog/notes provided by the cloud settings
+  payload.
 - **Install** button — Downloads and installs the update.
-- **Skip** button — Dismisses the dialog. The update is not installed but may be shown again on the next launch.
+- **Skip** button — Dismisses the dialog. The update is not installed but may be
+  shown again on the next launch.
 
 ---
 
@@ -54,7 +64,8 @@ When an update is found, a dialog appears with:
 
 1. G3M downloads the new `.dmg` or `.zip` release.
 2. Extracts the new `G3M.app`.
-3. On macOS, a Python symlink fix may be applied to ensure the app bundle is valid.
+3. On macOS, a Python symlink fix may be applied to ensure the app bundle is
+   valid.
 4. Replaces the current installation.
 5. Restarts.
 
@@ -80,11 +91,15 @@ If analytics opt-in is enabled, the outcome of each update check is recorded:
 
 ## Network Requirements
 
-Update checks require an internet connection and access to the G3M cloud backend. If the network is unavailable, the check silently fails and no notification is shown.
+Update checks require an internet connection and access to the G3M cloud
+backend. If the network is unavailable, the check silently fails and no
+notification is shown.
 
-The request timeout is 5 seconds (`NETWORK_TIMEOUT_SHORT`). If the cloud server is slow to respond, the check may be skipped.
+The request timeout is 5 seconds (`NETWORK_TIMEOUT_SHORT`). If the cloud server
+is slow to respond, the check may be skipped.
 
-Recent G3M builds also try to classify update download failures more clearly where possible, for example:
+Recent G3M builds also try to classify update download failures more clearly
+where possible, for example:
 
 - request timeout
 - SSL or certificate failure

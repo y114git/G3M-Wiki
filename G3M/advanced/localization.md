@@ -18,8 +18,10 @@ The current bundled set is:
 
 Bundled language files are inside `src/assets/lang/`.
 
-At runtime, G3M also syncs language files into the user data `lang/` folder so they can be customized outside the bundle.
+At runtime, G3M also syncs language files into the user data `lang/` folder so
+they can be customized outside the bundle.
 
 ## Plugin support
 
-Plugins can ship their own `lang/` folder and merge extra strings into the app localization system.
+Plugins can ship their own `lang/` folder and merge extra strings into the app
+localization system.

@@ -2,7 +2,8 @@
 
 The Library is where your installed mods become an actual playable setup.
 
-If the Mods Browser is for finding things, the Library is for choosing what gets applied when you press launch.
+If the Mods Browser is for finding things, the Library is for choosing what gets
+applied when you press launch.
 
 ---
 
@@ -43,7 +44,8 @@ In chapter mode:
 - a mod can appear in multiple chapter tabs if it has data for multiple chapters
 - direct launch can be tied to a specific chapter
 
-If chapter mode is off, the selection is simpler and behaves like one shared launch setup.
+If chapter mode is off, the selection is simpler and behaves like one shared
+launch setup.
 
 ---
 
@@ -64,7 +66,8 @@ From there you can usually:
 - open its folder
 - delete it
 
-Some mods also expose extra context actions such as homepage or GameBanana links.
+Some mods also expose extra context actions such as homepage or GameBanana
+links.
 
 ---
 
@@ -87,13 +90,15 @@ When you press `Add Mod`, you are really choosing one of two paths:
 - import something that already exists
 - create a new mod from scratch
 
-So the Library is both your play space and your starting point for local modding.
+So the Library is both your play space and your starting point for local
+modding.
 
 ## Diagnostics
 
 The Library header also exposes a **Diagnostics** button.
 
-That dialog builds a read-only report for the current game or chapter scope and helps you inspect:
+That dialog builds a read-only report for the current game or chapter scope and
+helps you inspect:
 
 - file conflicts between selected mods
 - target paths for extra-file overrides

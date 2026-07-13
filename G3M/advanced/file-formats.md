@@ -16,7 +16,8 @@ This page is a quick map of the file types G3M actually cares about.
 - `.vcdiff`
 - `.csx`
 
-Archive-style G3M patches may also be plain `.zip` files that contain `g3mpatch.json`.
+Archive-style G3M patches may also be plain `.zip` files that contain
+`g3mpatch.json`.
 
 ## Core metadata files
 

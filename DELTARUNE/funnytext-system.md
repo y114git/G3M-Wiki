@@ -1,217 +1,88 @@
-﻿# Funnytext System
+# Funnytext System
 
-`obj_funnytext` is an animated text-object family used for title cards, board labels, TV callouts, and other non-standard text reveals. It runs alongside `obj_writer` and is integrated through writer-owned object slots in Chapters 3 and 4.
+`obj_funnytext` is a writer-owned animated sprite/text effect used for title
+cards, labels, callouts, and other non-standard reveals. It becomes prominent in
+Chapter 3 and remains present through Chapter 5.
 
-The main roots are:
+## Registration and Insertion
 
-- `scripts/scr_funnytext_init/scr_funnytext_init.gml`
-- `objects/obj_funnytext/Create_0.gml`
-- `objects/obj_funnytext/Step_0.gml`
-- `global.writerobj[]` and related writer-routing arrays
-
----
-
-## Writer Registration
-
-The core initializer is:
+`scr_funnytext_init(slot, x, y, sprite, setting_a, setting_b)` stores an object,
+offsets, sprite, and two settings in the shared writer-object arrays:
 
 ```gml
-function scr_funnytext_init(arg0, arg1, arg2, arg3, arg4, arg5)
-{
-    global.writerobj[arg0] = obj_funnytext;
-    global.writerobjx[arg0] = arg1;
-    global.writerobjy[arg0] = arg2;
-    global.writerimg[arg0] = arg3;
-    global.writerobjsettinga[arg0] = arg4;
-    global.writerobjsettingb[arg0] = arg5;
-}
+scr_funnytext_init(0, 8, -12, spr_funnytext_dump_her, 0, 0);
+global.msg[0] = "* Look! \\O0%%";
+scr_writetext();
 ```
 
-Funnytext is usually selected through the shared writer-routing system rather than hardcoded everywhere with direct instance creation.
+When `obj_writer` reaches the `\O` slot code, it creates the configured object
+at the current cursor plus offsets, copies the sprite/settings, and records that
+the slot was made. `\I` and `\m` use related writer image arrays for inline
+images and mini-images but do not imply `obj_funnytext`.
 
----
+## Runtime
 
-## Default Runtime Slots
+The object starts with `typingstyle = 0`, `typingspeed = 3`, `charshake = 1`,
+and a stopped sprite. Its first Step resolves an optional sound, interprets the
+settings, and searches for a loop sprite derived from the assigned sprite name.
 
-Chapter 3 and Chapter 4 `scr_gamestart` preinitialize several writer-object slots to funnytext-capable defaults:
+### 0
 
-```gml
-global.writerimg[i] = spr_btact;
-global.writerobj[i] = obj_funnytext;
-global.writerobjsettinga[i] = 0;
-global.writerobjsettingb[i] = 0;
-global.writerobjx[i] = 0;
-global.writerobjy[i] = 0;
-```
+**Behavior:** Play an intro animation, then use an optional `_loop` sprite
 
-These defaults make funnytext part of the standard writer-owned object insertion system.
+### 1
 
----
+**Behavior:** Reveal characters/frames through `chartimer` and `charmax`
 
-## How To Configure Funnytext Before Inserting It In Text
+### 2
 
-The intended setup flow is:
+**Behavior:** Play an intro and retain a looping display state
 
-1. choose a writer-object slot, usually `0..9`
-2. configure that slot with `scr_funnytext_init(slot, x, y, sprite, settinga, settingb)`
-3. later place `\O<slot>` inside the dialogue string
+It observes the writer's halt/end lifecycle and destroys itself after the owning
+writer disappears. A persistent effect therefore needs an explicit ownership
+change rather than merely changing its depth.
 
-`obj_writer/Draw_0.gml` inserts those configured objects through the `\O` tag:
+## Sound Registry
 
-```gml
-var writerobj = instance_create(wx + global.writerobjx[nextchar2var], wy + global.writerobjy[nextchar2var], global.writerobj[nextchar2var]);
-writerobj.sprite_index = global.writerimg[nextchar2var];
-writerobj.settinga = global.writerobjsettinga[nextchar2var];
-writerobj.settingb = global.writerobjsettingb[nextchar2var];
-object_made[nextchar2var] = 1;
-```
+`scr_funnytext_init_sounds()`, `scr_funnytext_new_sound()`, and
+`scr_funnytext_get_sound()` form a sprite-name-to-sound registry. The registry
+stores sprite names and resolves them through `scr_84_get_sprite()`, which keeps
+locale/resource remapping in the lookup path.
 
-The inline text tag does not decide funnytext behavior by itself. It only consumes the configuration already stored in the global writer-object tables.
-
-The configured fields are:
-
-- `global.writerobj[slot]`: object class to spawn, usually `obj_funnytext`
-- `global.writerimg[slot]`: sprite assigned to the spawned object
-- `global.writerobjx[slot]`: X offset relative to the current writer cursor
-- `global.writerobjy[slot]`: Y offset relative to the current writer cursor
-- `global.writerobjsettinga[slot]`: copied into the object's `settinga`
-- `global.writerobjsettingb[slot]`: copied into the object's `settingb`
-
-This is the funnytext insertion pipeline in Chapters 3 and 4.
-
----
-
-## Relationship To Inline Writer Tags
-
-The text runtime uses several related tag families:
-
-- `\I?` draws an inline sprite from `global.writerimg[]`
-- `\m?` draws a mini inline image / mini portrait using `global.writerimg[]`
-- `\O?` spawns a configured writer-owned object, often `obj_funnytext`
-
-`funnytext` is one member of the writer-side asset insertion system.
-
----
-
-## Sound Map Initialization
-
-Chapter 3 adds `scr_funnytext_init_sounds()` and helper lookups:
-
-- `scr_funnytext_get_sound(arg0)`
-- `scr_funnytext_new_sound(arg0, arg1)`
-
-Representative sprite-to-sound mappings include:
-
-- `spr_funnytext_fun_loop` -> `snd_crowd_cheer_single`
-- `spr_funnytext_big` -> `snd_ftext_bounce`
-- `spr_funnytext_physical_challenge` -> `snd_ftext_bounce`
-- `spr_funnytext_board` -> `snd_ftext_woodblock`
-- `spr_funnytext_bonus_round` -> `snd_ftext_prize`
-- `spr_funnytext_hall_of_fame` -> `snd_ftext_prize`
-
----
-
-## Object Initialization
-
-Chapter 3 `obj_funnytext/Create_0.gml` initializes:
-
-```gml
-Settinga = 0;
-settingb = 0;
-typingstyle = 0;
-typingspeed = 3;
-typingnoise = 144;
-charshake = 1;
-init = 0;
-chartimer = -1;
-charmax = 1;
-typingfinished = 0;
-writerfinished = 0;
-image_speed = 0;
-idealxscale = 1;
-idealyscale = 1;
-con = 0;
-loopsprite = sprite_index;
-playsound = 0;
-```
-
-Chapter 4 is very similar, but changes `typingnoise` to `190`.
-
----
-
-## First-Step Bootstrap
-
-On first Step, the object:
-
-- auto-selects a sound with `scr_funnytext_get_sound(sprite_index)` if needed
-- copies `settinga` into the effective style behavior
-- for `typingstyle == 0`, tries to find a loop sprite named `sprite_name + "_loop"`
-- prepares scale/reveal timers for other styles
-
-This delayed bootstrap means funnytext inherits its sprite and settings from the writer-routing arrays.
-
----
-
-## Typing Styles
-
-### Style 0
-
-Animated intro sprite with optional loop-sprite follow-up.
-
-### Style 1
-
-Character reveal using:
-
-- `chartimer`
-- `typingspeed`
-- `charmax`
-
-### Style 2
-
-Intro animation followed by a looping display state.
-
-Funnytext is not one effect. It is a mini-framework for several stylized text behaviors.
-
----
-
-## Relationship To `obj_writer`
-
-The Step event watches writer lifecycle:
-
-- if `obj_writer.halt` is reached, it marks `writerfinished = 1`
-- if no `obj_writer` exists anymore, the funnytext object destroys itself
-
-`obj_funnytext` still follows writer lifecycle and destroys itself when the owning writer is gone.
-
----
+The registry is payload-specific. Chapter 5's shipped initializer contains the
+established mapping `spr_funnytext_dump_her` to `snd_ftext_bounce`; do not copy
+the much larger Chapter 3 TV registry and assume every asset remains registered.
 
 ## Chapter Differences
 
-## Chapter 3
+### Chapters 1-2
 
-- first major funnytext-heavy chapter
-- large sprite/sound registry
-- strong TV/game-show usage
-- default `typingnoise = 144`
+**established behavior:** No standard writer-object funnytext workflow
 
-## Chapter 4
+### Chapter 3
 
-- keeps the same broad system
-- retunes defaults such as `typingnoise = 190`
+**established behavior:** Large TV/game-show sprite and sound registry; default
+noise 144
 
-Funnytext is a Chapter 3/4 specialization. Chapter 1 does not use this insertion model.
+### Chapter 4
 
----
+**established behavior:** Same architecture; default noise 190
 
-## Modding Implications
+### Chapter 5
 
-- If funnytext appears but has no sound, check the sprite-to-sound mapping.
-- If it vanishes too early, inspect the owning `obj_writer` lifecycle.
-- If the wrong looping animation plays, inspect the `"_loop"` sprite naming expectation.
+**established behavior:** Same architecture; default noise 289 and a reduced
+shipped registry
 
----
+Those numbers are asset IDs in each payload, not portable sound constants.
 
-## Relationship To Other Pages
+## Modding Checks
 
-- [Dialogue System](dialogue-system.md) explains the writer pipeline.
-- [Cutscene System](cutscene-system.md) explains the scenes that often trigger funnytext-backed text events.
+- Configure a slot before the writer reaches its `\O` code.
+- Use a slot not already consumed by the same writer.
+- Add the sprite to the target payload and, if needed, its sound registry.
+- Supply the expected `_loop` sprite for style 0.
+- Preserve writer ownership or implement explicit cleanup.
+- confirm localized strings retain the same writer-object control code.
+
+See [Dialogue System](dialogue-system.md) and
+[Cutscene System](cutscene-system.md).

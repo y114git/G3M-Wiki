@@ -6,11 +6,13 @@ The main launcher and mod manager documented by this wiki.
 
 ## G3MTool
 
-The bundled command-line helper that handles patching, conversion, diff, info, and script execution work for GameMaker data files.
+The bundled command-line helper that handles patching, conversion, diff, info,
+and script execution work for GameMaker data files.
 
 ## Profile
 
-A separate mod-library context inside G3M. Profiles keep their own installed mods, metadata, and selected-mod state.
+A separate mod-library context inside G3M. Profiles keep their own installed
+mods, metadata, and selected-mod state.
 
 ## Game Version
 
@@ -26,8 +28,10 @@ G3M's native patch format.
 
 ## Extra files
 
-Files a mod copies alongside its main data patch, such as additional assets or supporting files.
+Files a mod copies alongside its main data patch, such as additional assets or
+supporting files.
 
 ## One-click install
 
-A protocol-based download handoff using the `g3m` or legacy `deltahub` URL scheme.
+A protocol-based download handoff using the `g3m` or legacy `deltahub` URL
+scheme.

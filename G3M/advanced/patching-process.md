@@ -1,6 +1,7 @@
 # Patching Process
 
-When you launch a game with mods, G3M temporarily changes the target files, starts the game, and restores the originals when the session ends.
+When you launch a game with mods, G3M temporarily changes the target files,
+starts the game, and restores the originals when the session ends.
 
 ## Normal flow
 
@@ -28,19 +29,28 @@ Extra files from mods are copied separately from the main data patching step.
 
 ## Multiple mods
 
-If more than one mod is selected for the same slot, G3M applies them in order. Later mods can override earlier ones.
+If more than one mod is selected for the same slot, G3M applies them in order.
+Later mods can override earlier ones.
 
-The **Merge Properties** and **Merge Code** settings also affect how some overlapping changes are combined.
+The **Merge Properties** and **Merge Code** settings also affect how some
+overlapping changes are combined.
 
 ## Safety and recovery
 
 - Backups are stored before patching starts.
 - If patching fails, G3M attempts to restore the original files immediately.
-- If the app crashes during a session, recovery data in `%LOCALAPPDATA%\G3M\settings\session.lock` is used on the next start.
+- If the app crashes during a session, recovery data in
+  `%LOCALAPPDATA%\G3M\settings\session.lock` is used on the next start.
 - Backup work also uses `%LOCALAPPDATA%\G3M\patching_backups\`.
 
 ## G3MTool
 
-Patch creation, patch apply, diff-style operations, and script execution are delegated to the bundled `G3MTool` binaries through the G3M adapter layer.
+Patch creation, patch apply, diff-style operations, and script execution are
+delegated to the bundled `G3MTool` binaries through the G3M adapter layer.
 
-The bundled G3MTool also supports batch CLI workflows for advanced users. `patch batch apply` and `patch batch create` run repeated jobs against one original file, while `patch batch merge` accepts multiple quoted merge sets such as `"mod_a.g3mpatch,mod_b.xdelta"`. Batch jobs hash their inputs first and skip repeated identical work by copying the first generated result to later duplicate output names.
+The bundled G3MTool also supports batch CLI workflows for advanced users.
+`patch batch apply` and `patch batch create` run repeated jobs against one
+original file, while `patch batch merge` accepts multiple quoted merge sets such
+as `"mod_a.g3mpatch,mod_b.xdelta"`. Batch jobs hash their inputs first and skip
+repeated identical work by copying the first generated result to later duplicate
+output names.

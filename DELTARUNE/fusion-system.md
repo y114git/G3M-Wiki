@@ -1,35 +1,31 @@
 # Fusion System
 
-Equipment fusion allows combining two items or equipment pieces into a stronger result. The system is defined in `scr_fusion_info` and executed by `scr_fusion_queue`.
+Equipment fusion allows combining two items or equipment pieces into a stronger
+result. The system is defined in `scr_fusion_info` and executed by
+`scr_fusion_queue`.
 
 ---
 
 ## Fusion Recipes
 
-The same 6 recipes exist identically in Chapters 2, 3, and 4:
+The same six definition cases exist in Chapters 2, 3, and 4:
 
-| Recipe | Ingredient A | Type | Ingredient B | Type | Result | Type | Description |
-|---:|---|---|---|---|---|---|---|
-| 1 | Item 8 | item | Item 8 | item | Item 22 | item | Heal 60 HPx2 |
-| 2 | Armor 1 | armor | Armor 1 | armor | Armor 8 | armor | $ Gained +5% |
-| 3 | Armor 3 | armor | Armor 4 | armor | Armor 9 | armor | Graze Area+ |
-| 4 | Armor 10 | armor | Armor 5 | armor | Armor 13 | armor | Attack+ |
-| 5 | Armor 12 | armor | Item 27 | item | Armor 15 | armor | Graze TP+ |
-| 6 | Weapon 13 | weapon | Key Item 15 | key | Weapon 11 | weapon | Trance |
+The former wrapped summary table was removed. The records below list runtime
+values.
+
+The queue caller proves the execution API, not that every definition case is
+enumerated by a production menu. Recipe status below therefore remains
+definition-only or uncertain unless an exact UI enumeration, gate, placed
+controller, and ingredient acquisition chain were all joined. In particular,
+case 6 must not be described as production-reachable from the generic queue call
+alone.
 
 ---
 
 ## `scr_fusion_info` Output Fields
 
-| Field | Type | Purpose |
-|---|---|---|
-| `ingredient[0]` | int | First ingredient id |
-| `ingredienttype[0]` | string | First ingredient type: `"item"`, `"armor"`, `"weapon"`, `"key"` |
-| `ingredient[1]` | int | Second ingredient id |
-| `ingredienttype[1]` | string | Second ingredient type |
-| `result` | int | Result item id |
-| `resulttype` | string | Result item type |
-| `resultdesc` | string | Display description of result |
+The former wrapped summary table was removed. The records below list runtime
+values.
 
 ---
 
@@ -46,8 +42,364 @@ The fusion system is not limited to same-type ingredients.
 
 ## Modding Reference
 
-| Goal | Inspect |
-|---|---|
-| Add a fusion recipe | Add a `case` block in `scr_fusion_info` |
-| Change fusion result | Edit the `result`/`resulttype` in the matching case |
-| Configure fusion UI | Inspect the Castle Town shop objects that call `scr_fusion_info` |
+The former wrapped summary table was removed. The records below list runtime
+values.
+
+An exact new recipe requires both metadata and queue support:
+
+```gml
+// scr_fusion_info
+case NEW_RECIPE_CASE:
+    ingredient[0] = 8; ingredienttype[0] = "item";
+    ingredient[1] = 27; ingredienttype[1] = "item";
+    result = NEW_ITEM_ID; resulttype = "item";
+    resultdesc = "Heal and tension";
+    break;
+```
+
+Increase the fusion menu's recipe count and ensure `scr_fusion_queue` recognizes
+the same four type strings. Test missing ingredients, duplicate ingredients,
+full destination inventory, queue completion, cancel, save, and reload.
+
+## Complete recipe catalog
+
+### Recipe ch2-case-1
+
+- inputs: `item:8 x1, item:8 x1`
+- output: `item:22`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch2-case-2
+
+- inputs: `armor:1 x1, armor:1 x1`
+- output: `armor:8`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch2-case-3
+
+- inputs: `armor:3 x1, armor:4 x1`
+- output: `armor:9`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch2-case-4
+
+- inputs: `armor:10 x1, armor:5 x1`
+- output: `armor:13`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch2-case-5
+
+- inputs: `armor:12 x1, item:27 x1`
+- output: `armor:15`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch2-case-6
+
+- inputs: `weapon:13 x1, key:15 x1`
+- output: `weapon:11`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-1
+
+- inputs: `item:8 x1, item:8 x1`
+- output: `item:22`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-2
+
+- inputs: `armor:1 x1, armor:1 x1`
+- output: `armor:8`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-3
+
+- inputs: `armor:3 x1, armor:4 x1`
+- output: `armor:9`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-4
+
+- inputs: `armor:10 x1, armor:5 x1`
+- output: `armor:13`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-5
+
+- inputs: `armor:12 x1, item:27 x1`
+- output: `armor:15`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch3-case-6
+
+- inputs: `weapon:13 x1, key:15 x1`
+- output: `weapon:11`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-1
+
+- inputs: `item:8 x1, item:8 x1`
+- output: `item:22`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-2
+
+- inputs: `armor:1 x1, armor:1 x1`
+- output: `armor:8`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-3
+
+- inputs: `armor:3 x1, armor:4 x1`
+- output: `armor:9`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-4
+
+- inputs: `armor:10 x1, armor:5 x1`
+- output: `armor:13`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-5
+
+- inputs: `armor:12 x1, item:27 x1`
+- output: `armor:15`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch4-case-6
+
+- inputs: `weapon:13 x1, key:15 x1`
+- output: `weapon:11`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-1
+
+- inputs: `item:8 x1, item:8 x1`
+- output: `item:22`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-2
+
+- inputs: `armor:1 x1, armor:1 x1`
+- output: `armor:8`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-3
+
+- inputs: `armor:3 x1, armor:4 x1`
+- output: `armor:9`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-4
+
+- inputs: `armor:10 x1, armor:5 x1`
+- output: `armor:13`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-5
+
+- inputs: `armor:12 x1, item:27 x1`
+- output: `armor:15`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-6
+
+- inputs: `weapon:13 x1, key:15 x1`
+- output: `weapon:11`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-7
+
+- inputs: `weapon:51 x1, armor:53 x1`
+- output: `armor:30`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-8
+
+- inputs: `armor:27 x1, armor:20 x1`
+- output: `armor:31`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-9
+
+- inputs: `item:37 x1, item:37 x1`
+- output: `item:34`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-10
+
+- inputs: `item:34 x1, item:34 x1`
+- output: `item:39`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-11
+
+- inputs: `item:62 x1, armor:52 x1`
+- output: `item:40`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-12
+
+- inputs: `item:62 x1, armor:51 x1`
+- output: `item:29`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`
+
+### Recipe ch5-case-13
+
+- inputs: `armor:54 x1, item:33 x1`
+- output: `armor:32`
+- cost: `0`
+- conditions: `none in recipe case`
+- reachability: `definition-only`
+- reachability basis: `no literal UI enumeration; generic queue dispatch`
+  `excluded`
+- caller count: `1`

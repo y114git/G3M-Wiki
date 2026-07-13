@@ -1,6 +1,7 @@
 # Creating Mods
 
-If you are making a mod for G3M, the most important choice is not "which button do I press", but "what kind of payload am I shipping".
+If you are making a mod for G3M, the most important choice is not "which button
+do I press", but "what kind of payload am I shipping".
 
 ---
 
@@ -23,7 +24,8 @@ Patch-based mods are usually easier to live with because they are:
 - cleaner to distribute
 - less blunt than shipping a whole replacement file
 
-A full replacement file is still valid, but it is the heavy-handed option and is more likely to fight with other mods.
+A full replacement file is still valid, but it is the heavy-handed option and is
+more likely to fight with other mods.
 
 ---
 
@@ -64,4 +66,5 @@ At minimum, verify:
 - restore-after-exit still works
 - the description, name, version, and tags make sense to someone else
 
-The most useful mod is not just the one that works for you, but the one another person can understand and install without guessing.
+The most useful mod is not just the one that works for you, but the one another
+person can understand and install without guessing.

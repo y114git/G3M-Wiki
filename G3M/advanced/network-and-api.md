@@ -1,11 +1,13 @@
 # Network & API
 
-G3M mixes local features with a few online ones. Local library management keeps working offline. Browser-style features depend on the network.
+G3M mixes local features with a few online ones. Local library management keeps
+working offline. Browser-style features depend on the network.
 
 ## What uses the network
 
 - GameBanana browsing and downloads
-- Discord Rich Presence handoff through the local Discord IPC pipe when available
+- Discord Rich Presence handoff through the local Discord IPC pipe when
+  available
 - Announcements and polls
 - Update checks
 - Analytics uploads
@@ -13,13 +15,17 @@ G3M mixes local features with a few online ones. Local library management keeps 
 
 ## GameBanana
 
-G3M talks to the GameBanana API through the built-in adapter and uses the current API base configured in the app. GameBanana-backed browsing is what powers the Mods Browser for supported games.
+G3M talks to the GameBanana API through the built-in adapter and uses the
+current API base configured in the app. GameBanana-backed browsing is what
+powers the Mods Browser for supported games.
 
-The UI also has an explicit rate-limit message for the documented `250` requests per hour limit.
+The UI also has an explicit rate-limit message for the documented `250` requests
+per hour limit.
 
 ## G3M cloud services
 
-Several G3M-specific features use cloud endpoints through the shared network helpers:
+Several G3M-specific features use cloud endpoints through the shared network
+helpers:
 
 - announcements and poll voting
 - analytics upload
@@ -27,9 +33,11 @@ Several G3M-specific features use cloud endpoints through the shared network hel
 
 ## Session and availability
 
-G3M keeps a shared network session and tracks overall connectivity with `app_state.has_internet`.
+G3M keeps a shared network session and tracks overall connectivity with
+`app_state.has_internet`.
 
-When that flag is false, online features degrade gracefully, but local actions such as:
+When that flag is false, online features degrade gracefully, but local actions
+such as:
 
 - managing installed mods
 - switching profiles

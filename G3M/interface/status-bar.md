@@ -27,4 +27,5 @@ The action button changes with context. Depending on state, it can be used to:
 - cancel a running operation
 - close a running game
 
-This is the main place where G3M exposes the current "do the next important thing" action.
+This is the main place where G3M exposes the current "do the next important
+thing" action.

@@ -20,7 +20,8 @@ Before digging deeper, ask:
 - does the issue still happen with no mods selected
 - does it still happen with one simple mod instead of the full stack
 
-That quick check often tells you whether the issue is launcher setup, mod order, a bad import, or something game-specific.
+That quick check often tells you whether the issue is launcher setup, mod order,
+a bad import, or something game-specific.
 
 ---
 
@@ -47,16 +48,19 @@ The main logs to check are:
 - `%LOCALAPPDATA%\G3M\logs\shortcut.log`
 - archived logs under `%LOCALAPPDATA%\G3M\logs\g3m\`
 
-If you need to report a real bug, include the relevant log section. It is usually the fastest way to move from "it failed" to "this exact step failed".
+If you need to report a real bug, include the relevant log section. It is
+usually the fastest way to move from "it failed" to "this exact step failed".
 
 ---
 
 ## Hard Reset Option
 
-If you truly want a clean restart of the whole launcher state, the destructive option is still:
+If you truly want a clean restart of the whole launcher state, the destructive
+option is still:
 
 1. close G3M
 2. remove the user data folder
 3. reopen G3M and rebuild the setup
 
-Use that only when you already accepted losing local settings, profiles, plugins, and installed mods.
+Use that only when you already accepted losing local settings, profiles,
+plugins, and installed mods.

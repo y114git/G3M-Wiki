@@ -25,13 +25,16 @@ It also provides buttons for:
 - Telegram
 - Discord
 
-The Releases and Issues links are fixed GitHub URLs. The Wiki button uses `global_settings["wiki_url"]` when present and otherwise falls back to `https://github.com/y114git/G3M/`.
+The Releases and Issues links are fixed GitHub URLs. The Wiki button uses
+`global_settings["wiki_url"]` when present and otherwise falls back to
+`https://github.com/y114git/G3M/`.
 
 ---
 
 ## Changelog Dialog
 
-The changelog dialog is a `QTextBrowser` that loads markdown content from the changelog URL stored in global settings.
+The changelog dialog is a `QTextBrowser` that loads markdown content from the
+changelog URL stored in global settings.
 
 Current behavior:
 

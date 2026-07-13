@@ -1,6 +1,7 @@
 # Migration
 
-G3M still contains migration logic for older local data layouts and for the legacy DELTAHUB naming era.
+G3M still contains migration logic for older local data layouts and for the
+legacy DELTAHUB naming era.
 
 ## What it covers
 
@@ -11,4 +12,5 @@ G3M still contains migration logic for older local data layouts and for the lega
 
 ## Why it matters
 
-This code exists so an existing user data folder can be brought forward into the current layout instead of forcing a manual reset.
+This code exists so an existing user data folder can be brought forward into the
+current layout instead of forcing a manual reset.

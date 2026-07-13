@@ -9,4 +9,5 @@ G3MTool -V
 
 Current code version: `1.2.0`
 
-Use this when a bug report, patch manifest, or support request needs the exact tool version.
+Use this when a bug report, patch manifest, or support request needs the exact
+tool version.

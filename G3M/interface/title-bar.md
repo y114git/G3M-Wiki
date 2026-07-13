@@ -1,6 +1,7 @@
 # Title Bar
 
-G3M uses a custom Qt title bar widget instead of relying on the platform default.
+G3M uses a custom Qt title bar widget instead of relying on the platform
+default.
 
 ---
 
@@ -19,7 +20,8 @@ Right side:
 - maximize or restore
 - close
 
-The `Windows` menu currently exposes the log viewer action. The `Help` menu exposes changelog and about actions.
+The `Windows` menu currently exposes the log viewer action. The `Help` menu
+exposes changelog and about actions.
 
 ---
 
@@ -36,7 +38,8 @@ Buttons themselves do not trigger dragging.
 
 ## Theming and Scaling
 
-The title bar applies the current theme text color to the window control icons and rescales its metrics from the UI scale setting. The widget updates:
+The title bar applies the current theme text color to the window control icons
+and rescales its metrics from the UI scale setting. The widget updates:
 
 - margins
 - spacing

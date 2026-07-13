@@ -22,4 +22,5 @@ If you want the fastest route to a custom look, do it in this order:
 
 ## Best practical advice
 
-Keep text contrast strong first. A theme that looks stylish but makes Library or Browser text harder to read is a bad trade for everyday use.
+Keep text contrast strong first. A theme that looks stylish but makes Library or
+Browser text harder to read is a bad trade for everyday use.

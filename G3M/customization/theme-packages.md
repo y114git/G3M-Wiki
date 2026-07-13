@@ -1,6 +1,7 @@
 # Theme Packages
 
-Theme packages let you import or export a bundle of appearance settings instead of changing everything by hand.
+Theme packages let you import or export a bundle of appearance settings instead
+of changing everything by hand.
 
 ## Main manifest
 

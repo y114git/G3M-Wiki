@@ -4,7 +4,8 @@ G3M accepts drag-and-drop input in several places.
 
 ## Main use
 
-The main window can accept local files, folders, and supported URLs for import-style flows.
+The main window can accept local files, folders, and supported URLs for
+import-style flows.
 
 ## Typical accepted content
 
@@ -16,8 +17,10 @@ The main window can accept local files, folders, and supported URLs for import-s
 
 ## Other dialogs
 
-Dedicated version-management dialogs also accept dropped archives for their own import flows.
+Dedicated version-management dialogs also accept dropped archives for their own
+import flows.
 
 ## Practical meaning
 
-If you already have the file in Explorer or your file manager, drag and drop is usually the fastest way to get it into G3M.
+If you already have the file in Explorer or your file manager, drag and drop is
+usually the fastest way to get it into G3M.

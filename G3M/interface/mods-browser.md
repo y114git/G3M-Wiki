@@ -1,12 +1,14 @@
 # Mods Browser
 
-The Mods Browser is the discovery tab. Its job is simple: help you find a mod, inspect it, and get it into your library with as little friction as possible.
+The Mods Browser is the discovery tab. Its job is simple: help you find a mod,
+inspect it, and get it into your library with as little friction as possible.
 
 ---
 
 ## What It Searches
 
-The browser only shows games that currently have a GameBanana ID in the runtime registry.
+The browser only shows games that currently have a GameBanana ID in the runtime
+registry.
 
 That means:
 
@@ -14,7 +16,8 @@ That means:
 - custom games can appear if you gave them a GameBanana ID
 - games without a GameBanana ID do not show up here
 
-So if a game is supported by G3M but missing from the browser, the usual reason is that there is no GameBanana mapping for it.
+So if a game is supported by G3M but missing from the browser, the usual reason
+is that there is no GameBanana mapping for it.
 
 ---
 
@@ -43,7 +46,8 @@ The filter bar answers different kinds of questions:
 - sort: "show popular, newer, or recently updated items first"
 - NSFW toggle: "hide or include adult-marked content"
 
-The browser uses the same broad tag family the rest of G3M uses, with extra special cases such as `CYOP/AFOM` where relevant.
+The browser uses the same broad tag family the rest of G3M uses, with extra
+special cases such as `CYOP/AFOM` where relevant.
 
 ---
 
@@ -58,7 +62,8 @@ Opening a mod gives you the richer view:
 - homepage or mod-page links when available
 - download and library-related actions
 
-If the mod has multiple downloadable files, G3M asks which file you want instead of guessing.
+If the mod has multiple downloadable files, G3M asks which file you want instead
+of guessing.
 
 ---
 
@@ -66,4 +71,6 @@ If the mod has multiple downloadable files, G3M asks which file you want instead
 
 Not every GameBanana upload is something G3M can auto-install cleanly.
 
-When a file is compatible, the Browser-to-Downloads-to-Library flow is smooth. When it is not, G3M can still tell you that the mod exists, but it may need a manual install path or an external format conversion first.
+When a file is compatible, the Browser-to-Downloads-to-Library flow is smooth.
+When it is not, G3M can still tell you that the mod exists, but it may need a
+manual install path or an external format conversion first.

@@ -1,6 +1,7 @@
 # Backup & Restore
 
-Backup and restore is the reason G3M can behave like a launcher session instead of a one-way patcher.
+Backup and restore is the reason G3M can behave like a launcher session instead
+of a one-way patcher.
 
 ---
 
@@ -19,9 +20,11 @@ That is the safety model behind normal modded launching.
 
 ## What This Protects
 
-The important targets are the files G3M changes during patching, including main game data and other files a mod may overwrite or add.
+The important targets are the files G3M changes during patching, including main
+game data and other files a mod may overwrite or add.
 
-So if you are worried that "launching with mods" permanently rewrites your install, this is the system that exists to prevent that.
+So if you are worried that "launching with mods" permanently rewrites your
+install, this is the system that exists to prevent that.
 
 ---
 
@@ -29,7 +32,9 @@ So if you are worried that "launching with mods" permanently rewrites your insta
 
 G3M also keeps session state for interrupted modded runs.
 
-That means if the launcher or machine goes down at the wrong time, the next startup can still try to restore the previous session instead of leaving the game in a half-modded state.
+That means if the launcher or machine goes down at the wrong time, the next
+startup can still try to restore the previous session instead of leaving the
+game in a half-modded state.
 
 ---
 

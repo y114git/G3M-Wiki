@@ -1,6 +1,7 @@
 # Mod Editor
 
-The Mod Editor is the built-in dialog for creating a new local mod or editing an existing one.
+The Mod Editor is the built-in dialog for creating a new local mod or editing an
+existing one.
 
 ## What you can edit
 
@@ -19,7 +20,9 @@ The current editor covers the core mod fields:
 
 It also lets you attach per-slot data files and extra files.
 
-For FRICKBEARS3 mods, the current editor also understands addon-style extra-file layouts and keeps them in the normal mod file structure instead of treating them as unrelated loose files.
+For FRICKBEARS3 mods, the current editor also understands addon-style extra-file
+layouts and keeps them in the normal mod file structure instead of treating them
+as unrelated loose files.
 
 ## Supported main file types
 
@@ -33,6 +36,7 @@ For chapter or slot data, the editor can work with:
 
 ## What happens on save
 
-For local mods, G3M writes or updates `mod_config.json`, copies chosen assets into the mod folder, and refreshes the Library view.
+For local mods, G3M writes or updates `mod_config.json`, copies chosen assets
+into the mod folder, and refreshes the Library view.
 
 The mod ID stays stable after creation.

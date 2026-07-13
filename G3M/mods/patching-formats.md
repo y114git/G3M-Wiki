@@ -16,8 +16,10 @@ G3M currently works with four main patching styles for game data:
 
 ## Detection
 
-G3M detects the format automatically from the file extension or, for archive-style patches, from the presence of `g3mpatch.json`.
+G3M detects the format automatically from the file extension or, for
+archive-style patches, from the presence of `g3mpatch.json`.
 
 ## Recommendation
 
-For sharing and combining mods, patch-based formats are usually more flexible than shipping a full raw data file.
+For sharing and combining mods, patch-based formats are usually more flexible
+than shipping a full raw data file.

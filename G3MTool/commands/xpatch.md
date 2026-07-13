@@ -1,8 +1,10 @@
 # xpatch
 
-Create or apply xdelta patches. xdelta stores byte-level differences and expects the matching original file when applying.
+Create or apply xdelta patches. xdelta stores byte-level differences and expects
+the matching original file when applying.
 
-G3MTool bundles xdelta for supported platforms, and xpatch also honors the global `--xdelta-path <path>` override.
+G3MTool bundles xdelta for supported platforms, and xpatch also honors the
+global `--xdelta-path <path>` override.
 
 ## xpatch create
 
@@ -10,11 +12,18 @@ G3MTool bundles xdelta for supported platforms, and xpatch also honors the globa
 G3MTool xpatch create <original> <modified> [output] [--xdelta-path <path>]
 ```
 
-| Argument | Required | Description |
-| --- | --- | --- |
-| `original` | Yes | Source file |
-| `modified` | Yes | Modified file |
-| `output` | No | Output `.xdelta`. Default: `<modified_name>.xdelta` next to the executable |
+- **Argument:** `original`
+  - **Required:** Yes
+  - **Description:** Source file
+
+- **Argument:** `modified`
+  - **Required:** Yes
+  - **Description:** Modified file
+
+- **Argument:** `output`
+  - **Required:** No
+  - **Description:** Output `.xdelta`. Default: `<modified_name>.xdelta` next to
+    the executable
 
 ## xpatch apply
 
@@ -22,11 +31,18 @@ G3MTool xpatch create <original> <modified> [output] [--xdelta-path <path>]
 G3MTool xpatch apply <original> <patch> [output] [--xdelta-path <path>]
 ```
 
-| Argument | Required | Description |
-| --- | --- | --- |
-| `original` | Yes | Source file expected by the xdelta patch |
-| `patch` | Yes | `.xdelta` file |
-| `output` | No | Output file. Default: `<original_name>_patched.<ext>` next to the executable |
+- **Argument:** `original`
+  - **Required:** Yes
+  - **Description:** Source file expected by the xdelta patch
+
+- **Argument:** `patch`
+  - **Required:** Yes
+  - **Description:** `.xdelta` file
+
+- **Argument:** `output`
+  - **Required:** No
+  - **Description:** Output file. Default: `<original_name>_patched.<ext>` next
+    to the executable
 
 ## Notes
 

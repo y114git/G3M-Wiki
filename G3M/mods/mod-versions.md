@@ -1,6 +1,7 @@
 # Mod Versions
 
-Mod Versions is a per-mod snapshot system. It helps you keep checkpoints for a mod without duplicating the whole library.
+Mod Versions is a per-mod snapshot system. It helps you keep checkpoints for a
+mod without duplicating the whole library.
 
 ## Where snapshots live
 

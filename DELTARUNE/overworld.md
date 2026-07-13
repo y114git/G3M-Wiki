@@ -1,259 +1,135 @@
-﻿# Overworld Movement
+# Overworld Runtime
 
-The main overworld controller in the numbered chapters is `obj_mainchara`. It owns:
+The numbered chapters build their navigable world from rooms, placed objects,
+and per-room controller objects. `obj_mainchara` is the shared player root;
+`obj_overworldc` supplies room-level overworld state. The complete route catalog
+is on [Rooms, Events, and Progression](rooms-events-and-progression.md).
 
-- Kris movement
-- room entry positioning
-- overworld interaction checks
-- menu opening
-- overworld battle collision support
-- later chapter movement extensions such as sword state or climbing
+## Player Movement
 
-This page documents `obj_mainchara` as seen through UndertaleModTool.
-
----
-
-## Shared Core Responsibilities
-
-Across the numbered chapters, `obj_mainchara` Create event usually does the following:
-
-1. set room/depth state
-2. initialize battle-heart support for overworld battle zones
-3. initialize movement variables
-4. choose the correct sprite set for light or dark world
-5. restore facing
-6. position Kris at the correct entrance marker if entering from a door
-7. reset menu state
-8. prepare effective defensive stats or related runtime values
-
----
-
-## Chapter 1 Baseline
-
-Important Create-time features in Chapter 1:
-
-- `global.currentroom = scr_get_id_by_room_index(room)`
-- `alarm[2] = 2`
-- `autorun = 0`
-- `battlemode = 0`
-- `battleheart = instance_create(x, y, obj_overworldheart)`
-- `darkmode = global.darkzone`
-- `bwspeed = 3` in Light World, `4` in Dark World
-- direction sprite fields:
-  - `dsprite`
-  - `rsprite`
-  - `usprite`
-  - `lsprite`
-- entrance placement through hardcoded marker checks
-
-Chapter 1 is the cleanest version of the classic Kris-overworld controller.
-
----
-
-## Chapter 2 Expansion
-
-Chapter 2 keeps the same movement core and adds more overworld state:
-
-- `drawbattlemode`
-- `sliding`
-- `becamesword`
-- `swordmode`
-- `swordcon`
-- `swordtimer`
-- `stop_movement`
-- `roomenterfreezeend`
-- `runcounter`
-
-It also upgrades room-entry logic:
-
-- stores `cameFromEntrance`
-- uses `switch (global.entrance)` instead of only chained `if`
-- checks marker existence with `i_ex(...)`
-- falls back to `obj_markerAny` or room center if a specific marker is missing
-
-Chapter 2 adds `i_ex()` existence checks and `obj_markerAny` fallback for missing markers.
-
----
-
-## Chapter 3 Expansion
-
-Chapter 3 adds more movement-state extensions:
-
-- `climbing`
-- `climbbuffer`
-- `floorheight`
-- `canrun`
-- `drawdebug`
-- `ignoredepth`
-- `freeze`
-
-It also introduces Chapter 3-specific sprite overrides inside the Dark World:
-
-```gml
-if (global.chapter == 3)
-{
-    if (scr_flag_get(1076) == 1 || scr_flag_get(1077) == 1)
-    {
-        usprite = spr_krisu_dark_cool;
-    }
-}
-```
-
-That is a good example of chapter-specific overworld presentation living directly in the main player controller.
-
----
-
-## Chapter 4 Expansion
-
-Chapter 4 keeps most of the Chapter 3 movement runtime and adds chapter-specific presentation branches again.
-
-Notable changes visible in Create:
-
-- `global.currentroom = room` instead of the earlier `scr_get_id_by_room_index(room)` form at this point in Create
-- `climbsprite` changes again
-- special Chapter 4 clothing/presentation branch:
-
-```gml
-if (global.chapter == 4)
-{
-    if (global.darkzone == 0 && global.plot >= 11 && global.plot < 35)
-    {
-        init_clothes = true;
-        dsprite = spr_kris_walk_down_church;
-        rsprite = spr_kris_walk_right_church;
-        lsprite = spr_kris_walk_left_church;
-    }
-    tower_shake_xoffset = 0;
-}
-```
-
-Chapter 4 Create-time state is denser than earlier chapters before Step logic even begins.
-
----
-
-## Base Movement Model
-
-The classic Kris overworld movement model is still recognizable in all chapters:
-
-- `press_l`, `press_r`, `press_u`, `press_d`
-- `px`, `py`
-- `wspeed`, `bwspeed`
-- `run`, `runtimer`
-- `subx`, `suby`, `subxspeed`, `subyspeed`
-- `walktimer`, `walkbuffer`
-
-This controller is still heavily state-driven rather than physics-driven.
-
----
-
-## Light World vs Dark World
-
-The basic split remains:
-
-- Light World base speed: `3`
-- Dark World base speed: `4`
-
-and the dark world usually enables:
-
-- `stepping = 1`
-- doubled sprite scale
-- dark sprite set
-
-Dark World mode changes movement speed and sprite sets inside `obj_mainchara`, not only room art.
-
----
-
-## Entrance / Room Transition Placement
-
-This transition path is one of the main chapter-flow entrypoints.
+`obj_mainchara` reads directional button helpers into `press_l`, `press_r`,
+`press_u`, and `press_d`, resolves movement against solids, updates facing and
+walk animation, and owns the interaction buffers. Its conventional speeds are
+`3` in the Light World and `4` in the Dark World. Later payloads extend the same
+controller rather than replacing it:
 
 ### Chapter 1
 
-Hardcoded marker checks:
+**Important additions:** `autorun`, `battlemode`, sub-pixel movement, facing
+sprites
 
-- `obj_markerA`
-- `obj_markerB`
-- `obj_markerC`
-- `obj_markerD`
-- `obj_markerE`
-- `obj_markerF`
-- `obj_markerr`
-- `obj_markers`
-- `obj_markert`
-- `obj_markeru`
-- `obj_markerv`
-- `obj_markerw`
-- `obj_markerX`
+### Chapter 2
 
-### Chapter 2+
+**Important additions:** `sliding`, `swordmode`, `stop_movement`, safer entrance
+fallback
 
-The same marker family remains, but the logic becomes safer:
+### Chapter 3
 
-- explicit `switch` on `global.entrance`
-- `i_ex(...)` marker existence checks
-- fallback to `obj_markerAny`
-- final fallback to room center
+**Important additions:** `climbing`, `floorheight`, `canrun`, `freeze`
 
-This is exactly the kind of chapter-to-chapter implementation difference modders need documented.
+### Chapter 4
 
----
+**Important additions:** church clothing, tower shake, climbing and darkness
+states
 
-## Overworld Battle Support
+### Chapter 5
 
-Even outside formal battle scenes, `obj_mainchara` is connected to overworld combat support through:
+**Important additions:** platforming, dash, wind, climb, cut-down and special
+follower states
 
-- `battleheart`
-- `battlemode`
-- `drawbattlemode`
-- overworld bullet-area objects
+Movement is state-driven. A room gimmick normally sets a player field or
+temporarily delegates movement to a controller; it does not create another
+general-purpose player class. Chapter 5's garden, cliff, and flower-castle rooms
+are the clearest examples.
 
-Related object families grow across chapters:
+## Collision, Depth, and Layers
 
-- Chapter 1: `obj_overworldbulletparent`, `obj_overworldheart`
-- Chapter 2: adds more overworld enemy / bullet-area support
-- Chapter 4: adds darkness, knight-sword, lantern-flame, and more specialized overworld danger objects
+Placed `obj_solidblock` instances provide much of the rectangular collision.
+Specialized parents and room objects add slopes, moving platforms, water,
+climbable geometry, darkness hazards, bullets, and scripted blockers. Visual
+depth is a mixture of instance `depth`, automatic Y-based depth, foreground
+layers, and explicit cutscene commands such as `c_depth` and `c_autodepth`.
+Consequently, moving only a background or tile layer does not move collision.
 
-Overworld combat is attached to the main player controller from Chapter 1 onward and grows with each chapter.
+Room JSON also records view dimensions, follow borders, layer depth, tile
+assets, and instance placement. Treat those values as part of the room, not as
+properties of its background sprite.
 
----
+## Doors and Room Entry
 
-## Interaction / Menu Layer
+Placed door controllers use `doorRoom` and numeric `doorEntrance` fields,
+perform their freeze/fade flow, and let the destination controller place Kris at
+the matching marker. Some inherited Light World doors still use letter-like
+marker values, but Chapter 5 platforming routes use numeric entrances. Chapter 2
+and later can fall back to `obj_markerAny`, then to the room center.
+`global.currentroom` and room history support save repair and return
+transitions.
 
-`obj_mainchara` also anchors:
+A complete Chapter 5 pattern configures the placed `obj_doorAny` or
+`obj_doorAnyHorz` in its room pre-create code:
 
-- interaction button buffering
-- menu opening state
-- door-entry flow
+```gml
+doorRoom = room_dogplatforming;
+doorEntrance = 3;
+doorFadeMusic = 1;
+doorAllowPlatmode = false;
+```
 
-Common state includes:
+The door object performs collision/interact, input freeze, fade, room change,
+and release. The destination must contain entrance 3 or an accepted fallback. Do
+not replace this with a naked `room_goto()`: it bypasses the controller's
+freeze/fade and platform-mode cleanup.
 
-- `onebuffer`
-- `twobuffer`
-- `threebuffer`
-- `global.menuno`
+## Interaction
 
-`obj_mainchara` handles movement, interaction routing, door checks, and menu opening.
+The confirm buffer in `obj_mainchara` finds eligible nearby interactables; room
+and NPC objects then dispatch their own branch. `global.interact` is often the
+selected instance. Typical interactables include doors, save points, chests,
+switches, signs, NPCs, shops, and chapter-specific puzzle controls. An NPC
+branch should gate on a durable flag and populate localized text:
 
----
+```gml
+if (scr_flag_get(1200) == 0) {
+    scr_flag_set(1200, 1);
+    global.msg[0] = stringsetloc("* First visit.%%", "mod_slash_npc_first_0");
+} else {
+    global.msg[0] = stringsetloc("* Welcome back.%%", "mod_slash_npc_repeat_0");
+}
+scr_writetext();
+```
 
-## Modding Reference
+Use a free flag only after checking the chapter's flag consumers. See
+[Dialogue System](dialogue-system.md) for message ownership.
 
-| Goal | Inspect |
-|---|---|
-| Change base player speed | `bwspeed` in `obj_mainchara` Create |
-| Change room-entry placement | `global.entrance` switch in `obj_mainchara`, marker objects |
-| Change overworld battle | `obj_overworldheart`, `obj_overworldbulletparent` |
-| Change follower behavior | `scr_makecaterpillar`, caterpillar alignment offsets |
-| Add sword/climbing state | Extend `swordmode`/`climbmode` branches in `obj_mainchara` Step |
-| Change menu opening | `global.menuno` and interaction buffer state |
-| Change NPC interaction | `scr_interact`, NPC objects in room |
+## Camera
 
----
+Rooms enable a view and establish its dimensions, port, follow borders, and
+optional follow target. The normal camera follows the player; cutscenes can pan
+to coordinates or objects and change pan speed. Cleanup must restore the player
+target and automatic follow. Special modes use dedicated controllers for board,
+climb, platforming, chase, tower, and battle framing.
 
-## Relationship To Other Pages
+## Followers
 
-- [Party Management](party-management.md) explains the caterpillar follower system
-- [Cutscene System](cutscene-system.md) explains how cutscenes drive overworld actors
-- [Board System](board-system.md) explains the grid-based overworld replacement in Ch3
-- [Battle System](battle-system.md) explains how overworld encounters transition to battle
-- [Global Variables](global-variables.md) explains `global.entrance`, `global.darkzone`, `global.interact`
+The caterpillar party is created and reordered by party helpers, while follower
+objects replay stored player positions with per-member spacing. Cutscenes can
+convert actors to party members and back. Chapter 5 sometimes suppresses or
+restages followers around vertical platforming. A room transition must preserve
+the party state or deliberately rebuild it; merely placing Kris is insufficient.
+
+## Encounters and Hazards
+
+Touch encounters generally freeze overworld motion, stage enemies, transfer the
+current party and encounter data into battle, then restore or remove the
+overworld encounter according to the result. Overworld bullet zones instead keep
+Kris in the room and use `obj_overworldheart` plus bullet parents. Chapters 4
+and 5 add darkness, climb, platform, wind, dash, and obstacle controllers whose
+failure path may reposition the player without changing rooms.
+
+## Related Pages
+
+- [Rooms, Events, and Progression](rooms-events-and-progression.md)
+- [Cutscene System](cutscene-system.md)
+- [Party Management](party-management.md)
+- [Battle System](battle-system.md)
+- [Global Variables](global-variables.md)

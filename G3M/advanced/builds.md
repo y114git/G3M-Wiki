@@ -1,6 +1,8 @@
 # Building & Packaging
 
-The current project metadata comes from `pyproject.toml`, `builds/G3MExecutable.spec`, `builds/G3MWindowsInstaller.iss`, and the GitHub workflows in `.github/workflows/`.
+The current project metadata comes from `pyproject.toml`,
+`builds/G3MExecutable.spec`, `builds/G3MWindowsInstaller.iss`, and the GitHub
+workflows in `.github/workflows/`.
 
 ---
 
@@ -23,15 +25,15 @@ The installer is defined by `builds/G3MWindowsInstaller.iss`.
 
 Current values:
 
-| Property | Value |
-| --- | --- |
-| App name | `G3M` |
-| App version | `3.2.0` |
-| Executable name | `G3M.exe` |
-| Default install dir | `{autopf}\G3M` |
-| Minimum Windows build | `17763` |
-| Installer languages | English, Spanish, Russian |
-| Output file name | `G3M_setup_3.2.0` |
+| Property              | Value                     |
+| --------------------- | ------------------------- |
+| App name              | `G3M`                     |
+| App version           | `3.2.0`                   |
+| Executable name       | `G3M.exe`                 |
+| Default install dir   | `{autopf}\G3M`            |
+| Minimum Windows build | `17763`                   |
+| Installer languages   | English, Spanish, Russian |
+| Output file name      | `G3M_setup_3.2.0`         |
 
 The installer also creates optional shortcuts and supports post-install launch.
 
@@ -45,7 +47,9 @@ The `builds/` directory currently contains:
 - `G3MWindowsInstaller.iss`
 - installer bitmap assets
 
-The project also bundles platform-specific helper binaries under `src/assets/bin/`, including G3MTool and xdelta assets used by launcher features.
+The project also bundles platform-specific helper binaries under
+`src/assets/bin/`, including G3MTool and xdelta assets used by launcher
+features.
 
 ---
 
