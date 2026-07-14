@@ -65,6 +65,10 @@ User data lives under the platform-specific G3M root:
 | macOS    | `~/Library/Application Support/G3M` |
 | Linux    | `~/.local/share/G3M`                |
 
+You can change this root in **Settings > App > Advanced**. The selected folder
+is used directly for settings, profiles, mods, versions, plugins, downloads,
+cache, and logs.
+
 Important subpaths in the current code:
 
 - **Windows path:** `%LOCALAPPDATA%\G3M\settings\settings.json`
@@ -75,9 +79,6 @@ Important subpaths in the current code:
 
 - **Windows path:** `%LOCALAPPDATA%\G3M\settings\custom_games.json`
   - **Purpose:** Custom game registry
-
-- **Windows path:** `%LOCALAPPDATA%\G3M\settings\analytics_pending.json`
-  - **Purpose:** Pending analytics batch data
 
 - **Windows path:** `%LOCALAPPDATA%\G3M\profiles\`
   - **Purpose:** Profile folders

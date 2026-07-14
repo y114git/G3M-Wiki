@@ -12,8 +12,8 @@ that appear in the main window.
 3. Use the visible sections for general settings, game settings, appearance,
    library/browser options, downloads, tools, and plugin-provided settings.
 
-Most settings are saved immediately or when the control changes. Shared settings
-are stored on Windows in:
+Most settings are saved immediately or when the control changes. At the default
+Windows data location, shared settings are stored in:
 
 `%LOCALAPPDATA%\G3M\settings\settings.json`
 
@@ -32,8 +32,12 @@ Current shared settings include:
 - hide library tab
 - hide library filters
 - show reset buttons
-- analytics opt-in
 - disable Discord Rich Presence
+- G3M data location under **App > Advanced**
+
+The data-location control accepts any folder and uses it directly. On change,
+G3M can copy the current data or start with the selected folder as-is. The
+change takes effect after restart; the previous folder is not removed.
 
 Available bundled languages are currently:
 
