@@ -38,8 +38,8 @@ The smoothest imports are:
 - supported archives with clear mod structure
 
 Supported conversion paths also exist for some external ecosystems, including
-DELTAMOD, supported Pizza Tower-related flows, and strict FRICKBEARS3 addon
-archives.
+current TOML and legacy JSON DELTAMOD packages, supported Pizza Tower-related
+flows, and strict FRICKBEARS3 addon archives.
 
 ---
 

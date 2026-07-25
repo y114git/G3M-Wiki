@@ -73,7 +73,7 @@ G3M can convert or unpack several external formats during import, including:
 
 - native G3M folders
 - G3MTool patch archives
-- DELTAMOD packages
+- DELTAMOD packages with current TOML or legacy JSON manifests
 - PizzaOven packages
 - AFOM/CYOP tower packages
 
