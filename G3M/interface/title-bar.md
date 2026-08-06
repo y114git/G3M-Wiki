@@ -20,8 +20,8 @@ Right side:
 - maximize or restore
 - close
 
-The `Windows` menu currently exposes the log viewer action. The `Help` menu
-exposes changelog and about actions.
+The `Windows` menu opens the log viewer and Support Packager. The `Help` menu
+opens the changelog, About dialog and first-run tour.
 
 ---
 

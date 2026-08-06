@@ -5,8 +5,8 @@ ships as a Python 3.14+ desktop application built with PyQt6 and focuses on mod
 browsing, library management, patching workflows, profiles, plugins,
 customization, and launch automation.
 
-Current code version: **3.2.0**  
-License: **GPL-3.0**  
+Current code version: **3.3.1**
+License: **GPL-3.0**
 UI framework: **PyQt6 6.7.1**
 
 ## Supported built-in games
@@ -27,10 +27,16 @@ G3M also supports custom single-tab games added through the in-app Game Manager.
   local archives, raw folders, and one-click protocol links.
 - Manages installed mods, profiles, mod versions, game versions, blocklist
   rules, downloads, and plugin state in the local data directory.
+- Includes a first-run tour that opens the relevant screens and points to the
+  controls being explained. You can run it again from **Help**.
 - Applies mods with built-in support for `.g3mpatch`, `.xdelta` / `.vcdiff`,
   `.csx`, raw data files, and extra-file overrides.
+- Sends the original DATA and priority-ordered patch inputs to G3MTool for
+  mixed-format application and merge; G3M handles targets, backups, extra
+  files, progress, and final placement.
 - Provides built-in tools for patch create/apply/merge/info/diff workflows
   through the Modding Tools dialog.
+- Shows recent and featured GameBanana submissions in **Community**.
 - Loads bundled and local plugins, validates API compatibility, and exposes
   plugin hooks, settings views, and main views.
 - Supports theme import/export, external language files, startup sound and

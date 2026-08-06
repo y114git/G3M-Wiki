@@ -108,3 +108,22 @@ Examples:
 
 Raw exception details are still kept in logs, but the installed plugin record
 now tries to present a clearer user-facing reason when the cause is known.
+
+## DELTARUNE Save Manager 1.2.0
+
+The bundled catalog includes DELTARUNE Save Manager 1.2.0 for Chapters 1 through 5.
+The editor reads numbered `filech<chapter>_<slot>` saves and exposes two modes:
+
+- Simple mode groups player state, party members, inventory, equipment,
+  storage, recruits, and named progression flags.
+- Advanced mode exposes every serialized line and can add field labels and flag
+  descriptions.
+
+The parser handles the chapter-specific save layouts, including four character
+records, chapter inventory capacities, 72 storage slots in the later format,
+spells, equipment statistics, and each remaining flag value. It writes the same
+layout back to disk and preserves values outside the simple controls.
+
+The plugin can copy one slot or all three slots across available chapters. Its
+shortcut integration stores the chosen save collection with the shortcut and
+uses the same selection before mod application and after restoration.

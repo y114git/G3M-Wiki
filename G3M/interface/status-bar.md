@@ -6,7 +6,7 @@ The bottom status area is where G3M reports what it is doing right now.
 
 - a status text label
 - a progress indicator for long operations
-- the main action button
+- shortcut, main action and Community buttons
 
 ## What it is used for
 
@@ -29,3 +29,6 @@ The action button changes with context. Depending on state, it can be used to:
 
 This is the main place where G3M exposes the current "do the next important
 thing" action.
+
+**Shortcut** creates a launcher for the selected setup. **Community** opens the
+recent or featured GameBanana feed.

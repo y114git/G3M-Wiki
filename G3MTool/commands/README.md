@@ -2,7 +2,7 @@
 
 - **Command:** [`patch`](patch.md)
   - **Description:** Create, apply, batch-process, validate, or merge
-    `.g3mpatch` files
+    `.g3mpatch`, `.xdelta` / `.vcdiff`, `.csx`, and GameMaker data inputs
 
 - **Command:** [`xpatch`](xpatch.md)
   - **Description:** Create or apply xdelta patches
@@ -22,6 +22,8 @@
   - **Description:** Print the installed G3MTool version
 
 All data-file arguments accept `.win`, `.ios`, `.unx`, and `.droid`.
+`patch create` writes `.g3mpatch` by default; `--xdelta` selects xdelta output.
+`--xdelta` and `--xdelta-fallback` cannot be used together.
 
 Global options are documented in
 [Getting Started](../getting-started.md#global-options). Commands that support

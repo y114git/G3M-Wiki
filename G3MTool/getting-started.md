@@ -24,11 +24,12 @@ Common publish runtimes used by the project:
 
 ```bash
 G3MTool patch create original.win modified.win mod.g3mpatch
+G3MTool patch create original.win script.csx mod.xdelta --xdelta
 G3MTool patch apply original.win mod.g3mpatch patched.win
 G3MTool patch batch apply original.win mod1.g3mpatch mod2.xdelta \
   --out-dir patched
 G3MTool patch batch merge original.win "mod1.g3mpatch,mod2.xdelta" \
-  "mod3.win,mod4.g3mpatch" --apply merged --out merged-patches
+  "mod3.win,mod4.csx" --apply merged --out merged-patches
 G3MTool info data.win
 G3MTool diff original.win modified.win reports
 ```
@@ -38,7 +39,7 @@ G3MTool diff original.win modified.win reports
 Run `G3MTool` without arguments to open the interactive prompt.
 
 ```text
-G3MTool (1.2.0) - by Y114
+G3MTool (1.2.6) - by Y114
 Type 'help' for available commands or 'exit' to quit
 ```
 

@@ -11,7 +11,8 @@ G3M currently works with four main patching styles for game data:
 
 - `g3mpatch` is G3M's native patch format
 - `xdelta` and `vcdiff` are binary patch formats
-- `csx` is a script-based modification flow through G3MTool
+- `csx` runs against the original data through G3MTool; the saved result must
+  reopen as valid GameMaker data before G3MTool uses it
 - raw replacement swaps the whole data file
 
 ## Detection
@@ -21,5 +22,5 @@ archive-style patches, from the presence of `g3mpatch.json`.
 
 ## Recommendation
 
-For sharing and combining mods, patch-based formats are usually more flexible
-than shipping a full raw data file.
+G3M passes every format to G3MTool. Mixed-format merge uses the user-defined
+priority order.

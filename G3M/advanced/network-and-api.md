@@ -10,8 +10,9 @@ working offline. Browser-style features depend on the network.
   available
 - Announcements and polls
 - Update checks
-- Analytics uploads
+- Online presence count and global settings
 - Plugin catalog and plugin downloads
+- Community feeds
 
 ## GameBanana
 
@@ -24,12 +25,12 @@ per hour limit.
 
 ## G3M cloud services
 
-Several G3M-specific features use cloud endpoints through the shared network
-helpers:
+G3M uses cloud endpoints for:
 
 - announcements and poll voting
-- analytics upload
-- startup/global settings fetches
+- online presence and global settings
+
+G3M 3.3.1 does not collect or upload usage analytics.
 
 ## Session and availability
 

@@ -35,6 +35,9 @@ They are much nicer than rebuilding the same loadout by hand every session.
 
 Shortcuts depend on the referenced setup still existing.
 
+A shortcut can store several priority steps, but each step can contain only one
+mod. Use the main window when one step must merge several mods.
+
 If you later:
 
 - remove the mod

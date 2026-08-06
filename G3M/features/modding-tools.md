@@ -69,15 +69,15 @@ Create patch:
 
 1. Set the action to **Create**.
 2. Pick the original DATA file.
-3. Pick the modified DATA file.
-4. Choose an output path ending in `.g3mpatch` or `.xdelta`.
+3. Pick a DATA file, `.g3mpatch`, `.xdelta` / `.vcdiff`, or `.csx` input.
+4. Choose `.g3mpatch` output, or xdelta output when that mode is selected.
 5. Click **Run**.
 
 Apply patch:
 
 1. Set the action to **Apply**.
 2. Pick the original DATA file.
-3. Pick the patch file.
+3. Pick a `.g3mpatch`, `.xdelta` / `.vcdiff`, `.csx`, or DATA input.
 4. Choose where to write the patched DATA output.
 5. Click **Run**.
 
@@ -104,11 +104,12 @@ file yourself.
 
 ## Merge
 
-Use **Merge** when you have multiple patch files that should be combined against
-the same original DATA file.
+Use **Merge** when multiple patch inputs should be combined against the same
+original DATA file. One merge can mix `.g3mpatch`, `.xdelta` / `.vcdiff`,
+`.csx`, and ready DATA files.
 
 1. Pick the original DATA file.
-2. Add two or more patch files.
+2. Add two or more inputs in low-to-high priority order.
 3. Choose the output DATA file.
 4. Optionally choose a `.g3mpatch` output if you want to keep the merged patch
    package too.
@@ -126,8 +127,10 @@ Merge options apply to every set in the batch:
 - **Report** writes merge report files when supported.
 - **Continue on error** keeps later sets running if one set fails.
 
-If two patches change the same content, the result depends on what the
-underlying merge can safely combine.
+G3M passes the original DATA and ordered inputs to G3MTool. Each input is
+derived from that original before the changes are merged. If inputs change the
+same content, the later input has higher priority where a safe merge is
+possible.
 
 ## Info
 
@@ -181,7 +184,7 @@ G3MTool cache files, when used by these workflows, are stored under:
 
 `%LOCALAPPDATA%\G3M\cache\G3MTool\`
 
-Bundled G3MTool 1.2.0 also supports CLI batch operations:
+Bundled G3MTool 1.2.6 also supports CLI batch operations:
 
 - `patch batch apply` for applying many patches independently to the same
   original

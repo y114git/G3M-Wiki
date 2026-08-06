@@ -173,10 +173,9 @@ the file to someone else, who can import it in their G3M. See
 
 ### Does G3M collect personal data?
 
-No. G3M has a two-tier anonymous analytics system. A small set of always-on
-events (app launch, mod installs, game launches) is always collected with no
-personal information. An additional opt-in tier collects more detail and is
-**disabled by default**. See [Analytics](analytics.md).
+G3M 3.3.1 does not collect or upload usage analytics. Online requests are still
+used for updates, announcements, the online count, GameBanana and other
+features that need a network connection.
 
 ### Are one-click install links safe?
 

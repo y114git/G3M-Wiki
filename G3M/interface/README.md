@@ -5,11 +5,14 @@ below, you can find almost everything quickly.
 
 ---
 
-## The Three Main Tabs
+## Main views
 
 - **Mods Browser**: find mods online
 - **Library**: manage what you already installed
 - **Settings**: change app, game, theme, and plugin behavior
+
+The bottom **Community** button opens a separate GameBanana feed for recent and
+featured submissions.
 
 Most people spend almost all of their time switching between Browser, Library,
 and the launch controls in the bottom area.

@@ -1,11 +1,28 @@
 # Multiple Mods
 
-G3M lets you stack more than one mod for the same game slot or chapter.
+G3M can merge compatible mods and run dependent mods in separate steps.
 
-## How order works
+## Priority inside a step
 
-The selected mods are applied in order. Later mods can override files or changes
-from earlier ones.
+Mods in the same step use the same starting DATA file. G3MTool merges their
+changes, and the mod with the higher priority wins when two changes cannot be
+combined.
+
+## Steps
+
+Steps run from top to bottom. The result of one step becomes the starting DATA
+for the next.
+
+Use another step when:
+
+- an addon expects the main mod to be applied first
+- a version patch must run before the mod that needs that version
+- two patches must run in sequence instead of being merged against the same
+  original file
+
+If a later patch does not accept the result of an earlier step, launch stops
+with the patch error. G3M does not guess another order or skip the required
+step.
 
 ## What affects compatibility
 
@@ -19,6 +36,5 @@ changes.
 
 ## Shortcut limitation
 
-Desktop shortcuts are stricter than the full app flow. The shortcut system does
-not support every multi-mod setup, so complex stacks are better launched from
-the main G3M window.
+Desktop shortcuts support multiple steps, but each shortcut step can contain
+only one mod. Use the main G3M window when a step must merge several mods.

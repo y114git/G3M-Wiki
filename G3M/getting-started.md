@@ -33,11 +33,18 @@ Useful extras from `pyproject.toml`:
 
 - G3M enforces a **single running instance** using the key
   `g3m.single-instance-lock`.
+- A first-run tour opens the relevant tabs and settings while pointing to the
+  controls it describes. Finishing or skipping it records the tour as
+  completed.
 - It accepts both `g3m://` and legacy `deltahub://` protocol links.
 - On first startup it can migrate user data from the legacy **DELTAHUB** folder
   into the current **G3M** data directory.
 - It attempts automatic game-path detection only for built-in games that have
   autodetection support in the current codebase.
+
+Open **Help > Run Onboarding** to repeat the tour. It covers game paths, the
+Mods Browser, Library, profiles, Priority & Steps, Diagnostics, Modding Tools,
+downloads, shortcuts and Game Versions.
 
 ## Built-in games
 

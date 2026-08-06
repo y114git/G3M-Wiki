@@ -97,11 +97,17 @@ modding.
 
 The Library header also exposes a **Diagnostics** button.
 
-That dialog builds a read-only report for the current game or chapter scope and
-helps you inspect:
+The initial view reads the installed mod files and helps you inspect:
 
 - file conflicts between selected mods
 - target paths for extra-file overrides
 - DATA patch types
 - `.g3mpatch` resource summaries and previews
 - obvious missing-file issues before launch
+
+Use **Analyze Launch** for a deeper check. It runs the selected priority steps
+on a temporary copy, then reports the files and resources that would change.
+The original game folder remains untouched. Reports can be exported as JSON or
+HTML.
+
+See [Launch Diagnostics](../features/diagnostics.md) for the full workflow.

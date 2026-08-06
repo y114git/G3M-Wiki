@@ -39,7 +39,7 @@ when checking the remote launcher file list.
 
 When an update is found, a dialog appears with:
 
-- **Current version** — Your installed version (currently `3.2.0` on this
+- **Current version:** Your installed version (currently `3.3.1` on this
   codebase).
 - **New version** — The available version.
 - **Release notes** — The changelog/notes provided by the cloud settings
@@ -74,18 +74,6 @@ When an update is found, a dialog appears with:
 1. G3M downloads the new release archive.
 2. Extracts it alongside the current installation.
 3. Restarts.
-
----
-
-## Update Analytics
-
-If analytics opt-in is enabled, the outcome of each update check is recorded:
-
-- **up_to_date** — No update available.
-- **update_available** — A newer version exists.
-- **update_installed** — The user installed the update.
-- **update_skipped** — The user dismissed the update.
-- **check_failed** — The update check failed (network error, etc.).
 
 ---
 

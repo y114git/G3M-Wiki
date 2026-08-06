@@ -95,8 +95,12 @@ Custom games use the configured `data_file_name` as the preferred match.
 
 ## Process Names
 
-Process monitoring uses the names declared by each game definition. The built-in
-set currently includes:
+Process monitoring starts with the names declared by each game definition and
+tracks the matching processes created after launch. It also follows known
+launcher relationships so Steam, Wine and PortProton do not leave G3M waiting
+after the game has closed.
+
+The built-in set currently includes:
 
 - `DELTARUNE.exe`
 - `DELTARUNE`

@@ -62,7 +62,7 @@ folder selected in settings.
   - **Purpose:** Custom games plus order and visibility
 
 - `<data-root>/settings/session.lock`
-  - **Purpose:** Session recovery data after launch-time patching
+  - **Purpose:** Active launch backup map and deployed-file fingerprints
 
 - `<data-root>/downloads/downloads_history.json`
   - **Purpose:** Download history
@@ -103,4 +103,6 @@ The exact extension depends on the file you selected.
 
 - Launch-time patch backups use `<data-root>/patching_backups/`.
 - Crash recovery uses `<data-root>/settings/session.lock`.
+- Sessions with external file changes move under
+  `<data-root>/patching_backups/recovery_conflicts/` for manual inspection.
 - Download and import operations may also create temporary files while they run.

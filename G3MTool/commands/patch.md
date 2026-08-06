@@ -5,17 +5,17 @@ Create, apply, batch-process, validate, or merge `.g3mpatch` files.
 ## patch create
 
 ```bash
-G3MTool patch create <original> <modified> [output] \
-  [--xdelta-fallback] [--cache <dir>] [--xdelta-path <path>]
+G3MTool patch create <original> <input> [output] \
+  [--xdelta] [--xdelta-fallback] [--cache <dir>] [--xdelta-path <path>]
 ```
 
 - **Argument:** `original`
   - **Required:** Yes
   - **Description:** Original data file (`.win`, `.ios`, `.unx`, `.droid`)
 
-- **Argument:** `modified`
+- **Argument:** `input`
   - **Required:** Yes
-  - **Description:** Modified data file or `.xdelta` patch
+  - **Description:** `.g3mpatch`, `.xdelta`, `.vcdiff`, `.csx`, or data file
 
 - **Argument:** `output`
   - **Required:** No
@@ -26,12 +26,17 @@ G3MTool patch create <original> <modified> [output] \
   - **Description:** Store an embedded xdelta fallback built from `original` and
     the modified result
 
+- **Option:** `--xdelta`
+  - **Description:** Create `.xdelta` instead of `.g3mpatch`
+
+`--xdelta` and `--xdelta-fallback` are mutually exclusive.
+
 - **Option:** `--cache <dir>`
   - **Description:** Read and write `.g3mcache` analysis files for reusable
     data-file analysis
 
-If `modified` is `.xdelta`, G3MTool applies it to `original` first and creates
-the `.g3mpatch` from that temporary result.
+G3MTool materializes the input against `original` and validates the resulting
+data before creating the output.
 
 ## patch apply
 
@@ -46,7 +51,7 @@ G3MTool patch apply <data> <patch> [output] \
 
 - **Argument:** `patch`
   - **Required:** Yes
-  - **Description:** `.g3mpatch`, `.xdelta`, or another data file
+  - **Description:** `.g3mpatch`, `.xdelta`, `.vcdiff`, `.csx`, or data file
 
 - **Argument:** `output`
   - **Required:** No
@@ -66,7 +71,8 @@ Input behavior:
 | Input       | Behavior                                             |
 | ----------- | ---------------------------------------------------- |
 | `.g3mpatch` | Apply resource-level changes                         |
-| `.xdelta`   | Apply xdelta directly                                |
+| `.xdelta`, `.vcdiff` | Apply the binary patch                    |
+| `.csx`      | Run against `data`, save, reopen, and validate        |
 | data file   | Convert it to `.g3mpatch` against `data`, then apply |
 
 Default `.g3mpatch` apply tries the normal G3MTool flow first. If that fails and
@@ -113,7 +119,8 @@ G3MTool patch merge <original> <patch1> <patch2> [patch3 ...] \
 Accepted merge inputs:
 
 - `.g3mpatch`
-- `.xdelta`
+- `.xdelta` and `.vcdiff`
+- `.csx`
 - data files (`.win`, `.ios`, `.unx`, `.droid`)
 
 - **Option:** `--apply <path>`
@@ -188,11 +195,11 @@ matches the original extension.
 
 ```bash
 G3MTool patch batch create <original> <modified...> --out-dir <dir> \
-  [--cache <dir>] [--continue-on-error] [--xdelta-fallback]
+  [--xdelta] [--cache <dir>] [--continue-on-error] [--xdelta-fallback]
 ```
 
-Creates one `.g3mpatch` for each modified input. Inputs can be modified data
-files or `.xdelta` patches.
+Creates one `.g3mpatch` for each supported input. Add `--xdelta` to create
+xdelta outputs instead.
 
 Example:
 

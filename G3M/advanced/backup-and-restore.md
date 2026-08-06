@@ -1,48 +1,39 @@
-# Backup & Restore
+# Backup and Restore
 
-Backup and restore is the reason G3M can behave like a launcher session instead
-of a one-way patcher.
+G3M backs up each file that a modded launch will replace and records files that
+the launch adds. It stores the backup under `<data-root>/patching_backups/` and
+writes the active session to `<data-root>/settings/session.lock`.
 
----
+After patching finishes, G3M records the size and SHA-256 hash of every deployed
+file. Directory entries use a hash built from each relative file path and its
+contents. G3M starts the game only after it saves these fingerprints.
 
-## The Core Promise
+## Normal exit
 
-When you launch with mods, G3M is supposed to:
+After the game exits, G3M compares the deployed files with their saved
+fingerprints. A match lets G3M restore replaced files and remove files that the
+mod added. G3M writes restored files through a temporary file and `os.replace`
+so another process cannot observe a partial copy.
 
-1. remember the original state
-2. apply the modded state
-3. let you play
-4. put things back afterward
+G3M refuses restoration if any tracked path changed after launch. This protects
+edits made by the game, the user, Steam, another mod tool, or an updater. The
+status bar reports that external changes prevented restoration.
 
-That is the safety model behind normal modded launching.
+## Crash recovery
 
----
+G3M checks `session.lock` during the next startup. It restores the previous
+session only when all tracked paths still match the deployed fingerprints.
 
-## What This Protects
+If a tracked path changed, G3M keeps the backup and session record under
+`<data-root>/patching_backups/recovery_conflicts/` and removes the active lock.
+It does not overwrite the changed game files. The archived session remains
+available for manual inspection.
 
-The important targets are the files G3M changes during patching, including main
-game data and other files a mod may overwrite or add.
+Old manifests without deployed fingerprints retain the legacy restore behavior.
+An empty manifest has no work to perform, so G3M removes its backup directory and
+lock.
 
-So if you are worried that "launching with mods" permanently rewrites your
-install, this is the system that exists to prevent that.
+## Game Versions
 
----
-
-## Crash Recovery
-
-G3M also keeps session state for interrupted modded runs.
-
-That means if the launcher or machine goes down at the wrong time, the next
-startup can still try to restore the previous session instead of leaving the
-game in a half-modded state.
-
----
-
-## Not the Same as Game Versions
-
-Do not mix up these two features:
-
-- **Backup & Restore**: temporary protection around a modded launch session
-- **Game Versions**: user-managed saved snapshots you keep on purpose
-
-They solve different problems.
+Backup and Restore protects one launch session. Game Versions stores snapshots
+that you create and restore from the Game Versions dialog.

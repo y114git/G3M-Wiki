@@ -26,6 +26,26 @@ Archive-style G3M patches may also be plain `.zip` files that contain
 - `theme_config.json` for theme packages
 - legacy `theme.json` is still recognized during theme import
 
+### Extra-file status
+
+An installed extra file keeps the compact string form:
+
+```json
+"extra_files": ["runtime/config.json"]
+```
+
+A dependency-only entry uses an object so scripts can read it inside the mod
+folder without deploying it:
+
+```json
+"extra_files": [
+  {"file_path": "scripts/", "status": "dependency"}
+]
+```
+
+Readers preserve unknown status strings for format compatibility. Runtime
+deployment selects entries whose status is `install`.
+
 ## Settings and state files
 
 - `%LOCALAPPDATA%\G3M\settings\settings.json`

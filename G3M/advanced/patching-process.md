@@ -29,8 +29,9 @@ Extra files from mods are copied separately from the main data patching step.
 
 ## Multiple mods
 
-If more than one mod is selected for the same slot, G3M applies them in order.
-Later mods can override earlier ones.
+If more than one mod is selected for the same slot, G3M passes the original
+data file and the ordered raw inputs to `G3MTool patch merge`. G3MTool derives
+each input from the same original and merges them from low to high priority.
 
 The **Merge Properties** and **Merge Code** settings also affect how some
 overlapping changes are combined.
@@ -39,14 +40,21 @@ overlapping changes are combined.
 
 - Backups are stored before patching starts.
 - If patching fails, G3M attempts to restore the original files immediately.
-- If the app crashes during a session, recovery data in
-  `%LOCALAPPDATA%\G3M\settings\session.lock` is used on the next start.
+- After deployment, G3M stores SHA-256 fingerprints in
+  `%LOCALAPPDATA%\G3M\settings\session.lock`.
+- After a crash, G3M restores the previous session only if every tracked path
+  still matches its deployed fingerprint.
+- If another process changed a tracked path, G3M archives the recovery data and
+  leaves the changed game files in place.
 - Backup work also uses `%LOCALAPPDATA%\G3M\patching_backups\`.
+
+See [Backup and Restore](backup-and-restore.md) for the recovery rules.
 
 ## G3MTool
 
-Patch creation, patch apply, diff-style operations, and script execution are
-delegated to the bundled `G3MTool` binaries through the G3M adapter layer.
+G3M delegates patch input interpretation, apply, create, batch, and merge to
+the bundled G3MTool. G3M keeps backups, target discovery, extra-file copying,
+progress display, and final file placement.
 
 The bundled G3MTool also supports batch CLI workflows for advanced users.
 `patch batch apply` and `patch batch create` run repeated jobs against one

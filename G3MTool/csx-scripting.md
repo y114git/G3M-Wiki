@@ -4,8 +4,23 @@ G3MTool can execute `.csx` C# scripts against a loaded GameMaker data file.
 Scripts are compiled and run at runtime through the Roslyn scripting engine and
 receive a `ScriptGlobals` instance as their global context.
 
-Scripts are used by [`execute`](commands/execute.md). G3MTool also embeds import
-and export scripts for UndertaleModTool-style workflows.
+Scripts are used by [`execute`](commands/execute.md) and can be supplied directly
+to `patch create`, `patch apply`, `patch merge`, and their batch variants.
+G3MTool also embeds import and export scripts for UndertaleModTool-style
+workflows.
+
+## Using a script as a patch input
+
+```bash
+G3MTool patch apply original.win mod.csx patched.win
+G3MTool patch create original.win mod.csx mod.g3mpatch
+G3MTool patch merge original.win base.xdelta mod.csx --apply merged.win
+```
+
+For patch commands, G3MTool loads the current DATA into the script globals,
+runs the script, saves its result to a temporary DATA file, and verifies that
+the file can be reopened before continuing. A script failure or invalid saved
+DATA stops the operation with an error.
 
 ## Running a script
 
@@ -57,6 +72,10 @@ Current behavior:
   - **Type:** `bool`
   - **Description:** Mirrors G3MTool verbose mode
 
+- **Member:** `ExePath`
+  - **Type:** `string`
+  - **Description:** Directory that contains the current script
+
 ### Validation and messaging
 
 - **Method:** `EnsureDataLoaded()`
@@ -67,6 +86,22 @@ Current behavior:
 
 - **Method:** `ScriptMessage(string message)`
   - **Description:** Writes a script log message
+
+- **Method:** `ScriptWarning(string message)`
+  - **Description:** Writes a script warning
+
+- **Method:** `RunUMTScript(string path)`
+  - **Description:** Runs another CSX file with the same loaded DATA and globals
+
+## Relative scripts and resources
+
+G3MTool resolves `#load`, metadata references, and `RunUMTScript()` paths from
+the script directory. Nested scripts can call other scripts under the main
+script's directory tree. G3MTool rejects a nested path that escapes that tree.
+
+Keep helper scripts and resource folders beside the entry script. In a G3M mod,
+mark those folders as dependency-only extra entries so G3M keeps them in the mod
+folder without copying them into the game.
 
 - **Method:** `ScriptQuestion(string message)`
   - **Description:** Logs the question and returns `true`

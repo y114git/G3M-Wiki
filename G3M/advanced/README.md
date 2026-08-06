@@ -20,7 +20,6 @@ network features do, and what to do when something goes wrong.
 ## More Technical Topics
 
 - [Localization](localization.md)
-- [Analytics](analytics.md)
 - [Network & API](network-and-api.md)
 - [Building & Packaging](builds.md)
 - [Architecture](architecture.md)

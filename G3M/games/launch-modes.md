@@ -78,8 +78,19 @@ basic idea that selected mods are applied before the game begins.
 
 ## Mod Order Still Matters
 
-When you selected multiple mods for the same target, G3M applies them in
-sequence. That means later mods can override changes from earlier ones.
+Open **Priority & Steps** when selected mods need a specific order. Mods inside
+one step are merged against the same starting DATA file. The next step starts
+from the previous step's result.
 
 If two mods touch the same thing and the result looks wrong, order is one of the
 first things to check.
+
+## After the game exits
+
+G3M tracks the launched process and related launcher processes on Windows,
+macOS and Linux. Steam, Wine and PortProton launches use the same
+patch-and-restore flow.
+
+The window becomes available after G3M confirms that the game has stopped.
+File restoration can finish in the background, but another launch remains
+blocked until cleanup completes.

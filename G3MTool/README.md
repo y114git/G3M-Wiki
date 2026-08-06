@@ -3,9 +3,9 @@
 G3MTool is the command-line tool and reference implementation for the
 `.g3mpatch` format. It works with GameMaker data files, creates and applies
 `.g3mpatch` patches, runs batch patch jobs, merges patches, compares files,
-prints metadata, runs `.csx` scripts, and exposes direct xdelta helpers.
+prints metadata, runs `.csx` scripts, and creates or applies xdelta patches.
 
-Current code version: **1.2.0**
+Current code version: **1.2.6**
 
 ## Supported data-file extensions
 
@@ -73,3 +73,6 @@ Batch apply and batch create require `--out-dir` and write generated files into
 that directory. Batch merge writes patched data files to the current directory
 by default, can redirect them with `--apply`, and can additionally keep merged
 `.g3mpatch` files with `--out`.
+
+`patch create` writes `.g3mpatch` by default. Add `--xdelta` to write an xdelta
+patch. `--xdelta` and `--xdelta-fallback` cannot be used together.

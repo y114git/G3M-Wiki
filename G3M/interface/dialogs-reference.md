@@ -23,8 +23,23 @@ window.
 
 - **Dialog:** Mod Diagnostics
   - **Where it is usually opened:** Library header button
-  - **What it is for:** Preview file conflicts, patch targets, and `.g3mpatch`
-    resource changes before launch
+  - **What it is for:** Inspect installed mod files or run the launch patching
+    process on a temporary copy, then export the result as JSON or HTML
+
+- **Dialog:** Support Packager
+  - **Where it is usually opened:** **Windows > Support Packager**
+  - **What it is for:** Build a local ZIP with selected diagnostics, logs,
+    file trees, patch manifests, and mod data
+
+- **Dialog:** Community
+  - **Where it is usually opened:** Community button in the status bar
+  - **What it is for:** Browse recent or featured GameBanana submissions for
+    one configured game or all configured games
+
+- **Dialog:** Priority & Steps
+  - **Where it is usually opened:** Library header button
+  - **What it is for:** Set conflict priority and split dependent mods into
+    ordered launch steps
 
 - **Dialog:** Profile Manager
   - **Where it is usually opened:** Profile selector controls
