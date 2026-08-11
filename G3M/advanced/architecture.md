@@ -49,7 +49,7 @@ Current key values from `src/config/config.py`:
 | Constant              | Value             |
 | --------------------- | ----------------- |
 | `APP_DISPLAY_NAME`    | `G3M`             |
-| `APP_VERSION`         | `3.3.1`           |
+| `APP_VERSION`         | `3.3.2`           |
 | `PRIMARY_URL_SCHEME`  | `g3m`             |
 | `LEGACY_URL_SCHEME`   | `deltahub`        |
 | `PLUGIN_API_VERSION`  | `1.1.0`           |

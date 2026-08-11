@@ -143,6 +143,10 @@ Accepted merge inputs:
   - **Alias:** `-r`
   - **Description:** Write a Markdown merge report
 
+- **Option:** `--sequential`
+  - **Description:** Use low-memory merge pipeline. It does not support `--code`
+    or `--properties`.
+
 - **Option:** `--cache <dir>`
   - **Alias:** —
   - **Description:** Reuse `.g3mcache` analysis while converting `.xdelta` or
@@ -151,6 +155,10 @@ Accepted merge inputs:
 If `--apply` is omitted, G3MTool writes the merged data file to the current
 directory as `<original>_merged<ext>`. Add `--out` when you also want to keep
 the intermediate merged `.g3mpatch`.
+
+Normal merges use faster pipeline. On out-of-memory failure, G3MTool retries
+with low-memory pipeline when its options allow it. Both pipelines keep required
+`audiogroup*.dat` files beside temporary and final DATA files.
 
 ## patch batch
 

@@ -1,58 +1,29 @@
 # G3MTool
 
-G3MTool is the command-line tool and reference implementation for the
-`.g3mpatch` format. It works with GameMaker data files, creates and applies
-`.g3mpatch` patches, runs batch patch jobs, merges patches, compares files,
-prints metadata, runs `.csx` scripts, and creates or applies xdelta patches.
+G3MTool is command-line reference implementation for `.g3mpatch`. It works
+with GameMaker DATA files and supports patch creation, application, merging,
+inspection, diff reports, `.csx`, and xdelta.
 
-Current code version: **1.2.6**
+Version: 1.2.7
 
-## Supported data-file extensions
-
-- `.win`
-- `.ios`
-- `.droid`
-- `.unx`
+Supported DATA extensions: `.win`, `.ios`, `.droid`, and `.unx`.
 
 ## Commands
 
-- **Command:** [`patch`](commands/patch.md)
-  - **Purpose:** Create, apply, batch-process, validate, or merge `.g3mpatch`
-    files
-
-- **Command:** [`xpatch`](commands/xpatch.md)
-  - **Purpose:** Create or apply binary xdelta patches
-
-- **Command:** [`execute`](commands/execute.md)
-  - **Purpose:** Run a `.csx` script, `xdelta`, or an external program
-
-- **Command:** [`info`](commands/info.md)
-  - **Purpose:** Show metadata for a data file or `.g3mpatch`
-
-- **Command:** [`diff`](commands/diff.md)
-  - **Purpose:** Compare data files or `.g3mpatch` files and write a Markdown
-    report
-
-- **Command:** [`--version`](commands/version.md)
-  - **Purpose:** Print the tool version
+- [`patch`](commands/patch.md): create, apply, validate, merge, and batch jobs.
+- [`xpatch`](commands/xpatch.md): create or apply xdelta patches.
+- [`execute`](commands/execute.md): run `.csx`, xdelta, or another program.
+- [`info`](commands/info.md): inspect a DATA file or `.g3mpatch`.
+- [`diff`](commands/diff.md): write a comparison report.
+- [`--version`](commands/version.md): print version.
 
 ## Global options
 
-- **Option:** `-v`, `--verbose`
-  - **Meaning:** Enable verbose output
-
-- **Option:** `-l`, `--log <path>`
-  - **Meaning:** Enable file logging; use `--log default` to write
-    `logs/{command}_{timestamp}.log` next to the executable
-
-- **Option:** `--json`
-  - **Meaning:** Output machine-readable JSON for supported commands
-
-- **Option:** `--xdelta-path <path>`
-  - **Meaning:** Use a specific xdelta executable instead of the bundled binary
-
-- **Option:** `--version`, `-V`
-  - **Meaning:** Print the version and exit
+- `-v`, `--verbose`: verbose output.
+- `-l`, `--log <path>`: write a log. `--log default` writes beside executable.
+- `--json`: JSON output for supported commands.
+- `--xdelta-path <path>`: use an xdelta executable at `path`.
+- `--version`, `-V`: print version and exit.
 
 ## Runtime behavior
 

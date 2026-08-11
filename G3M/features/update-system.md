@@ -39,7 +39,7 @@ when checking the remote launcher file list.
 
 When an update is found, a dialog appears with:
 
-- **Current version:** Your installed version (currently `3.3.1` on this
+- **Current version:** Your installed version (currently `3.3.2` on this
   codebase).
 - **New version** — The available version.
 - **Release notes** — The changelog/notes provided by the cloud settings

@@ -1,8 +1,7 @@
 # G3M Patch Format
 
-`.g3mpatch` is G3MTool's patch format. It stores a manifest plus exported
-resource payloads and helper data needed for apply and merge workflows. Optional
-xdelta fallback data can also be embedded.
+`.g3mpatch` stores a manifest, changed resource payloads, and apply metadata.
+It can also contain an xdelta fallback.
 
 G3MTool is the reference implementation for this format.
 
@@ -20,7 +19,7 @@ The current manifest model includes these top-level fields:
 | `statistics` | Resource and file counts                    |
 | `applyPlan`  | Apply hints used by G3MTool                 |
 
-The current example tool version in this repository is `1.2.6`.
+The example tool version in this repository is `1.2.7`.
 
 ## Data-file metadata
 
@@ -75,6 +74,10 @@ Each resource type can contain:
 
 Each changed or new resource entry stores its resource name plus a `files` map
 of logical file names to paths inside the archive.
+
+Patch creation omits unchanged code and asset-order metadata when index-aware
+apply does not need them. Patches retain full metadata when a change, duplicate
+name, or resource type needs it.
 
 ## Statistics
 

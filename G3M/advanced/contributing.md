@@ -1,6 +1,6 @@
 # Contributing
 
-This page is for people working on G3M itself rather than just using it.
+This page covers work on G3M itself.
 
 ## Current stack
 

@@ -1,7 +1,6 @@
 # Creating Mods
 
-If you are making a mod for G3M, the most important choice is not "which button
-do I press", but "what kind of payload am I shipping".
+If you are making a mod for G3M, choose the format before deciding how to import it.
 
 ---
 
@@ -66,5 +65,4 @@ At minimum, verify:
 - restore-after-exit still works
 - the description, name, version, and tags make sense to someone else
 
-The most useful mod is not just the one that works for you, but the one another
-person can understand and install without guessing.
+Write a mod that another person can understand and install without guessing.

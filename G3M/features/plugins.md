@@ -42,9 +42,9 @@ The manifest points to the plugin entry file and describes things such as:
 - plugin-specific files created by a plugin usually live inside that plugin's
   own folder unless the plugin documents another location
 
-## Important safety note
+## Safety
 
-Plugins are powerful and not sandboxed. Only enable plugins you trust.
+Plugins are not sandboxed. Enable only plugins you trust.
 
 ## Install a plugin
 

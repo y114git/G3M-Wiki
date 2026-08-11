@@ -16,7 +16,7 @@ so trust still matters.
 - restore logic tries to return files after the session
 - settings corruption handling exists for broken config files
 
-## Important limitation
+## Limitation
 
 Plugins are not sandboxed. A plugin runs with the same general local permissions
 as the app process.

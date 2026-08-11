@@ -28,7 +28,7 @@ Most customization lives in the user data folder:
   stable names
 - imported theme packages reapply those settings and files together
 
-That means your look is tied to the G3M data folder, not just to the executable.
+G3M stores theme settings in its data directory.
 
 ---
 

@@ -96,4 +96,4 @@ That file includes:
 - visibility
 - custom game definitions
 
-Changes are meant to take effect across the app, not just inside the dialog.
+Changes affect the whole app.

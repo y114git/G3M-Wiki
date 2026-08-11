@@ -20,7 +20,7 @@ A text search that matches against multiple fields simultaneously:
 - Updated date (formatted as text)
 
 The search is **case-insensitive**. Multiple space-separated terms must all
-match (AND logic) — each term can match in a different field. For example, "dark
+match (AND logic). Each term can match in a different field. For example, "dark
 chapter 2" matches a mod named "Dark World" with description mentioning "chapter
 2".
 
@@ -76,8 +76,8 @@ current profile.
 ### Blocklist Filter
 
 Mods matching any blocklist rule (by ID, name, or category) for the current game
-or globally are excluded from results. This happens transparently — blocked mods
-simply don't appear. See [Blocklist Manager](../features/blocklist.md).
+or globally are excluded from results. Blocked mods do not appear. See
+[Blocklist Manager](../features/blocklist.md).
 
 ### Installation Status Filter
 
@@ -168,4 +168,4 @@ persisted** across sessions. They reset to defaults when G3M starts:
 - Sort: Relevant / descending
 - NSFW: hidden
 
-The game selector does persist — G3M remembers the last selected game.
+G3M remembers the last selected game.

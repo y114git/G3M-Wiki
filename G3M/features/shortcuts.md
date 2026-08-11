@@ -1,7 +1,6 @@
 # Desktop Shortcuts
 
-Desktop shortcuts are for the moment when you already know the setup you want
-and do not want to reopen the full launcher every time.
+Desktop shortcuts launch a saved setup without reopening the full launcher.
 
 ---
 
@@ -14,8 +13,7 @@ A shortcut is a small launcher file that remembers:
 - which launch options matter for that run
 - which mod setup should be applied
 
-So instead of recreating the same setup in the UI every time, you can jump
-straight into it.
+They avoid recreating the same setup in the UI.
 
 ---
 
@@ -27,11 +25,11 @@ Shortcuts are most useful for:
 - a dedicated testing setup
 - keeping separate launch icons for separate profiles or games
 
-They are much nicer than rebuilding the same loadout by hand every session.
+They avoid rebuilding the same loadout for every session.
 
 ---
 
-## Important Limitation
+## Limitation
 
 Shortcuts depend on the referenced setup still existing.
 
@@ -50,6 +48,5 @@ then the shortcut may stop working correctly and should be recreated.
 
 ## Troubleshooting Tip
 
-If a shortcut launch fails, check the shortcut-specific log in the G3M logs area
-first. Shortcut launches are meant to work as a more direct runner flow, so that
-log is usually the fastest way to see what went wrong.
+If a shortcut launch fails, check the shortcut-specific log in the G3M logs
+area first.

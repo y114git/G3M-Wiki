@@ -1,23 +1,21 @@
 # Patching Process
 
-When you launch a game with mods, G3M temporarily changes the target files,
-starts the game, and restores the originals when the session ends.
+G3M applies mod files for the launch session, then restores backups after the
+game exits.
 
 ## Normal flow
 
 The current launch pipeline is:
 
-1. Validate the selected game path and the chosen mods.
-2. Back up files that may be changed.
-3. Apply the selected mod data in order.
-4. Copy any extra files the mods ship.
-5. Launch the game.
-6. Watch the running process.
-7. Restore the original files after the game closes.
+1. Check the game path and selected mods.
+2. Back up files G3M may replace.
+3. Apply DATA inputs in priority order and copy Extra files.
+4. Start the game and monitor its process.
+5. Restore files after exit.
 
 ## Patch types G3M can apply
 
-G3M currently recognizes these main data formats:
+G3M accepts these DATA inputs:
 
 - `.g3mpatch`
 - `.xdelta`
@@ -29,9 +27,8 @@ Extra files from mods are copied separately from the main data patching step.
 
 ## Multiple mods
 
-If more than one mod is selected for the same slot, G3M passes the original
-data file and the ordered raw inputs to `G3MTool patch merge`. G3MTool derives
-each input from the same original and merges them from low to high priority.
+For one target with several DATA mods, G3M calls `G3MTool patch merge`. Each
+input starts from the same original file. Order runs from low to high priority.
 
 The **Merge Properties** and **Merge Code** settings also affect how some
 overlapping changes are combined.
@@ -44,17 +41,16 @@ overlapping changes are combined.
   `%LOCALAPPDATA%\G3M\settings\session.lock`.
 - After a crash, G3M restores the previous session only if every tracked path
   still matches its deployed fingerprint.
-- If another process changed a tracked path, G3M archives the recovery data and
-  leaves the changed game files in place.
+- If another process changed a tracked path, G3M archives recovery data and
+  leaves that path unchanged.
 - Backup work also uses `%LOCALAPPDATA%\G3M\patching_backups\`.
 
 See [Backup and Restore](backup-and-restore.md) for the recovery rules.
 
 ## G3MTool
 
-G3M delegates patch input interpretation, apply, create, batch, and merge to
-the bundled G3MTool. G3M keeps backups, target discovery, extra-file copying,
-progress display, and final file placement.
+G3MTool interprets inputs and creates, applies, or merges DATA patches. G3M
+handles targets, backups, Extra files, progress, and final placement.
 
 The bundled G3MTool also supports batch CLI workflows for advanced users.
 `patch batch apply` and `patch batch create` run repeated jobs against one

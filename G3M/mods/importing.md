@@ -1,78 +1,26 @@
 # Importing Mods
 
-Importing is how a file becomes a usable Library mod.
+Import adds a mod to Library.
 
----
+## Sources
 
-## The Usual Ways
+Import from Mods Browser, a local file or folder, a URL, or drag and drop. All
+sources use the same import pipeline.
 
-Most imports happen through one of these:
+G3M recognizes native G3M mods, `.g3mpatch`, raw DATA files, supported patch
+files, and supported archives. It also converts current TOML and legacy JSON
+DELTAMOD packages when their paths stay inside the package.
 
-- download from the Mods Browser
-- choose a local file from disk
-- drag and drop a file, folder, or URL onto G3M
+For a converted DELTAMOD mod, G3M keeps script dependencies in the mod folder.
+It does not copy dependency-only files into the game installation. A CSX DATA
+entry can therefore use relative `#load` imports and resource paths.
 
-All three paths end up feeding the same general import pipeline.
+## Manual Install
 
----
+Open Manual Install when G3M cannot map an archive to game targets. Assign DATA
+files, Extra files, and xdelta patches to explicit targets there.
 
-## What G3M Tries to Recognize
+## Existing mods
 
-When a file comes in, G3M tries to answer:
-
-- is this already a native G3M mod
-- is this a supported archive with recognizable mod content
-- is this a known external format that can be converted
-- is this at least a raw patch or data file that can become a basic mod
-
-If one of those answers is yes, G3M tries to build a usable mod entry for you.
-
----
-
-## Best Case
-
-The smoothest imports are:
-
-- native G3M mod folders or archives
-- `.g3mpatch`
-- supported archives with clear mod structure
-
-Supported conversion paths also exist for some external ecosystems, including
-current TOML and legacy JSON DELTAMOD packages, supported Pizza Tower-related
-flows, and strict FRICKBEARS3 addon archives.
-
----
-
-## When Import Is Not Automatic
-
-Sometimes G3M can download or open a file but still cannot turn it into a clean
-installed mod on its own.
-
-That usually means:
-
-- the format is unsupported
-- the archive layout is too ambiguous
-- the file needs a more manual conversion workflow
-
-If the file is close to usable but not mappable automatically, G3M can hand it
-off to the Manual Install dialog instead of failing as a blind import. That flow
-can assign DATA files, extra files, and additional xdelta patches to explicit
-game targets.
-
-When that happens, the right next step is usually to inspect the file structure
-or try the relevant modding/conversion tools instead of assuming the file is
-broken.
-
----
-
-## Merge vs Replace
-
-If the incoming mod matches an existing mod ID, G3M asks whether you want to
-merge or replace.
-
-- **merge** is better when you want to preserve the current mod folder and
-  update it
-- **replace** is better when you want a clean reimport
-
-If you do not specifically need to preserve local folder state, replace is often
-the simpler option.
+When an import matches an installed mod ID, choose **Merge** to retain the
+existing folder or **Replace** to install the imported folder as-is.

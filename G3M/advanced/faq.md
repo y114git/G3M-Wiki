@@ -47,18 +47,17 @@ order — see [Modpacks](../mods/modpacks.md).
 
 ### Will mods break my game?
 
-No. G3M automatically backs up all original game files before applying mods and
-restores them after you exit the game. Your game files are never permanently
-modified. See [Backup & Restore](backup-and-restore.md).
+G3M backs up files before applying mods and restores matching deployed files
+after exit. It skips files changed by another process and archives recovery data
+instead of overwriting them. See [Backup & Restore](backup-and-restore.md).
 
 ### What mod formats does G3M support?
 
-- **g3mpatch** — G3M's native patch format (compact, fast).
-- **xdelta / vcdiff** — Standard binary diff patches.
-- **CSX scripts** — C# scripts for programmatic modifications.
-- **Raw data files** — Complete data file replacements.
-- **DELTAMOD** — Auto-converted on import.
-- **PizzaOven** — Auto-converted for Pizza Tower mods.
+- `g3mpatch`: G3MTool resource patch.
+- `xdelta` / `vcdiff`: binary patches.
+- `CSX`: C# scripts that modify DATA.
+- Raw DATA files: full replacement.
+- DELTAMOD and PizzaOven: converted on supported import paths.
 
 See [Patching Formats](../mods/patching-formats.md) for details.
 
@@ -149,7 +148,7 @@ into the mod lifecycle, add settings UI, and more. See
 
 ### Can I change G3M's appearance?
 
-Yes, extensively. G3M supports:
+G3M supports:
 
 - Seven customizable theme colors.
 - Custom background images or videos.
@@ -173,7 +172,7 @@ the file to someone else, who can import it in their G3M. See
 
 ### Does G3M collect personal data?
 
-G3M 3.3.1 does not collect or upload usage analytics. Online requests are still
+G3M 3.3.2 does not collect or upload usage analytics. Online requests are still
 used for updates, announcements, the online count, GameBanana and other
 features that need a network connection.
 

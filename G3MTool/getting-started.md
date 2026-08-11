@@ -1,8 +1,6 @@
 # Getting Started
 
-## Requirements
-
-G3MTool currently targets **.NET 10**.
+G3MTool targets .NET 10.
 
 To build from source:
 
@@ -10,7 +8,7 @@ To build from source:
 dotnet publish G3MToolCLI -c Release -r <runtime>
 ```
 
-Common publish runtimes used by the project:
+Common publish runtimes:
 
 | Runtime       | Platform            |
 | ------------- | ------------------- |
@@ -34,12 +32,10 @@ G3MTool info data.win
 G3MTool diff original.win modified.win reports
 ```
 
-## Interactive mode
-
-Run `G3MTool` without arguments to open the interactive prompt.
+Run `G3MTool` without arguments for interactive prompt.
 
 ```text
-G3MTool (1.2.6) - by Y114
+G3MTool (1.2.7) - by Y114
 Type 'help' for available commands or 'exit' to quit
 ```
 
@@ -59,21 +55,11 @@ G3MTool -V
 
 ## Global options
 
-- **Option:** `--verbose`, `-v`
-  - **Description:** Enable verbose output
-
-- **Option:** `--log <path>`, `-l <path>`
-  - **Description:** Enable file logging; use `default` to write into
-    `logs/{command}_{timestamp}.log` next to the executable
-
-- **Option:** `--json`
-  - **Description:** Print JSON for commands that support it
-
-- **Option:** `--xdelta-path <path>`
-  - **Description:** Override the bundled xdelta binary
-
-- **Option:** `--version`, `-V`
-  - **Description:** Print the version and exit
+- `--verbose`, `-v`: verbose output.
+- `--log <path>`, `-l <path>`: log file; `default` writes beside executable.
+- `--json`: JSON output where supported.
+- `--xdelta-path <path>`: override bundled xdelta.
+- `--version`, `-V`: print version and exit.
 
 ## Optional cache
 

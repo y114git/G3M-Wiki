@@ -184,7 +184,7 @@ G3MTool cache files, when used by these workflows, are stored under:
 
 `%LOCALAPPDATA%\G3M\cache\G3MTool\`
 
-Bundled G3MTool 1.2.6 also supports CLI batch operations:
+Bundled G3MTool 1.2.7 also supports CLI batch operations:
 
 - `patch batch apply` for applying many patches independently to the same
   original

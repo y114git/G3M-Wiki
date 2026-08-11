@@ -18,7 +18,7 @@ It is saved in the current profile's mod metadata.
 Playtime is shown in the Library UI through the mod summary panel. The value is
 formatted as hours for display.
 
-## Important limitation
+## Limitation
 
 This is G3M-side tracking. It reflects sessions launched and monitored through
 G3M, not every possible way the game might have been started outside the
