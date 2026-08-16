@@ -30,7 +30,7 @@ G3M uses cloud endpoints for:
 - announcements and poll voting
 - online presence and global settings
 
-G3M 3.3.2 does not collect or upload usage analytics.
+G3M does not collect or upload usage analytics.
 
 ## Session and availability
 

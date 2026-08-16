@@ -4,7 +4,7 @@ G3MTool is command-line reference implementation for `.g3mpatch`. It works
 with GameMaker DATA files and supports patch creation, application, merging,
 inspection, diff reports, `.csx`, and xdelta.
 
-Version: 1.2.7
+Version: 1.2.8
 
 Supported DATA extensions: `.win`, `.ios`, `.droid`, and `.unx`.
 

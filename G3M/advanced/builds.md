@@ -11,7 +11,7 @@ workflows in `.github/workflows/`.
 Current top-level build facts:
 
 - Python requirement: `>=3.14.6`
-- application version: `3.3.2`
+- application version: `3.3.3`
 - UI stack: `PyQt6==6.7.1`
 - package entry point: `src/main.py`
 
@@ -28,12 +28,12 @@ Current values:
 | Property              | Value                     |
 | --------------------- | ------------------------- |
 | App name              | `G3M`                     |
-| App version           | `3.3.2`                   |
+| App version           | `3.3.3`                   |
 | Executable name       | `G3M.exe`                 |
 | Default install dir   | `{autopf}\G3M`            |
 | Minimum Windows build | `17763`                   |
 | Installer languages   | English, Spanish, Russian |
-| Output file name      | `G3M_setup_3.3.2`         |
+| Output file name      | `G3M_setup_3.3.3`         |
 
 The installer also creates optional shortcuts and supports post-install launch.
 

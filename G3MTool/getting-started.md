@@ -35,7 +35,7 @@ G3MTool diff original.win modified.win reports
 Run `G3MTool` without arguments for interactive prompt.
 
 ```text
-G3MTool (1.2.7) - by Y114
+G3MTool (1.2.8) - by Y114
 Type 'help' for available commands or 'exit' to quit
 ```
 

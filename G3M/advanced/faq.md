@@ -172,7 +172,7 @@ the file to someone else, who can import it in their G3M. See
 
 ### Does G3M collect personal data?
 
-G3M 3.3.2 does not collect or upload usage analytics. Online requests are still
+G3M does not collect or upload usage analytics. Online requests are still
 used for updates, announcements, the online count, GameBanana and other
 features that need a network connection.
 

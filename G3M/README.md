@@ -2,7 +2,7 @@
 
 G3M is a PyQt6 desktop mod manager for GameMaker games.
 
-Version: 3.3.2
+Version: 3.3.3
 License: GPL-3.0
 
 ## Supported built-in games
