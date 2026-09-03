@@ -7,7 +7,7 @@ G3MTool --version
 G3MTool -V
 ```
 
-Current code version: `1.2.8`
+Current code version: `1.2.9`
 
 Use this when a bug report, patch manifest, or support request needs the exact
 tool version.

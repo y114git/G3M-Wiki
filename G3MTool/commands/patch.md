@@ -139,6 +139,10 @@ Accepted merge inputs:
   - **Alias:** —
   - **Description:** Enable deep merge for JSON property files
 
+When two patches make non-overlapping changes to `GeneralInfo`, G3MTool merges
+them with the original DATA file as the common base. Changes to the same value
+remain a conflict and are reported normally.
+
 - **Option:** `--report <path>`
   - **Alias:** `-r`
   - **Description:** Write a Markdown merge report

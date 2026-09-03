@@ -19,7 +19,7 @@ The current manifest model includes these top-level fields:
 | `statistics` | Resource and file counts                    |
 | `applyPlan`  | Apply hints used by G3MTool                 |
 
-The example tool version in this repository is `1.2.8`.
+The example tool version in this repository is `1.2.9`.
 
 ## Data-file metadata
 
